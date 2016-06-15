@@ -8,6 +8,7 @@ import Divider from 'material-ui/Divider';
 import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
 import ActionFavorite from 'material-ui/svg-icons/action/favorite';
 import ActionFavoriteBorder from 'material-ui/svg-icons/action/favorite-border';
+import EditNode from './admin.editNode'
 var MarkdownEditor = require('react-markdown-editor').MarkdownEditor;
 
 const style = {
@@ -48,14 +49,8 @@ const style = {
 		height: 400,
 		float: 'left',
 		backgroundImage: 'url(http://wallpapercave.com/wp/pEeUsp1.jpg)'
-	}
-}
-
-const styles = {
-  block: {
-    maxWidth: 100,
-  },
-  marginTop :{
+	},
+	marginTop :{
   	marginTop: 25,
   	marginLeft: 25,
   	width: '100%'
@@ -69,7 +64,7 @@ const styles = {
     marginBottom: 75,
     maxWidth: '10%'
   },
-};
+}
 
 export default class AddNode extends Component {
 	constructor(props){
@@ -77,7 +72,9 @@ export default class AddNode extends Component {
 		this.state = {
 			create: false,
 			cy: null,
+			edit: false,
 			currentNode: null,
+			passToEditNode: null,
 			newNodeName : "",
 			markdownDescription: "",
 			starType: "/components/star (1).png"
@@ -133,7 +130,6 @@ export default class AddNode extends Component {
   			starType: '/components/8902697.png'
   		})
   	}
-  	console.log('this,state', this.state.starType)
   }
 
   onConfirm = (e, value) => {
@@ -143,8 +139,8 @@ export default class AddNode extends Component {
       var newNodeName = this.state.newNodeName
       var currentNode = this.state.currentNode._private.data.id
 
-      this.state.cy.add([
-        { // node a
+      var newNode = this.state.cy.add([
+        {
           group: 'nodes',
           data: {
             id : newNodeName,
@@ -165,7 +161,13 @@ export default class AddNode extends Component {
       	'backgroundImage' : this.state.starType
       })
 
-      console.log('this state', this.state)
+      /**
+
+      	Creates a new cytoscape node with all of current entered information. Will lead into the edit node
+      	component immediately after execution
+
+      **/
+
       this.state.cy.layout()
       this.setState({
         create: false,
@@ -173,8 +175,14 @@ export default class AddNode extends Component {
         newNodeName: "",
         markdownDescription: "",
         starType: "",
-
-      })
+        edit: true,
+        passToEditNode: newNode
+			},
+		  () => {this.setState({
+				passToEditNode: null,
+				edit: false,
+				passToEditNode: null
+			})})
     }
   }
 
@@ -187,6 +195,8 @@ export default class AddNode extends Component {
 		  />
 		];
 		return(
+			<div>
+			<EditNode status={this.state} />
 			<Dialog
 	      title="Create Mode"
 	      modal={false}
@@ -202,27 +212,27 @@ export default class AddNode extends Component {
 		                <TextField hintText="Nodename" style={style.textStyle} onChange = {this.handleChangeText} underlineShow={false} />
 		                <Divider />
 		                </Paper>
-		                <div style={styles.marginTop}>
+		                <div style={style.marginTop}>
     <RadioButtonGroup onChange={this.starChange}style = {style.floatLeft} name="shipSpeed" defaultSelected="star1">
       <RadioButton
         value="star1"
         label="star1"
-        style={styles.radioButtonTop}
+        style={style.radioButtonTop}
       />
       <RadioButton
         value="star2"
         label="star2"
-        style={styles.radioButton}
+        style={style.radioButton}
       />
       <RadioButton
         value="star3"
         label="star3"
-        style={styles.radioButton}
+        style={style.radioButton}
       />
       <RadioButton
         value="star4"
         label="star4"
-        style={styles.radioButton}
+        style={style.radioButton}
       />
     </RadioButtonGroup>
   <div style={style.blackBox}> <img style={style.imageContent} src={this.state.starType}/></div>
@@ -248,6 +258,8 @@ export default class AddNode extends Component {
 		          </Tab>
 		        </Tabs>
 	        </div>
-	    </Dialog>)
+	    </Dialog>
+	    </div>
+	    )
 	}
 }

@@ -22,7 +22,6 @@ const style = {
     minWidth: 1000,
     maxWidth: 'none',
     minHeight: 600,
-    opacity: .5
   },
   textField : {
     color: 'white'
@@ -66,7 +65,6 @@ export default class editNode extends Component {
   }
 
   onChangeSlider = (e, value) => {
-    console.log("ohnoes")
     this.state.cy.$("#" + this.state.currentNode._private.data.id).style({
       'width': 100 + value*100,
       'height': 100 + value*100,
@@ -98,9 +96,25 @@ export default class editNode extends Component {
   }
 
   componentWillReceiveProps = (props) =>{
-    console.log(props, "in edit")
+
+    console.log(props.status.edit, "receiving props from", props)
+    console.log(this.state.edit, "current state")
+
+    if(props.status.edit && props.status.passToEditNode){
+      this.setState({
+        cy: props.status.cy,
+        edit: true,
+        addVideo: false,
+        addArticle: false,
+        currentNode: props.status.passToEditNode['0'],
+        markdownDescription: props.status.passToEditNode['0']._private.data.description,
+        currentVideos: props.status.passToEditNode['0']._private.data.videos
+      })
+      return
+    }
+
     if(props.status.edit){
-      console.log("deeper in edit")
+      
       this.setState({
         cy: props.status.cy,
         edit: true,

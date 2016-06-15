@@ -30,12 +30,12 @@ const styles = {
 		bottom: 0,
 		right: 0,
 		overflow: 'auto',
-		minHeight: 700,
+		minHeight: 600,
 		width: '100%',
 		maxWidth: 'none'
 	},
   dialogHugePlayer: {
-    minHeight: 670
+    minHeight: 610
   },
 	rocketImg: {
 		opacity: .2,
@@ -54,10 +54,14 @@ const styles = {
 		maxWidth: "50%",
     width: '49%',
     marginTop: 10,
-    height: 600,
+    height: 575,
 		overflow: 'scroll'
 
 	},
+  topTab : {
+    height: 35,
+    textAlign: 'top'
+  },
   markdownMargins : {
     margin: 3
   },
@@ -104,8 +108,8 @@ export default class User extends Component {
   }
 
   componentWillReceiveProps = (value) => {
-    if(value.props.currentNode){
-    	if(value.props.currentNode._private.data.videos.length){
+    if(value.props.currentNode && value.props.view){
+      if(value.props.currentNode._private.data.videos.length){
       	this.setState({
       		openPrompt: value.props.view,
       		cy: value.props.cy,
@@ -130,7 +134,8 @@ export default class User extends Component {
   handleClose = () => {
     this.setState({
       openPrompt: false,
-      description: ""
+      description: "",
+      currentNode: null
   	});
   };
 
@@ -141,12 +146,32 @@ export default class User extends Component {
     });
   };
 
+  handleRequestClosePrompt = () => {
+    this.setState({
+      cy : null,
+      currentNode: {},
+      openPrompt: false,
+      description: "",
+      open: false,
+      videoDesc: "",
+      currentVideos: []
+    });
+  };
+
   render(){
 
     const opts = {
       height: 390,
       width: '100%',
     };
+
+    const cancel = [
+      <FlatButton
+          label="Back to galactic view"
+          primary={true}
+          onTouchTap={this.handleRequestClosePrompt}
+      />
+    ];
 
     const contentStyle = {
     minWidth: 640,
@@ -163,6 +188,7 @@ export default class User extends Component {
           contentStyle= {styles.dialog}
           open={this.state.openPrompt}
           onRequestClose={this.handleClose}>
+
           <div>
             <Paper style={styles.dialog} zDepth={2}>
               <RaisedButton onClick = {this.handleClose} backgroundColor ='#ff0000' style={styles.buttonDecline}>ABORT</RaisedButton>
@@ -176,13 +202,13 @@ export default class User extends Component {
           modal={true}
           contentStyle={styles.dialogHuge}
           open={this.state.open}
+          actions={cancel}
           autoDetectWindowHeight = {false}>
         	<Tabs>
             <Tab label="Content" >
-              <Tabs>
+              <Tabs styles = {styles.dialogBody} tabItemContainerStyle={styles.topTab}>
               {this.state.currentVideos.map(function(value){
                 return (<Tab label={value.name}>
-                 <div style ={styles.dialogHugePlayer}>
                  <div style={styles.floatLeft}>
                   <Paper zDepth={2}>
                     <YouTube
@@ -194,7 +220,6 @@ export default class User extends Component {
                     <Paper style={styles.floatRight} zDepth={2}>
                       <MarkdownParser style={styles.markdownMargins} markdown={value.markdown}/>
                     </Paper>
-                  </div>
                   </div>
                 </Tab>)
               })}

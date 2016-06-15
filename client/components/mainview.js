@@ -21,6 +21,22 @@ export default class MainView extends Component {
 		}
   }
 
+  findPath = () => {
+    var aStar = this.state.cy.elements().aStar({ root: "#JavaScript2", goal: "#JavaScript10" });
+    var map = aStar.path.select()
+    for (var i = 0; i < map.length; i++){
+      if(map[i]._private.group === 'edges'){
+        map[i].style({
+          'line-color' : '#0289d5',
+          'overlay-color' : '#0289d5',
+          'overlay-opacity' : .9,
+          'width' : 10,
+          'overlay-padding': 3
+        })
+      }
+    }
+  }
+
   componentDidMount() {
 
   	var bind = this
@@ -28,7 +44,7 @@ export default class MainView extends Component {
   	var cy = cytoscape({
 
   	container: document.getElementById('cy'),
-  	autoungrabify: true, // container to render in
+  	autoungrabify: true,
 
   	elements: [
       {
@@ -345,110 +361,82 @@ export default class MainView extends Component {
     },
   });
 
-  	bind.setState({
-  		cy : cy
-  	})
 
-  	cy.on('tap', function(event){
+  cy.on('tap', function(event){
 
-      
-      var evtTarget = event.cyTarget;
-      var holder = bind.state.currentNode
-      
-      if(evtTarget._private.ready || evtTarget._private.group === 'edges'){
-        return
-      }
+    var evtTarget = event.cyTarget;
+    var holder = bind.state.currentNode
+    
+    if(evtTarget._private.ready || evtTarget._private.group === 'edges'){
+      return
+    }
 
-      if(bind.state.previousNode){
-        bind.state.previousNode._private.edges.forEach((value)=>{
-          value.style({
-          'line-color' : '#ccc',
-          'overlay-color' : '#ccc',
-          'overlay-opacity' : 0,
-          'width' : 1,
-          'overlay-padding': 1
-          })
-        })
-      }
-  
-      evtTarget.style({
-        'font-size': 80
-      })
-      evtTarget._private.edges.forEach((value)=>{
+    evtTarget.style({
+      'font-size': 80
+    })
+
+    if(bind.state.previousNode){
+      bind.state.previousNode._private.edges.forEach((value)=>{
         value.style({
+        'line-color' : '#ccc',
+        'overlay-color' : '#ccc',
+        'overlay-opacity' : 0,
+        'width' : 1,
+        'overlay-padding': 1
+        })
+      })
+    }
+
+
+    evtTarget._private.edges.forEach((value)=>{
+      value.style({
         'line-color' : [102,255,0],
         'overlay-color' : [102,255,0],
         'overlay-opacity' : .5,
         'width' : 4,
         'overlay-padding': 2
       })
-      })
-
-      // cy.animate({
-      //   center: {
-      //     eles : evtTarget
-      //   },
-      //   zoom: 5,
-      //   easing: 'ease-in-sine'
-      // }, {
-      //   duration: 500
-      // });
-
-      const findPath = () => {
-        var aStar = bind.state.cy.elements().aStar({ root: "#JavaScript2", goal: "#JavaScript10" });
-        var map = aStar.path.select()
-        for (var i = 0; i < map.length; i++){
-          if(map[i]._private.group === 'edges'){
-            map[i].style({
-              'line-color' : '#0289d5',
-              'overlay-color' : '#0289d5',
-              'overlay-opacity' : .9,
-              'width' : 10,
-              'overlay-padding': 3
-            })
-          }
-        }
-      }
-
-      
+    })
 
 
-      setTimeout(()=>{
-  		bind.setState({
-  			currentNode : evtTarget,
-        previousNode : holder,
-  			view       : true
-  		},()=>{
-        if(bind.state.previousNode){
-        bind.state.previousNode._private.edges.forEach((value)=>{
-          bind.state.previousNode.style({
-            'font-size' : 40
-          })
-          if( (value._private.data.source !== bind.state.currentNode._private.data.id) && (value._private.data.target !== bind.state.currentNode._private.data.id ))
-          value.style({
+     
+
+  
+
+    bind.setState({
+      currentNode : evtTarget,
+      previousNode : holder,
+      view       : true,
+      cy : cy
+    },
+    ()=>{
+      if(bind.state.previousNode){
+      bind.state.previousNode._private.edges.forEach((value)=>{
+        bind.state.previousNode.style({
+          'font-size' : 40
+        })
+        if( (value._private.data.source !== bind.state.currentNode._private.data.id) && (value._private.data.target !== bind.state.currentNode._private.data.id ))
+        value.style({
           'line-color' : '#ccc',
           'overlay-color' : '#ccc',
           'overlay-opacity' : 0,
           'width' : 1
           })
         })
-        findPath()
+      bind.findPath()
       }
-      }
-
-
-
-      )}, 0)
-  	});
+    }
+    )
+    });
   }
 
-	
-	render () {
-		return <div id="cy">
-			<Admin props={this.state} />
+  
+  render () {
+    return <div id="cy">
+      <Admin props={this.state} />
       <User props={this.state} />
-		</div>
-	}
+    </div>
+  }
 }
 
 
