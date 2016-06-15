@@ -47,6 +47,12 @@ export default class Menu extends Component {
           onRequestChange={(open) => this.setState({open})}>
             <MenuItem onTouchTap={this.handleClose}>Menu Item</MenuItem>
             <MenuItem onTouchTap={this.handleClose}>Menu Item 2</MenuItem>
+            <MenuItem onTouchTap={this.handleClose}>Menu Item 3</MenuItem>
+            <MenuItem onTouchTap={this.handleClose}>Menu Item 4</MenuItem>
+            <MenuItem onTouchTap={this.handleClose}>Menu Item 5</MenuItem>
+            <MenuItem onTouchTap={this.handleClose}>Menu Item 6</MenuItem>
+            <MenuItem onTouchTap={this.handleClose}>Menu Item 7</MenuItem>
+
         </Drawer>
       </div>
 			)

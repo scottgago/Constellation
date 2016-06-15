@@ -13,160 +13,47 @@ import Paper from 'material-ui/Paper';
 import Loading from './loading'
 
 const opts = {
-      height: 390,
-      width: '100%',
-    };
-
-    const contentStyle = {
-    minWidth: 640,
-    height: '100%',
-    minHeight: 400,
-    alignItems: 'center',
-    justifyContent: 'center',
-    overflow: 'scroll'
-  }
-
-const styles = {
-  dialogHugePlayer : {
-      position: 'relative',
-      height:'100%',
-      minHeight: 4000,
-      maxHeight: '100%',
-      width: '100%',
-      maxWidth: 'none',
-      overflow: 'scroll'
-    },
-    dialog: {
-      alignItems: 'center',
-      justifyContent: 'center',
-      overflow: 'scroll'
-    },
-    dialogBody: {
-      minWidth: 600,
-      minHeight: "100%",
-      overflow: 'scroll'
-    },
-    fill: {
-      width: '100%',
-      height: 50,
-      maxHeight: 'none'
-    },
-    dialogHuge : {
-      position: 'fixed',
-      top: 0,
-      left: 0,
-      bottom: 0,
-      right: 0,
-      overflow: 'scroll',
-      height: '100%',
-      width: '100%',
-      maxWidth: 'none',
-      overflow: 'scroll'
-    },
-    dialogHugePlayer : {
-      position: 'relative',
-      height:'100%',
-      minHeight: 400,
-      maxHeight: '100%',
-      width: '100%',
-      maxWidth: 'none',
-      overflow: 'scroll'
-    },
-    rocketImg: {
-      opacity: .2,
-      maxHeight: '100%',
-      position: 'fixed',
-      maxWidth: '100%'
-
-    },
-    floatLeft: {
-      float: 'left',
-      maxWidth: "50%",
-      maxHeight: 400,
-      marginTop: 10,
-      marginBottom: 30,
-    },
-    floatRight: {
-      float: 'right',
-      maxWidth: "50%",
-      marginTop: 10,
-      maxHeight: 400,
-      overflow: 'scroll',
-      marginBottom: 30,
-
-    },
-    floatLeftTopButton: {
-      float: 'left',
-      minWidth: "75%",
-    },
-    floatRightTopButton: {
-      float: 'right',
-      minWidth: "25%",
-
-    },
-
-
-    buttonDecline: {
-      width: '50%',
-      color: 'white',
-  },
-  divWidth : {
-    width: '100%',
-    height: '100%'
-  },
-    buttonAccept: {
-      width: '50%',
-      color: 'white',
-    },
-    description: {
-      background: 'transparent'
-    },
-    modalStyle: {
-      width: "80%",
-      maxWidth: 'none',
-      overflow:'scroll'
-    }
-  }
+  height: 390,
+  width: '100%',
+};
 
 const style = {
-  loginRow: {
-    flexDirection: 'row'
+ 
+  dialogHugePlayer : {
+    position: 'relative',
+    height:'100%',
+    minHeight: 400,
+    maxHeight: '100%',
+    width: '100%',
+    maxWidth: 'none',
+    overflow: 'scroll'
+  },
+  fill: {
+    width: '100%',
+    height: 50,
+    maxHeight: 'none'
   },
   contentDiv : {
     width: '100%',
     height: '100%'
-
   },
-  dialogBody: {
-    minWidth: 900,
-    minHeight: 600
+  floatLeftTopButton: {
+    float: 'left',
+    minWidth: "75%",
   },
-  textField : {
-    color: 'white'
-  },
-  headline: {
-    fontSize: 24,
-    paddingTop: 16,
-    marginBottom: 12,
-    fontWeight: 400,
-    opacity: 1,
-
-  },
-  textMargins: {
-    marginTop: 10,
-    width: '75%',
-    float: 'left'
-  },
-  buttonMargins: {
-    marginTop: 10,
-    width: '25%',
-    float: 'right'
+  floatRightTopButton: {
+    float: 'right',
+    minWidth: "25%",
   },
   textStyle: {
     marginLeft: 20
   },
-  alignCenter : {
-    alignItems: 'center'
+  contentStyle: {
+    minWidth: 640,
+    height: '100%',
+    minHeight: 400,
+    alignItems: 'center',
+    justifyContent: 'center'
   }
 }
 
@@ -198,12 +85,15 @@ export default class AddArticle extends Component {
     })
   }
 
+  // Listen for changes on the description change field, if so, update the description state
+
   handleSubmit = () => {
-    console.log(this.state)
     this.setState({
       currentArticle : this.state.articleURL
     })
   }
+
+  // On button press, submit the current textbox value article URL to the completed current article
 
   handleTextChange = (e,value) =>{
     this.setState({
@@ -211,28 +101,28 @@ export default class AddArticle extends Component {
     })
   }
 
+  // Listen for changes on the articleURL text box and map them to the articleURL state
+
   handleNext = () => {
 
     var anchor = this
-    console.log(this.state)
-
     var index = this.state.stepIndex + 1
     
     this.setState({
       stepIndex: this.state.stepIndex + 1,
       finished: (this.state.stepIndex > 1),
     });
-    console.log(this.state)
     if(this.state.stepIndex === 1){
       this.setState({
         openPrompt: false,
         stepIndex: 0,
         load: true
-      }, ()=>{this.setState({
-        load: false
-      })})
+      },
+        ()=>{this.setState({
+          load: false
+        })}
+      )
 
-      console.log("in handle next")
       this.state.currentNode._private.data.articles.push({
         article: anchor.state.articleURL,
       })
@@ -257,32 +147,30 @@ export default class AddArticle extends Component {
       case 0:
         return (
           <div style ={style.contentDiv}>
-                      <div style= {styles.floatLeftTopButton}>
-                      <TextField onChange = {this.handleTextChange} hintText="Confirm" style={style.textStyle} underlineShow={false} />
-                      <Divider />
-                      </div>
-                      <div style={styles.floatRightTopButton}>
-                      <RaisedButton
-                      style={styles.fill}
-                  label="Submit"
-                  primary={true}
-                  onTouchTap = {this.handleSubmit}
-                />
-                </div>
-                   
-          <Paper zDepth={2}>
-                    
-                    <iframe style={styles.dialogHugePlayer} src={this.state.currentArticle} height={'100%'} width={'100%'}/>
-                </Paper>
-                </div>)
+            <div style= {style.floatLeftTopButton}>
+              <TextField onChange = {this.handleTextChange} hintText="Confirm" style={style.textStyle} underlineShow={false} />
+              <Divider />
+            </div>
+            <div style={style.floatRightTopButton}>
+              <RaisedButton
+                style={style.fill}
+                label="Submit"
+                primary={true}
+                onTouchTap = {this.handleSubmit}
+              />
+            </div>
+            <Paper zDepth={2}>
+              <iframe style={style.dialogHugePlayer} src={this.state.currentArticle} height={'100%'} width={'100%'}/>
+            </Paper>
+          </div>
+        )
       case 1:
-        return  (<div>
-                   
-          <Paper zDepth={2}>
-                    
-                    <iframe style={styles.dialogHugePlayer} src={this.state.currentArticle} height={'100%'} width={'100%'}/>
-                </Paper>
-                </div>)
+        return (
+          <div>
+            <Paper zDepth={2}>
+              <iframe style={style.dialogHugePlayer} src={this.state.currentArticle} height={'100%'} width={'100%'}/>
+            </Paper>
+          </div>)
       default:
         return 'You\'re a long way from home sonny jim!';
     }
@@ -290,26 +178,23 @@ export default class AddArticle extends Component {
 
   render() {
     const {finished, stepIndex} = this.state;
-    
-
     return (
       <div>
-      <Loading status={this.state.load} />
-      <Dialog
-          modal={false}
-          open={this.state.openPrompt}
-          contentStyle={style.modalStyle}
-          onRequestClose={this.handleClose}>
-
-            <Stepper activeStep={stepIndex}>
-              <Step>
-                <StepLabel>Select an artcle</StepLabel>
-              </Step>
-              <Step>
-                <StepLabel>Preview and submit</StepLabel>
-              </Step>
-            </Stepper>
-          <div style={contentStyle}>
+        <Loading status={this.state.load} />
+        <Dialog
+            modal={false}
+            open={this.state.openPrompt}
+            contentStyle={style.modalStyle}
+            onRequestClose={this.handleClose}>
+          <Stepper activeStep={stepIndex}>
+            <Step>
+              <StepLabel>Select an artcle</StepLabel>
+            </Step>
+            <Step>
+              <StepLabel>Preview and submit</StepLabel>
+            </Step>
+          </Stepper>
+          <div style={style.contentStyle}>
             {finished ? (
               <p>
                 <a
@@ -330,17 +215,15 @@ export default class AddArticle extends Component {
                   label="Back"
                   disabled={stepIndex === 0}
                   onTouchTap={this.handlePrev}
-                  style={{marginRight: 12}}
-                />
+                  style={{marginRight: 12}} />
                 <RaisedButton
                   label={stepIndex === 1 ? 'Finish' : 'Next'}
                   primary={true}
-                  onTouchTap={this.handleNext}
-                />
+                  onTouchTap={this.handleNext} />
               </div>
             </div>
-          )}
-        </div>
+            )}
+          </div>
         </Dialog>
       </div>
     );

@@ -289,12 +289,12 @@ export default class AddVideo extends Component {
 
 
     const contentStyle = {
-    minWidth: 640,
-    height: '100%',
-    minHeight: 400,
-    alignItems: 'center',
-    justifyContent: 'center'
-  }
+      minWidth: 640,
+      height: '100%',
+      minHeight: 400,
+      alignItems: 'center',
+      justifyContent: 'center'
+    }
     
 
     return (
