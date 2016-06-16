@@ -35,7 +35,7 @@ const styles = {
 		maxWidth: 'none'
 	},
   dialogHugePlayer: {
-    minHeight: 610
+    minHeight: 580
   },
 	rocketImg: {
 		opacity: .2,
@@ -103,7 +103,8 @@ export default class User extends Component {
       description: "",
       open: false,
       videoDesc: "",
-      currentVideos: []
+      currentVideos: [],
+      currentArticles: [],
     }
   }
 
@@ -115,19 +116,20 @@ export default class User extends Component {
       		cy: value.props.cy,
       		currentNode: value.props.currentNode,
       		description: value.props.currentNode._private.data.description,
-      		currentVideos: value.props.currentNode._private.data.videos
+      		currentVideos: value.props.currentNode._private.data.videos,
+          currentArticles: value.props.currentNode._private.data.articles
       	})
       }
-      if(!value.props.currentNode._private.data.videos.length){
-        this.setState({
-          openPrompt: value.props.view,
-          cy: value.props.cy,
-          currentNode: value.props.currentNode,
-          description: value.props.currentNode._private.data.description,
-          videoDesc: "",
-          currentVideos: []
-        })
-      }
+      // if(!value.props.currentNode._private.data.videos.length){
+      //   this.setState({
+      //     openPrompt: value.props.view,
+      //     cy: value.props.cy,
+      //     currentNode: value.props.currentNode,
+      //     description: value.props.currentNode._private.data.description,
+      //     videoDesc: "",
+      //     currentVideos: []
+      //   })
+      // }
     }
   }
 
@@ -227,9 +229,16 @@ export default class User extends Component {
               </Tabs>
             </Tab>
             <Tab label="Documentation">
-              <div style={styles.dialogHugePlayer}>
-                <iframe style={styles.dialogHugePlayer} src='http://www.material-ui.com/#/components/dialog' height={'50%'} width={'100%'}/>
-              </div>
+              <Tabs tabItemContainerStyle={styles.topTab}>
+              {this.state.currentArticles.map((value)=>{
+                return ( <Tab label = {value.name}>
+                  <div style={styles.dialogHugePlayer}>
+                    <iframe style={styles.dialogHugePlayer} src={value.url} height={'50%'} width={'100%'}/>
+                  </div>
+                  </Tab>)
+
+              })}
+              </Tabs>
             </Tab>
             <Tab label="Questions">
               <div>

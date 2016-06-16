@@ -59,16 +59,20 @@ const style = {
 
 export default class AddArticle extends Component {
 
-  state = {
-    finished: false,
-    stepIndex: 0,
-    description : "",
-    openPrompt: false,
-    load: false,
-    currentNode: null,
-    articleURL: 'http://www.material-ui.com/#/components/dialog' ,
-    currentArticle: 'http://www.material-ui.com/#/components/dialog' 
-  };
+  constructor(props) {
+    super(props)
+    this.state = {
+      finished: false,
+      stepIndex: 0,
+      description : "",
+      openPrompt: false,
+      load: false,
+      currentNode: null,
+      articleURL: 'http://www.material-ui.com/#/components/dialog' ,
+      currentArticle: 'http://www.material-ui.com/#/components/dialog',
+      forceUpdate : props.status.confirmChange 
+    }
+  }
 
   componentWillReceiveProps = (value) =>{
     if(value.status.addArticle){
@@ -126,6 +130,8 @@ export default class AddArticle extends Component {
       this.state.currentNode._private.data.articles.push({
         article: anchor.state.articleURL,
       })
+      this.state.forceUpdate()
+
     }
   };
 
