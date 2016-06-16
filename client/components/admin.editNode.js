@@ -38,7 +38,10 @@ const style = {
     width: '100%',
     height: 40
   },
-
+  sliderStyle:{
+    maxWidth: '90%',
+    margin: "0 auto"
+  },
   textStyle: {
     marginLeft: 20
   },
@@ -61,20 +64,26 @@ export default class editNode extends Component {
       currentNode: null,
       addVideo: false,
       addArticle: false,
+      confirmChange : () =>{
+    this.setState({})
+  }
     }
   }
 
   onChangeSlider = (e, value) => {
-    this.state.cy.$("#" + this.state.currentNode._private.data.id).style({
-      'width': 100 + value*100,
-      'height': 100 + value*100,
+    this.state.currentNode.style({
+      'width': 100 + value*500,
+      'height': 100 + value*500,
     })
+  }
+
+  forceRender = () =>{
+    this.setState({})
   }
 
   handleAddVideo = () => {
     this.setState({
-      addVideo : true,
-      edit: false,
+      addVideo : true
     },
     () => {
       this.setState({
@@ -85,8 +94,7 @@ export default class editNode extends Component {
 
   handleAddArticle = () => {
     this.setState({
-      addArticle : true,
-      edit: false,
+      addArticle : true
     },
     () => {
       this.setState({
@@ -97,8 +105,6 @@ export default class editNode extends Component {
 
   componentWillReceiveProps = (props) =>{
 
-    console.log(props.status.edit, "receiving props from", props)
-    console.log(this.state.edit, "current state")
 
     if(props.status.edit && props.status.passToEditNode){
       this.setState({
@@ -122,7 +128,8 @@ export default class editNode extends Component {
         addArticle: false,
         currentNode: props.status.currentNode,
         markdownDescription: props.status.currentNode._private.data.description,
-        currentVideos: props.status.currentNode._private.data.videos
+        currentVideos: props.status.currentNode._private.data.videos,
+        currentArticles: props.status.currentNode._private.data.articles
       })
     }
   }
@@ -143,7 +150,7 @@ export default class editNode extends Component {
   render(){
     const cancel = [
       <FlatButton
-          label="Cancel"
+          label="Submit Changes"
           primary={true}
           onTouchTap={this.handleRequestClosePrompt}
       />
@@ -151,21 +158,22 @@ export default class editNode extends Component {
 
     return (
       <div>
-        <AdminAddVideo status={this.state} />
-        <AdminAddArticle status={this.state} />
+        
         <Dialog
           title="Edit Mode"
           modal={false}
           actions={cancel}
           open={this.state.edit}
           contentStyle ={style.dialogBody}>
+          <AdminAddVideo status={this.state} />
+          <AdminAddArticle status={this.state} />
           <div style = {style.dialogBody}>
             <Tabs style={style.contentDiv}>
               <Tab label="Style">
                 <div style = {style.alignCenter}>
                   <h2 style={style.headline}>Styling</h2>
                   <p>Node size</p>
-                  <Slider name="slider0" defaultValue={0.5} onChange={this.onChangeSlider} />
+                  <Slider name="slider0" defaultValue={0} style={style.sliderStyle} onChange={this.onChangeSlider} />
                 </div>
               </Tab>
               <Tab label="Content" >
@@ -178,14 +186,16 @@ export default class editNode extends Component {
                         <TableRow>
                           <TableHeaderColumn>ID</TableHeaderColumn>
                           <TableHeaderColumn>Name</TableHeaderColumn>
+                          <TableHeaderColumn>Youtube ID</TableHeaderColumn>
                           <TableHeaderColumn>Description</TableHeaderColumn>
                           <TableHeaderColumn>Edit</TableHeaderColumn>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {this.state.currentVideos.map(function(value){
+                        {this.state.currentVideos.map(function(value, index){
                           return (<TableRow>
-                                    <TableRowColumn>1</TableRowColumn>
+                                    <TableRowColumn>{index + 1}</TableRowColumn>
+                                    <TableRowColumn>Name</TableRowColumn>
                                     <TableRowColumn>{value.video}</TableRowColumn>
                                     <TableRowColumn>Employed</TableRowColumn>
                                     <TableRowColumn><RaisedButton>Edit</RaisedButton></TableRowColumn>
@@ -201,16 +211,20 @@ export default class editNode extends Component {
                       <TableHeader>
                         <TableRow>
                           <TableHeaderColumn>ID</TableHeaderColumn>
+                          <TableHeaderColumn>Name</TableHeaderColumn>
                           <TableHeaderColumn>URL</TableHeaderColumn>
+                          <TableHeaderColumn>Description</TableHeaderColumn>
                           <TableHeaderColumn>Edit</TableHeaderColumn>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {this.state.currentArticles.map(function(value){
+                        {this.state.currentArticles.map(function(value, index){
                           return (<TableRow>
-                                    <TableRowColumn>1</TableRowColumn>
+                                    <TableRowColumn>{index + 1}</TableRowColumn>
                                     <TableRowColumn>John Smith</TableRowColumn>
                                     <TableRowColumn>Employed</TableRowColumn>
+                                    <TableRowColumn>Employed</TableRowColumn>
+                                    <TableRowColumn><RaisedButton>Edit</RaisedButton></TableRowColumn>
                                   </TableRow>)
                         })}
                       </TableBody>

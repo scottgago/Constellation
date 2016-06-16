@@ -164,6 +164,7 @@ export default class AddVideo extends Component {
 
   constructor(props){
     super(props)
+    console.log(props, "newprops")
     this.state = {
       finished: false,
       stepIndex: 0,
@@ -171,7 +172,8 @@ export default class AddVideo extends Component {
       openPrompt: false,
       currentNode: null,
       videoURL: "",
-      currentVideo: "2g811Eo7K8U"
+      currentVideo: "2g811Eo7K8U",
+      forceUpdate : props.status.confirmChange
     };
   }
 
@@ -224,6 +226,8 @@ export default class AddVideo extends Component {
         video: anchor.state.videoURL,
         markdown: anchor.state.description
       })
+
+      this.state.forceUpdate()
     }
   };
 

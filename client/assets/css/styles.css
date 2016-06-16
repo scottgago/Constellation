@@ -4,7 +4,9 @@
   top: 0;
   right: 0;
   bottom: 0;
-  background-image: url(http://s33.postimg.org/mda7anda7/6927874_space_the_stars.jpg);
-  background-repeat: no-repeat;
-  background-size: 100%
+  background: url(../imgs/6927874-space-the-stars.jpg) no-repeat center center fixed; 
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
 }

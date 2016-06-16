@@ -9,6 +9,9 @@ import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
 import ActionFavorite from 'material-ui/svg-icons/action/favorite';
 import ActionFavoriteBorder from 'material-ui/svg-icons/action/favorite-border';
 import EditNode from './admin.editNode'
+import {Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn} from 'material-ui/Table'
+
+import Slider from 'material-ui/Slider';
 var MarkdownEditor = require('react-markdown-editor').MarkdownEditor;
 
 const style = {
@@ -16,10 +19,20 @@ const style = {
   	width: '100%',
   	height: '100%'
 	},
+
+  sliderStyle:{
+    maxWidth: '75%',
+    position: 'absolute',
+    width: '90%',
+    top: 400
+  },
 	imageContent : {
-		height: '100%',
-		display: 'block',
-    margin: '0 auto'
+		height: 100,
+    width: 100,
+    left: 500,
+    margin: "auto",
+		position: 'absolute',
+    top: 160
 	},
 	dialogBody: {
   	minWidth: 1000,
@@ -48,7 +61,8 @@ const style = {
 		height: '100%',
 		height: 400,
 		float: 'left',
-		backgroundImage: 'url(http://wallpapercave.com/wp/pEeUsp1.jpg)'
+		backgroundImage: 'url(./assets/imgs/pEeUsp1.jpg)',
+    overflow: 'none'
 	},
 	marginTop :{
   	marginTop: 25,
@@ -64,6 +78,23 @@ const style = {
     marginBottom: 75,
     maxWidth: '10%'
   },
+  adminList: {
+    marginTop: 15,
+    float: 'left',
+    width: '48%',
+    left: 0,
+    height: 450
+
+  },
+  nodeList: {
+    marginTop: 15,
+    float: 'right',
+    width: '48%',
+    height: 450,
+    right: 0,
+    overflow: "scroll"
+
+  }
 }
 
 export default class AddNode extends Component {
@@ -73,16 +104,31 @@ export default class AddNode extends Component {
 			create: false,
 			cy: null,
 			edit: false,
+      starWidth: 100,
+      starHeight: 100,
 			currentNode: null,
+      availableConnections: [],
+      selectedConnections : [],
 			passToEditNode: null,
 			newNodeName : "",
 			markdownDescription: "",
-			starType: "/components/star (1).png"
+			starType: "./assets/imgs/star (1).png"
 		}
 	}
 
 	componentWillReceiveProps = (props) =>{
-		console.log(props)
+
+    if(this.state.currentNode){
+      var nodes = [];
+      var newnodes = this.state.cy.nodes()
+      for(var i = 0; i < newnodes.length; i++){
+        nodes.push(newnodes[i])
+      }
+      this.setState({
+        availableConnections : nodes
+      })
+    }
+   
 		if(props.status.create){
 			this.setState({
 				cy: props.status.cy,
@@ -91,6 +137,20 @@ export default class AddNode extends Component {
 			})
 		}
 	}
+
+  onChangeSlider = (e, value) => {
+
+    this.setState({
+      starWidth : (style.imageContent.width = 100 + value*500),
+      starHeight: (style.imageContent.height = 100 + value*500)
+    })
+    
+    style.imageContent.width = 100 + value*500
+    style.imageContent.height = 100 + value*500
+    style.imageContent.left = 500 - (value*500)/2
+    style.imageContent.top = 160 - (value*500)/2
+    
+  }
 
 	handleRequestClosePrompt = () => {
     this.setState({
@@ -117,25 +177,31 @@ export default class AddNode extends Component {
   	console.log(value)
   	if(value === "star1"){
   		this.setState({
-  			starType: '/components/star (1).png'
+  			starType: './assets/imgs/star (1).png'
   		})
   	}
   	if(value === "star2"){
   		this.setState({
-  			starType: '/components/star.png'
+  			starType: './assets/imgs/star.png'
   		})
   	}
   	if(value === "star3"){
   		this.setState({
-  			starType: '/components/8902697.png'
+  			starType: './assets/imgs/8902697.png'
   		})
   	}
   }
 
+  selectedEdges = (e) => {
+    this.state.selectedConnections = []
+    for(var i = 0; i < e.length; i++){
+      this.state.selectedConnections.push(this.state.availableConnections[e[i] - 1]._private.data.id)
+    }
+  }
+
   onConfirm = (e, value) => {
     var anchor = this
-    var value = value.toLowerCase()
-    if(value === 'confirm'){
+    
       var newNodeName = this.state.newNodeName
       var currentNode = this.state.currentNode._private.data.id
 
@@ -146,7 +212,11 @@ export default class AddNode extends Component {
             id : newNodeName,
             description: anchor.state.markdownDescription,
             videos: [],
-            articles: []
+            articles: [],
+            styles: {
+              width: anchor.state.starWidth,
+              height: anchor.state.starHeight
+            }
           },
         },
         {
@@ -157,8 +227,23 @@ export default class AddNode extends Component {
             target: newNodeName
           }
         }
-      ]).style({
-      	'backgroundImage' : this.state.starType
+      ])['0'].style({
+      	'backgroundImage' : this.state.starType,
+        'width'           : this.state.starWidth,
+        'height'          : this.state.starHeight
+      }).addClass('gps_ring')
+
+
+      this.state.selectedConnections.forEach((edge) => {
+        console.log(edge)
+        this.state.cy.add({
+          group: 'edges',
+          data: {
+            id: edge+newNode,
+            source: newNodeName,
+            target: edge
+          }
+        })
       })
 
       /**
@@ -173,8 +258,11 @@ export default class AddNode extends Component {
         create: false,
         currentNode : null,
         newNodeName: "",
+
+        starWidth: 100,
+        starHeight: 100,
         markdownDescription: "",
-        starType: "",
+        starType: "./assets/imgs/star (1).png",
         edit: true,
         passToEditNode: newNode
 			},
@@ -183,7 +271,7 @@ export default class AddNode extends Component {
 				edit: false,
 				passToEditNode: null
 			})})
-    }
+    
   }
 
 	render(){
@@ -192,7 +280,12 @@ export default class AddNode extends Component {
 		      label="Cancel"
 		      primary={true}
 		      onTouchTap={this.handleRequestClosePrompt}
-		  />
+		  />,
+      <FlatButton
+          label="Create Node"
+          primary={true}
+          onTouchTap={this.onConfirm}
+      />
 		];
 		return(
 			<div>
@@ -211,8 +304,83 @@ export default class AddNode extends Component {
 		              <Paper zDepth={2}>
 		                <TextField hintText="Nodename" style={style.textStyle} onChange = {this.handleChangeText} underlineShow={false} />
 		                <Divider />
-		                </Paper>
-		                <div style={style.marginTop}>
+		              </Paper>
+                  <div style={style.adminList}>
+                  <span>Admins</span>
+                  <Table>
+    <TableHeader>
+      <TableRow>
+        <TableHeaderColumn>ID</TableHeaderColumn>
+        <TableHeaderColumn>Name</TableHeaderColumn>
+        <TableHeaderColumn>Priviledges</TableHeaderColumn>
+      </TableRow>
+    </TableHeader>
+    <TableBody>
+      <TableRow>
+        <TableRowColumn>1</TableRowColumn>
+        <TableRowColumn>Scott</TableRowColumn>
+        <TableRowColumn>Full</TableRowColumn>
+      </TableRow>
+      <TableRow>
+        <TableRowColumn>2</TableRowColumn>
+        <TableRowColumn>Michael</TableRowColumn>
+        <TableRowColumn>Full</TableRowColumn>
+      </TableRow>
+      <TableRow>
+        <TableRowColumn>3</TableRowColumn>
+        <TableRowColumn>Rong</TableRowColumn>
+        <TableRowColumn>Full</TableRowColumn>
+      </TableRow>
+      <TableRow>
+        <TableRowColumn>4</TableRowColumn>
+        <TableRowColumn>Jon</TableRowColumn>
+        <TableRowColumn>Full</TableRowColumn>
+      </TableRow>
+    </TableBody>
+  </Table ></div>
+                  <div style={style.nodeList}>
+                  <span>Node Connections</span>
+                  <Table multiSelectable={true} onRowSelection={this.selectedEdges}>
+    <TableHeader enableSelectAll={false}>
+      <TableRow>
+        <TableHeaderColumn>ID</TableHeaderColumn>
+        <TableHeaderColumn>Name</TableHeaderColumn>
+        <TableHeaderColumn>Connection Status</TableHeaderColumn>
+      </TableRow>
+    </TableHeader>
+    <TableBody>
+      {(()=>{
+        if(this.state.currentNode){
+          return (
+            <TableRow selectable={false}>
+              <TableRowColumn>{this.state.currentNode._private.data.id}</TableRowColumn>
+              <TableRowColumn>{this.state.currentNode._private.data.id}</TableRowColumn>
+              <TableRowColumn>Yes</TableRowColumn>
+            </TableRow>
+          )
+        }
+      })()}
+      
+      {this.state.availableConnections.map((value)=>{
+        return (
+          <TableRow>
+            <TableRowColumn>{value._private.data.id}</TableRowColumn>
+            <TableRowColumn>{value._private.data.id}</TableRowColumn>
+            <TableRowColumn>No</TableRowColumn>
+          </TableRow>
+        )
+      })}
+    </TableBody>
+  </Table></div>
+                </div>
+		          </Tab>
+		          <Tab label="Description Markdown">
+		            <div>
+		              <MarkdownEditor style = {style.contentDiv} initialContent="Test" onContentChange ={this.contentChange} iconsSet="materialize-ui"/>
+		            </div>
+		          </Tab>
+		          <Tab label="Styling">
+		                        <div style={style.marginTop}>
     <RadioButtonGroup onChange={this.starChange}style = {style.floatLeft} name="shipSpeed" defaultSelected="star1">
       <RadioButton
         value="star1"
@@ -235,26 +403,11 @@ export default class AddNode extends Component {
         style={style.radioButton}
       />
     </RadioButtonGroup>
-  <div style={style.blackBox}> <img style={style.imageContent} src={this.state.starType}/></div>
   </div>
-  
-		              
-		             </div>
-		          </Tab>
-		          <Tab label="Markdown">
-		            <div>
-		              <MarkdownEditor style = {style.contentDiv} initialContent="Test" onContentChange ={this.contentChange} iconsSet="materialize-ui"/>
-		            </div>
-		          </Tab>
-		          <Tab label="Confirm">
-		            <div>
-		              <h2 style={style.headline}>Confirmation</h2>
-		              <p>Please confirm your edit by typing 'confirm' in the textbox below </p>
-		              <Paper zDepth={2}>
-		                <TextField hintText="Confirm" onChange={this.onConfirm} style={style.textStyle} underlineShow={false} />
-		                <Divider />
-		              </Paper>
-		            </div>
+  <div style={style.blackBox}> <img style={style.imageContent} src={this.state.starType}/>
+
+  <Slider name="slider0" defaultValue={0} style={style.sliderStyle} onChange={this.onChangeSlider} />
+  </div>
 		          </Tab>
 		        </Tabs>
 	        </div>
