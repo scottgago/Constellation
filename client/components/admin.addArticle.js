@@ -186,7 +186,6 @@ export default class AddArticle extends Component {
     const {finished, stepIndex} = this.state;
     return (
       <div>
-        <Loading status={this.state.load} />
         <Dialog
             modal={false}
             open={this.state.openPrompt}

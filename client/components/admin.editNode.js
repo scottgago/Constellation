@@ -8,8 +8,10 @@ import Paper from 'material-ui/Paper';
 import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
 import Divider from 'material-ui/Divider';
-import AdminAddVideo from './admin.addVideo'
-import AdminAddArticle from './admin.addArticle'
+import AdminAddVideo from './admin.addVideo';
+import AdminAddArticle from './admin.addArticle';
+import AddAdmin from './admin.addAdmins';
+import AddConnections from './admin.addConnections'
 
 var MarkdownEditor = require('react-markdown-editor').MarkdownEditor;
 
@@ -64,9 +66,7 @@ export default class editNode extends Component {
       currentNode: null,
       addVideo: false,
       addArticle: false,
-      confirmChange : () =>{
-    this.setState({})
-  }
+      selectedConnections: []
     }
   }
 
@@ -105,6 +105,7 @@ export default class editNode extends Component {
 
   componentWillReceiveProps = (props) =>{
 
+  
 
     if(props.status.edit && props.status.passToEditNode){
       this.setState({
@@ -118,6 +119,9 @@ export default class editNode extends Component {
       })
       return
     }
+
+
+
 
     if(props.status.edit){
       
@@ -144,15 +148,114 @@ export default class editNode extends Component {
       currentNode: null,
       addVideo: false,
       addArticle: false,
+      selectedConnections: []
     });
   };
+
+  onSubmit = () =>{
+
+    var addNodes = []
+
+    for(var i = 0; i < this.state.selectedConnections.length; i++){
+      var flag = true
+      
+      for(var j = 0; j < this.state.currentNode._private.edges.length; j++){
+        console.log(this.state.currentNode._private.edges[j]._private.data.source + ' = ' + this.state.selectedConnections[i])
+        console.log(this.state.currentNode._private.edges[j]._private.data.target + ' = ' + this.state.selectedConnections[i])
+        if(this.state.currentNode._private.edges[j]._private.data.source === this.state.selectedConnections[i] ||
+           this.state.currentNode._private.edges[j]._private.data.target === this.state.selectedConnections[i]){
+            flag = false
+        }
+      }
+      if(flag){
+        console.log("pushing shit", this.state.selectedConnections[i])
+        addNodes.push(this.state.selectedConnections[i])
+      }
+    }
+
+    var cleanUp = []
+
+    for(var i = 0; i < this.state.currentNode._private.edges.length; i++){
+      console.log(i)
+      var flag = false
+      for(var j = 0; j < this.state.selectedConnections.length; j++){
+        if(this.state.currentNode._private.edges[i]._private.data.source === this.state.selectedConnections[j] ||
+           this.state.currentNode._private.edges[i]._private.data.target === this.state.selectedConnections[j]){
+            flag = true
+        }
+      }
+      if(!flag){
+
+        
+        
+        cleanUp.push(this.state.currentNode._private.edges[i])
+        
+        
+
+      } 
+    }
+
+    for(var i = 0; i < cleanUp.length; i++){
+      this.state.cy.remove(cleanUp[i])
+    }
+
+
+    for(var i = 0; i < addNodes.length; i++){
+
+      console.log(addNodes[i], "addnodes?")
+
+      this.state.cy.add({
+        group: 'edges',
+        data: {
+          id : this.state.currentNode._private.data.id + addNodes[i],
+          source: this.state.currentNode._private.data.id,
+          target: addNodes[i]
+        }
+      })
+    }
+
+
+
+    this.setState({
+      edit: false,
+      cy: null,
+      markdownDescription: "",
+      currentVideos: [],
+      currentArticles: [],
+      currentNode: null,
+      addVideo: false,
+      addArticle: false,
+      selectedConnections: []
+    });
+  }
+
+
+  selectedEdges = (value) => {
+    this.state.selectedConnections = value
+    console.log(value)
+  }
+
+  initTextBox = (currentNode) => {
+    
+    if(!currentNode){
+      return ""
+    }
+    return currentNode._private.data.id
+  }
+
+  initConnections = (currentNode) =>{
+    if(!currentNode){
+      return null
+    }
+    return currentNode
+  }
 
   render(){
     const cancel = [
       <FlatButton
           label="Submit Changes"
           primary={true}
-          onTouchTap={this.handleRequestClosePrompt}
+          onTouchTap={this.onSubmit}
       />
     ];
 
@@ -230,6 +333,25 @@ export default class editNode extends Component {
                       </TableBody>
                     </Table>
                   </Paper>
+                </div>
+              </Tab>
+              <Tab label="Connections/Admins">
+                <div>
+                  <p>Node name</p>
+                  <Paper zDepth={2}>
+                    <TextField disabled ={true} 
+                               defaultValue = {this.initTextBox(this.state.currentNode)} 
+                               hintText="Nodename" 
+                               style={style.textStyle} 
+                               onChange = {this.handleChangeText} underlineShow={false} />
+                    <Divider />
+                  </Paper>
+                  <AddAdmin />
+                  <AddConnections currentNode={this.initConnections(this.state.currentNode)} 
+                                  edit = {this.state.edit}
+                                  cy = {this.state.cy}
+                                  selectedEdges = {this.selectedEdges}
+                                  selectedConnections = {this.state.selectedConnections} />
                 </div>
               </Tab>
               <Tab label="Markdown">

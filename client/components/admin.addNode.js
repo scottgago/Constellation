@@ -9,7 +9,11 @@ import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
 import ActionFavorite from 'material-ui/svg-icons/action/favorite';
 import ActionFavoriteBorder from 'material-ui/svg-icons/action/favorite-border';
 import EditNode from './admin.editNode'
+
+import Snackbar from 'material-ui/Snackbar';
 import {Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn} from 'material-ui/Table'
+import AddAdmin from './admin.addAdmins'
+import AddConnections from './admin.addConnections'
 
 import Slider from 'material-ui/Slider';
 var MarkdownEditor = require('react-markdown-editor').MarkdownEditor;
@@ -78,14 +82,6 @@ const style = {
     marginBottom: 75,
     maxWidth: '10%'
   },
-  adminList: {
-    marginTop: 15,
-    float: 'left',
-    width: '48%',
-    left: 0,
-    height: 450
-
-  },
   nodeList: {
     marginTop: 15,
     float: 'right',
@@ -93,12 +89,12 @@ const style = {
     height: 450,
     right: 0,
     overflow: "scroll"
-
   }
 }
 
 export default class AddNode extends Component {
 	constructor(props){
+    console.log(props)
 		super(props)
 		this.state = {
 			create: false,
@@ -107,9 +103,10 @@ export default class AddNode extends Component {
       starWidth: 100,
       starHeight: 100,
 			currentNode: null,
-      availableConnections: [],
-      selectedConnections : [],
+      error: false,
 			passToEditNode: null,
+      selectedConnections: [],
+      selectedEdges: this.selectedEdges,
 			newNodeName : "",
 			markdownDescription: "",
 			starType: "./assets/imgs/star (1).png"
@@ -118,16 +115,6 @@ export default class AddNode extends Component {
 
 	componentWillReceiveProps = (props) =>{
 
-    if(this.state.currentNode){
-      var nodes = [];
-      var newnodes = this.state.cy.nodes()
-      for(var i = 0; i < newnodes.length; i++){
-        nodes.push(newnodes[i])
-      }
-      this.setState({
-        availableConnections : nodes
-      })
-    }
    
 		if(props.status.create){
 			this.setState({
@@ -162,15 +149,12 @@ export default class AddNode extends Component {
   };
 
 	handleChangeText = (e, value) => {
-    this.setState({
-      newNodeName : value
-    })
+    this.state.newNodeName = value
+    
   }
 
   contentChange = (e,value) => {
-    this.setState({
-      markdownDescription: e
-    })
+    this.state = markdownDescription = e
   }
 
   starChange = (e,value) => {
@@ -192,14 +176,20 @@ export default class AddNode extends Component {
   	}
   }
 
-  selectedEdges = (e) => {
-    this.state.selectedConnections = []
-    for(var i = 0; i < e.length; i++){
-      this.state.selectedConnections.push(this.state.availableConnections[e[i] - 1]._private.data.id)
-    }
+  selectedEdges = (value) => {
+    this.state.selectedConnections = value
+    console.log(this.state.selectedConnections, "in here")
+  }
+
+  selectedNodes = (nodes) => {
+    this.state.selectedConnections = nodes
   }
 
   onConfirm = (e, value) => {
+
+    console.log(this.state.selectedConnections)
+
+    if(this.state.newNodeName.length){
     var anchor = this
     
       var newNodeName = this.state.newNodeName
@@ -210,6 +200,7 @@ export default class AddNode extends Component {
           group: 'nodes',
           data: {
             id : newNodeName,
+            admins: ['scott'],
             description: anchor.state.markdownDescription,
             videos: [],
             articles: [],
@@ -218,14 +209,6 @@ export default class AddNode extends Component {
               height: anchor.state.starHeight
             }
           },
-        },
-        {
-          group: 'edges',
-          data: {
-            id: newNodeName+currentNode,
-            source: currentNode,
-            target: newNodeName
-          }
         }
       ])['0'].style({
       	'backgroundImage' : this.state.starType,
@@ -233,13 +216,11 @@ export default class AddNode extends Component {
         'height'          : this.state.starHeight
       }).addClass('gps_ring')
 
-
       this.state.selectedConnections.forEach((edge) => {
-        console.log(edge)
         this.state.cy.add({
           group: 'edges',
           data: {
-            id: edge+newNode,
+            id: edge+newNodeName,
             source: newNodeName,
             target: edge
           }
@@ -258,7 +239,7 @@ export default class AddNode extends Component {
         create: false,
         currentNode : null,
         newNodeName: "",
-
+        selectedConnections: [], 
         starWidth: 100,
         starHeight: 100,
         markdownDescription: "",
@@ -271,6 +252,11 @@ export default class AddNode extends Component {
 				edit: false,
 				passToEditNode: null
 			})})
+      return
+    }
+    this.setState({
+      error : true
+    }, ()=>{this.state.error = false})
     
   }
 
@@ -305,73 +291,12 @@ export default class AddNode extends Component {
 		                <TextField hintText="Nodename" style={style.textStyle} onChange = {this.handleChangeText} underlineShow={false} />
 		                <Divider />
 		              </Paper>
-                  <div style={style.adminList}>
-                  <span>Admins</span>
-                  <Table>
-    <TableHeader>
-      <TableRow>
-        <TableHeaderColumn>ID</TableHeaderColumn>
-        <TableHeaderColumn>Name</TableHeaderColumn>
-        <TableHeaderColumn>Priviledges</TableHeaderColumn>
-      </TableRow>
-    </TableHeader>
-    <TableBody>
-      <TableRow>
-        <TableRowColumn>1</TableRowColumn>
-        <TableRowColumn>Scott</TableRowColumn>
-        <TableRowColumn>Full</TableRowColumn>
-      </TableRow>
-      <TableRow>
-        <TableRowColumn>2</TableRowColumn>
-        <TableRowColumn>Michael</TableRowColumn>
-        <TableRowColumn>Full</TableRowColumn>
-      </TableRow>
-      <TableRow>
-        <TableRowColumn>3</TableRowColumn>
-        <TableRowColumn>Rong</TableRowColumn>
-        <TableRowColumn>Full</TableRowColumn>
-      </TableRow>
-      <TableRow>
-        <TableRowColumn>4</TableRowColumn>
-        <TableRowColumn>Jon</TableRowColumn>
-        <TableRowColumn>Full</TableRowColumn>
-      </TableRow>
-    </TableBody>
-  </Table ></div>
-                  <div style={style.nodeList}>
-                  <span>Node Connections</span>
-                  <Table multiSelectable={true} onRowSelection={this.selectedEdges}>
-    <TableHeader enableSelectAll={false}>
-      <TableRow>
-        <TableHeaderColumn>ID</TableHeaderColumn>
-        <TableHeaderColumn>Name</TableHeaderColumn>
-        <TableHeaderColumn>Connection Status</TableHeaderColumn>
-      </TableRow>
-    </TableHeader>
-    <TableBody>
-      {(()=>{
-        if(this.state.currentNode){
-          return (
-            <TableRow selectable={false}>
-              <TableRowColumn>{this.state.currentNode._private.data.id}</TableRowColumn>
-              <TableRowColumn>{this.state.currentNode._private.data.id}</TableRowColumn>
-              <TableRowColumn>Yes</TableRowColumn>
-            </TableRow>
-          )
-        }
-      })()}
-      
-      {this.state.availableConnections.map((value)=>{
-        return (
-          <TableRow>
-            <TableRowColumn>{value._private.data.id}</TableRowColumn>
-            <TableRowColumn>{value._private.data.id}</TableRowColumn>
-            <TableRowColumn>No</TableRowColumn>
-          </TableRow>
-        )
-      })}
-    </TableBody>
-  </Table></div>
+                  <AddAdmin />
+                  <AddConnections 
+                    currentNode={this.state.currentNode} 
+                    create = {this.state.create}
+                    cy = {this.state.cy}
+                    selectedEdges = {this.state.selectedEdges}/>
                 </div>
 		          </Tab>
 		          <Tab label="Description Markdown">
@@ -381,7 +306,7 @@ export default class AddNode extends Component {
 		          </Tab>
 		          <Tab label="Styling">
 		                        <div style={style.marginTop}>
-    <RadioButtonGroup onChange={this.starChange}style = {style.floatLeft} name="shipSpeed" defaultSelected="star1">
+    <RadioButtonGroup onChange={this.starChange} style = {style.floatLeft} name="shipSpeed" defaultSelected="star1">
       <RadioButton
         value="star1"
         label="star1"
@@ -405,12 +330,16 @@ export default class AddNode extends Component {
     </RadioButtonGroup>
   </div>
   <div style={style.blackBox}> <img style={style.imageContent} src={this.state.starType}/>
-
   <Slider name="slider0" defaultValue={0} style={style.sliderStyle} onChange={this.onChangeSlider} />
   </div>
 		          </Tab>
 		        </Tabs>
 	        </div>
+          <Snackbar
+          open={this.state.error}
+          message={"Node name was blank or invalid. Please enter a new node name"}
+          autoHideDuration={4000}
+        />
 	    </Dialog>
 	    </div>
 	    )
