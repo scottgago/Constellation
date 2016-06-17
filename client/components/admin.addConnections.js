@@ -26,7 +26,8 @@ export default class AddConnections extends Component {
 			edit_currentEdges: [],
 			currentSelected: [],
 			availableConnections: [],
-			selectedEdges: props.selectedEdges
+			selectedEdges: props.selectedEdges,
+			connectionChanges : props.connectionChanges
 		}
 	}
 
@@ -34,21 +35,41 @@ export default class AddConnections extends Component {
 
 		console.log("receiving props")
 
+		if(nextProps.connectionChanges){
+
+			return this.setState({
+	    	currentNode: nextProps.currentNode,
+				cy: nextProps.cy,
+				edit: nextProps.edit,
+				create: nextProps.create,
+				edit_currentEdges: [],
+				currentSelected: [],
+				selectedEdges: nextProps.selectedEdges,
+				connectionChanges : nextProps.connectionChanges
+	    })
+		}
+
 		this.setState({
-    	currentNode: nextProps.currentNode,
-			cy: nextProps.cy,
-			edit: nextProps.edit,
-			create: nextProps.create,
-			edit_currentEdges: [],
-			currentSelected: [],
-			selectedEdges: nextProps.selectedEdges
-    })
+	    	currentNode: nextProps.currentNode,
+				cy: nextProps.cy,
+				edit: nextProps.edit,
+				create: nextProps.create,
+				edit_currentEdges: [],
+				currentSelected: [],
+				selectedEdges: nextProps.selectedEdges,
+		})
+
+
+
+
 	
 	}
 
 	selectorFunction = (value) => {
 
-		console.log(this.state.availableConnections)
+		if(this.state.connectionChanges){
+			this.state.connectionChanges()
+		}
 
 		var newList = []
 		for(var i = 0; i < value.length; i++){

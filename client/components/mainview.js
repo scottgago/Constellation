@@ -361,7 +361,7 @@ export default class MainView extends Component {
         }
       }],
     layout: {
-      name: 'cose'
+      name: 'cose-bilkent'
     },
   });
 

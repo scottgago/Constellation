@@ -120,16 +120,16 @@ export default class User extends Component {
           currentArticles: value.props.currentNode._private.data.articles
       	})
       }
-      // if(!value.props.currentNode._private.data.videos.length){
-      //   this.setState({
-      //     openPrompt: value.props.view,
-      //     cy: value.props.cy,
-      //     currentNode: value.props.currentNode,
-      //     description: value.props.currentNode._private.data.description,
-      //     videoDesc: "",
-      //     currentVideos: []
-      //   })
-      // }
+      if(!value.props.currentNode._private.data.videos.length){
+        this.setState({
+          openPrompt: value.props.view,
+          cy: value.props.cy,
+          currentNode: value.props.currentNode,
+          description: value.props.currentNode._private.data.description,
+          videoDesc: "",
+          currentVideos: []
+        })
+      }
     }
   }
 
