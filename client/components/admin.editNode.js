@@ -133,7 +133,8 @@ export default class editNode extends Component {
         currentNode: props.status.currentNode,
         markdownDescription: props.status.currentNode._private.data.description,
         currentVideos: props.status.currentNode._private.data.videos,
-        currentArticles: props.status.currentNode._private.data.articles
+        currentArticles: props.status.currentNode._private.data.articles,
+        connectionChanges: false
       })
     }
   }
@@ -153,6 +154,8 @@ export default class editNode extends Component {
   };
 
   onSubmit = () =>{
+
+    if(this.state.connectionChanges){
 
     var addNodes = []
 
@@ -213,6 +216,7 @@ export default class editNode extends Component {
         }
       })
     }
+  }
 
 
 
@@ -225,10 +229,15 @@ export default class editNode extends Component {
       currentNode: null,
       addVideo: false,
       addArticle: false,
+      connectionChanges: false,
       selectedConnections: []
     });
-  }
+  
+}
 
+  connectionChanges = () => {
+    this.state.connectionChanges = true
+  }
 
   selectedEdges = (value) => {
     this.state.selectedConnections = value
@@ -351,7 +360,8 @@ export default class editNode extends Component {
                                   edit = {this.state.edit}
                                   cy = {this.state.cy}
                                   selectedEdges = {this.selectedEdges}
-                                  selectedConnections = {this.state.selectedConnections} />
+                                  selectedConnections = {this.state.selectedConnections}
+                                  connectionChanges = {this.connectionChanges} />
                 </div>
               </Tab>
               <Tab label="Markdown">

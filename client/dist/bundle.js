@@ -44608,7 +44608,7 @@
 	          }
 	        }],
 	        layout: {
-	          name: 'cose'
+	          name: 'cose-bilkent'
 	        }
 	      });
 
@@ -51269,7 +51269,7 @@
 	                    currentNode: this.state.currentNode,
 	                    create: this.state.create,
 	                    cy: this.state.cy,
-	                    selectedEdges: this.state.selectedEdges })
+	                    selectedEdges: this.selectedEdges })
 	                )
 	              ),
 	              _react2.default.createElement(
@@ -51344,7 +51344,8 @@
 	      _this2.setState({
 	        cy: props.status.cy,
 	        create: true,
-	        currentNode: props.status.currentNode
+	        currentNode: props.status.currentNode,
+	        selectedConnections: [props.status.currentNode._private.data.id]
 	      });
 	    }
 	  };
@@ -51376,7 +51377,7 @@
 	  };
 
 	  this.contentChange = function (e, value) {
-	    _this2.state = markdownDescription = e;
+	    _this2.state.markdownDescription = e;
 	  };
 
 	  this.starChange = function (e, value) {
@@ -51400,7 +51401,6 @@
 
 	  this.selectedEdges = function (value) {
 	    _this2.state.selectedConnections = value;
-	    console.log(_this2.state.selectedConnections, "in here");
 	  };
 
 	  this.selectedNodes = function (nodes) {
@@ -51436,6 +51436,8 @@
 	        'height': _this2.state.starHeight
 	      }).addClass('gps_ring');
 
+	      console.log(_this2.state.selectedConnections);
+
 	      _this2.state.selectedConnections.forEach(function (edge) {
 	        _this2.state.cy.add({
 	          group: 'edges',
@@ -51462,7 +51464,7 @@
 	        starHeight: 100,
 	        markdownDescription: "",
 	        starType: "./assets/imgs/star (1).png",
-	        edit: true,
+	        edit: false,
 	        passToEditNode: newNode
 	      }, function () {
 	        _this2.setState(_defineProperty({
@@ -52975,7 +52977,8 @@
 	                    edit: this.state.edit,
 	                    cy: this.state.cy,
 	                    selectedEdges: this.selectedEdges,
-	                    selectedConnections: this.state.selectedConnections })
+	                    selectedConnections: this.state.selectedConnections,
+	                    connectionChanges: this.connectionChanges })
 	                )
 	              ),
 	              _react2.default.createElement(
@@ -53061,7 +53064,8 @@
 	        currentNode: props.status.currentNode,
 	        markdownDescription: props.status.currentNode._private.data.description,
 	        currentVideos: props.status.currentNode._private.data.videos,
-	        currentArticles: props.status.currentNode._private.data.articles
+	        currentArticles: props.status.currentNode._private.data.articles,
+	        connectionChanges: false
 	      });
 	    }
 	  };
@@ -53082,56 +53086,59 @@
 
 	  this.onSubmit = function () {
 
-	    var addNodes = [];
+	    if (_this2.state.connectionChanges) {
 
-	    for (var i = 0; i < _this2.state.selectedConnections.length; i++) {
-	      var flag = true;
+	      var addNodes = [];
 
-	      for (var j = 0; j < _this2.state.currentNode._private.edges.length; j++) {
-	        console.log(_this2.state.currentNode._private.edges[j]._private.data.source + ' = ' + _this2.state.selectedConnections[i]);
-	        console.log(_this2.state.currentNode._private.edges[j]._private.data.target + ' = ' + _this2.state.selectedConnections[i]);
-	        if (_this2.state.currentNode._private.edges[j]._private.data.source === _this2.state.selectedConnections[i] || _this2.state.currentNode._private.edges[j]._private.data.target === _this2.state.selectedConnections[i]) {
-	          flag = false;
+	      for (var i = 0; i < _this2.state.selectedConnections.length; i++) {
+	        var flag = true;
+
+	        for (var j = 0; j < _this2.state.currentNode._private.edges.length; j++) {
+	          console.log(_this2.state.currentNode._private.edges[j]._private.data.source + ' = ' + _this2.state.selectedConnections[i]);
+	          console.log(_this2.state.currentNode._private.edges[j]._private.data.target + ' = ' + _this2.state.selectedConnections[i]);
+	          if (_this2.state.currentNode._private.edges[j]._private.data.source === _this2.state.selectedConnections[i] || _this2.state.currentNode._private.edges[j]._private.data.target === _this2.state.selectedConnections[i]) {
+	            flag = false;
+	          }
+	        }
+	        if (flag) {
+	          console.log("pushing shit", _this2.state.selectedConnections[i]);
+	          addNodes.push(_this2.state.selectedConnections[i]);
 	        }
 	      }
-	      if (flag) {
-	        console.log("pushing shit", _this2.state.selectedConnections[i]);
-	        addNodes.push(_this2.state.selectedConnections[i]);
-	      }
-	    }
 
-	    var cleanUp = [];
+	      var cleanUp = [];
 
-	    for (var i = 0; i < _this2.state.currentNode._private.edges.length; i++) {
-	      console.log(i);
-	      var flag = false;
-	      for (var j = 0; j < _this2.state.selectedConnections.length; j++) {
-	        if (_this2.state.currentNode._private.edges[i]._private.data.source === _this2.state.selectedConnections[j] || _this2.state.currentNode._private.edges[i]._private.data.target === _this2.state.selectedConnections[j]) {
-	          flag = true;
+	      for (var i = 0; i < _this2.state.currentNode._private.edges.length; i++) {
+	        console.log(i);
+	        var flag = false;
+	        for (var j = 0; j < _this2.state.selectedConnections.length; j++) {
+	          if (_this2.state.currentNode._private.edges[i]._private.data.source === _this2.state.selectedConnections[j] || _this2.state.currentNode._private.edges[i]._private.data.target === _this2.state.selectedConnections[j]) {
+	            flag = true;
+	          }
+	        }
+	        if (!flag) {
+
+	          cleanUp.push(_this2.state.currentNode._private.edges[i]);
 	        }
 	      }
-	      if (!flag) {
 
-	        cleanUp.push(_this2.state.currentNode._private.edges[i]);
+	      for (var i = 0; i < cleanUp.length; i++) {
+	        _this2.state.cy.remove(cleanUp[i]);
 	      }
-	    }
 
-	    for (var i = 0; i < cleanUp.length; i++) {
-	      _this2.state.cy.remove(cleanUp[i]);
-	    }
+	      for (var i = 0; i < addNodes.length; i++) {
 
-	    for (var i = 0; i < addNodes.length; i++) {
+	        console.log(addNodes[i], "addnodes?");
 
-	      console.log(addNodes[i], "addnodes?");
-
-	      _this2.state.cy.add({
-	        group: 'edges',
-	        data: {
-	          id: _this2.state.currentNode._private.data.id + addNodes[i],
-	          source: _this2.state.currentNode._private.data.id,
-	          target: addNodes[i]
-	        }
-	      });
+	        _this2.state.cy.add({
+	          group: 'edges',
+	          data: {
+	            id: _this2.state.currentNode._private.data.id + addNodes[i],
+	            source: _this2.state.currentNode._private.data.id,
+	            target: addNodes[i]
+	          }
+	        });
+	      }
 	    }
 
 	    _this2.setState({
@@ -53143,8 +53150,13 @@
 	      currentNode: null,
 	      addVideo: false,
 	      addArticle: false,
+	      connectionChanges: false,
 	      selectedConnections: []
 	    });
+	  };
+
+	  this.connectionChanges = function () {
+	    _this2.state.connectionChanges = true;
 	  };
 
 	  this.selectedEdges = function (value) {
@@ -74074,7 +74086,9 @@
 
 			_this.selectorFunction = function (value) {
 
-				console.log(_this.state.availableConnections);
+				if (_this.state.connectionChanges) {
+					_this.state.connectionChanges();
+				}
 
 				var newList = [];
 				for (var i = 0; i < value.length; i++) {
@@ -74091,7 +74105,8 @@
 				edit_currentEdges: [],
 				currentSelected: [],
 				availableConnections: [],
-				selectedEdges: props.selectedEdges
+				selectedEdges: props.selectedEdges,
+				connectionChanges: props.connectionChanges
 			};
 			return _this;
 		}
@@ -74101,6 +74116,20 @@
 			value: function componentWillReceiveProps(nextProps) {
 
 				console.log("receiving props");
+
+				if (nextProps.connectionChanges) {
+
+					return this.setState({
+						currentNode: nextProps.currentNode,
+						cy: nextProps.cy,
+						edit: nextProps.edit,
+						create: nextProps.create,
+						edit_currentEdges: [],
+						currentSelected: [],
+						selectedEdges: nextProps.selectedEdges,
+						connectionChanges: nextProps.connectionChanges
+					});
+				}
 
 				this.setState({
 					currentNode: nextProps.currentNode,
@@ -74486,16 +74515,16 @@
 	            currentArticles: value.props.currentNode._private.data.articles
 	          });
 	        }
-	        // if(!value.props.currentNode._private.data.videos.length){
-	        //   this.setState({
-	        //     openPrompt: value.props.view,
-	        //     cy: value.props.cy,
-	        //     currentNode: value.props.currentNode,
-	        //     description: value.props.currentNode._private.data.description,
-	        //     videoDesc: "",
-	        //     currentVideos: []
-	        //   })
-	        // }
+	        if (!value.props.currentNode._private.data.videos.length) {
+	          _this.setState({
+	            openPrompt: value.props.view,
+	            cy: value.props.cy,
+	            currentNode: value.props.currentNode,
+	            description: value.props.currentNode._private.data.description,
+	            videoDesc: "",
+	            currentVideos: []
+	          });
+	        }
 	      }
 	    };
 

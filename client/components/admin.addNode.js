@@ -120,7 +120,8 @@ export default class AddNode extends Component {
 			this.setState({
 				cy: props.status.cy,
 				create: true,
-				currentNode: props.status.currentNode
+				currentNode: props.status.currentNode,
+        selectedConnections: [props.status.currentNode._private.data.id]
 			})
 		}
 	}
@@ -154,7 +155,7 @@ export default class AddNode extends Component {
   }
 
   contentChange = (e,value) => {
-    this.state = markdownDescription = e
+    this.state.markdownDescription = e
   }
 
   starChange = (e,value) => {
@@ -178,7 +179,6 @@ export default class AddNode extends Component {
 
   selectedEdges = (value) => {
     this.state.selectedConnections = value
-    console.log(this.state.selectedConnections, "in here")
   }
 
   selectedNodes = (nodes) => {
@@ -216,6 +216,8 @@ export default class AddNode extends Component {
         'height'          : this.state.starHeight
       }).addClass('gps_ring')
 
+      console.log(this.state.selectedConnections)
+
       this.state.selectedConnections.forEach((edge) => {
         this.state.cy.add({
           group: 'edges',
@@ -244,7 +246,7 @@ export default class AddNode extends Component {
         starHeight: 100,
         markdownDescription: "",
         starType: "./assets/imgs/star (1).png",
-        edit: true,
+        edit: false,
         passToEditNode: newNode
 			},
 		  () => {this.setState({
@@ -296,7 +298,7 @@ export default class AddNode extends Component {
                     currentNode={this.state.currentNode} 
                     create = {this.state.create}
                     cy = {this.state.cy}
-                    selectedEdges = {this.state.selectedEdges}/>
+                    selectedEdges = {this.selectedEdges}/>
                 </div>
 		          </Tab>
 		          <Tab label="Description Markdown">
