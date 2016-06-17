@@ -1,4 +1,4 @@
-import { ADMIN_CREATENODE, ADMIN_DELETENODE } from '../actions/actionList';
+import { ADMIN_CREATENODE, ADMIN_DELETENODE, FETCH_NODES } from '../actions/actionList';
 
 export default function(state, action) {
 	switch(action.type){
@@ -7,6 +7,10 @@ export default function(state, action) {
 
 		case ADMIN_DELETENODE:
 			return {...state, authenticated: false };
+
+		case FETCH_NODES:
+		  //console.log(action.payload);
+		  return action.payload;
 
 		default:
 			return state;
