@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import Admin from './admin.view'
 import User from './user.view'
 import Loading from './loading'
-
+import * as actions from '../actions/actions';
+import { connect } from 'react-redux';
 
 
 const style = {
@@ -35,6 +36,11 @@ export default class MainView extends Component {
         })
       }
     }
+  }
+
+  componentWillMount() {
+    console.log("props:", this.props);
+    this.props.fetchNodes();
   }
 
   componentDidMount() {
@@ -443,7 +449,14 @@ export default class MainView extends Component {
   }
 }
 
+function mapStateToProps(state) {
+  console.log("the state", state);
+  return { };
+}
 
+
+
+export default connect(mapStateToProps, actions)(MainView)
 
 
 
