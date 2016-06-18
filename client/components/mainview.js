@@ -6,6 +6,7 @@ import * as actions from '../actions/actions';
 import { connect } from 'react-redux';
 
 
+
 const style = {
 	
 }
@@ -39,7 +40,7 @@ export default class MainView extends Component {
   }
 
   componentWillMount() {
-    console.log("props:", this.props);
+    //console.log("props:", this.props);
     this.props.fetchNodes();
   }
 
@@ -51,6 +52,9 @@ export default class MainView extends Component {
 
   	container: document.getElementById('cy'),
   	autoungrabify: true,
+
+    //synch issue, but ready to get data from database
+    //elements: [this.posts],
 
   	elements: [
       {
@@ -337,6 +341,7 @@ export default class MainView extends Component {
           description: "JavaScript® (often shortened to JS) is a lightweight, interpreted, object-oriented language with first-class functions, and is best known as the scripting language for Web pages, but it's used in many non-browser environments as well. It is a prototype-based, multi-paradigm scripting language that is dynamic, and supports object-oriented, imperative, and functional programming styles. JavaScript runs on the client side of the web, which can be used to design / program how the web pages behave on the occurrence of an event. JavaScript is an easy to learn and also powerful scripting language, widely used for controlling web page behaviour. Contrary to popular misconception, JavaScript is not 'Interpreted Java'. In a nutshell, JavaScript is a dynamic scripting language supporting prototype based object construction. The basic syntax is intentionally similar to both Java and C++ to reduce the number of new concepts required to learn the language. Language constructs, such as if statements, for and while loops, and switch and try ... catch blocks function the same as in these languages (or nearly so.) JavaScript can function as both a procedural and an object oriented language. Objects are created programmatically in JavaScript, by attaching methods and properties to otherwise empty objects at run time, as opposed to the syntactic class definitions common in compiled languages like C++ and Java. Once an object has been constructed it can be used as a blueprint (or prototype) for creating similar objects. JavaScript's dynamic capabilities include runtime object construction, variable parameter lists, function variables, dynamic script creation (via eval), object introspection (via for ... in), and source code recovery (JavaScript programs can decompile function bodies back into their source text). For a more in depth discussion of JavaScript programming follow the JavaScript resources links below."
         }
       }],
+
       style: [{
         selector: 'node',
         style: {
@@ -450,10 +455,9 @@ export default class MainView extends Component {
 }
 
 function mapStateToProps(state) {
-  console.log("the state", state);
-  return { };
+  console.log("the state/ inital data: ", state);
+  return { posts: state.posts };
 }
-
 
 
 export default connect(mapStateToProps, actions)(MainView)

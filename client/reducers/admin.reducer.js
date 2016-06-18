@@ -1,6 +1,6 @@
 import { ADMIN_CREATENODE, ADMIN_DELETENODE, FETCH_NODES } from '../actions/actionList';
 
-export default function(state, action) {
+export default function(state = {}, action) {
 	switch(action.type){
 		case ADMIN_CREATENODE:
 			return {...state, error: '', authenticated: true };

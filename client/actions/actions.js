@@ -3,7 +3,7 @@ import Firebase from 'firebase';
 import { 
 	ADMIN_CREATENODE, ADMIN_DELETENODE, FETCH_NODES } from './actionList'
 
-const Posts = new Firebase('https://node-test-1-2087b.firebaseio.com/constellationsV1');
+const Posts = new Firebase('https://node-test-1-2087b.firebaseio.com/nodesTest2');
 
 export function createNode({ id, name, video, links }) {
 	console.log("in createNode")
