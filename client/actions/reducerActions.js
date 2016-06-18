@@ -20,8 +20,8 @@ export function createNode({cy, currentNode, id, name, description, styles, admi
 	}
 }
 
-export function selectNode({currentNode, previousNode, openUserView, currentArticles, currentVideos}){
-	return { type: SELECT_NODE, payload :  {currentArticles: currentArticles, currentVideos: currentVideos, currentNode: currentNode, previousNode: previousNode, openUserView : openUserView} }
+export function selectNode({moduleDescription, currentNode, previousNode, openUserView, currentArticles, currentVideos}){
+	return { type: SELECT_NODE, payload :  {moduleDescription: moduleDescription, currentArticles: currentArticles, currentVideos: currentVideos, currentNode: currentNode, previousNode: previousNode, openUserView : openUserView} }
 }
 
 export function registerCY({cy}){
@@ -33,7 +33,7 @@ export function closeUserView(){
 }
 
 export function openModule(){
-	return {type: USER_OPEN_MODULE, payload : { openModuleView: true } }
+	return {type: USER_OPEN_MODULE, payload : { openModuleView: true, openUserView: false } }
 }
 
 export function closeModule(){

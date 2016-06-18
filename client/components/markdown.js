@@ -17,14 +17,17 @@ export default class MarkdownParser extends Component {
 
 	constructor(props) {
 		super(props)
+		console.log(props, "this is parsing")
 		this.state = {
 			unparsed : props.markdown
 		}
 	}
 
 	componentWillReceiveProps = (value) => {
+
+
 		this.setState({
-			unparsed : ""
+			unparsed : value.markdown
 		})
 	}
 

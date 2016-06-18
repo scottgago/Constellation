@@ -6,7 +6,10 @@ const INITIAL_STATE = {
 	previousNode: {},
 	cy: {},
 	currentArticles: [],
-	currentVideos: []
+	currentVideos: [],
+	moduleDescription: '',
+	openUserView: false,
+	openModuleView: false
 } 
 
 export default function(state = INITIAL_STATE, action) {
@@ -20,9 +23,9 @@ export default function(state = INITIAL_STATE, action) {
 		case CLOSE_USER_VIEW:
 			return {...state, openUserView : action.payload.openUserView }
 		case USER_OPEN_MODULE:
-			return {...state, openModuleView: action.payload.openModuleView}
+			return {...state, openModuleView: action.payload.openModuleView, openUserView: action.payload.openUserView}
 		case USER_CLOSE_MODULE:
-			return {...state, openModuleView: action.payload. openModuleView}
+			return {...state, openModuleView: action.payload.openModuleView}
 		default:
 			return state;
 	}

@@ -51119,8 +51119,9 @@
 			var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(MarkdownParser).call(this, props));
 
 			_this.componentWillReceiveProps = function (value) {
+
 				_this.setState({
-					unparsed: ""
+					unparsed: value.markdown
 				});
 			};
 
@@ -51129,6 +51130,7 @@
 				return { __html: markdown };
 			};
 
+			console.log(props, "this is parsing");
 			_this.state = {
 				unparsed: props.markdown
 			};
@@ -52957,13 +52959,14 @@
 	}
 
 	function selectNode(_ref2) {
+		var moduleDescription = _ref2.moduleDescription;
 		var currentNode = _ref2.currentNode;
 		var previousNode = _ref2.previousNode;
 		var openUserView = _ref2.openUserView;
 		var currentArticles = _ref2.currentArticles;
 		var currentVideos = _ref2.currentVideos;
 
-		return { type: _actionList.SELECT_NODE, payload: { currentArticles: currentArticles, currentVideos: currentVideos, currentNode: currentNode, previousNode: previousNode, openUserView: openUserView } };
+		return { type: _actionList.SELECT_NODE, payload: { moduleDescription: moduleDescription, currentArticles: currentArticles, currentVideos: currentVideos, currentNode: currentNode, previousNode: previousNode, openUserView: openUserView } };
 	}
 
 	function registerCY(_ref3) {
@@ -52977,7 +52980,7 @@
 	}
 
 	function openModule() {
-		return { type: _actionList.USER_OPEN_MODULE, payload: { openModuleView: true } };
+		return { type: _actionList.USER_OPEN_MODULE, payload: { openModuleView: true, openUserView: false } };
 	}
 
 	function closeModule() {
@@ -76010,47 +76013,24 @@
 	var User = function (_Component) {
 	  _inherits(User, _Component);
 
-	  function User(props) {
+	  function User() {
+	    var _Object$getPrototypeO;
+
+	    var _temp, _this, _ret;
+
 	    _classCallCheck(this, User);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(User).call(this, props));
+	    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+	      args[_key] = arguments[_key];
+	    }
 
-	    _this.handleCloseModule = function () {
+	    return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_Object$getPrototypeO = Object.getPrototypeOf(User)).call.apply(_Object$getPrototypeO, [this].concat(args))), _this), _this.handleCloseModule = function () {
 	      _this.props.closeModule();
-	    };
-
-	    _this.handleOpenModule = function () {
+	    }, _this.handleOpenModule = function () {
 	      _this.props.openModule();
-	    };
-
-	    _this.handleClosePrompt = function () {
+	    }, _this.handleClosePrompt = function () {
 	      _this.props.closeUserView();
-	    };
-
-	    _this.initPrompt = function () {
-	      console.log(_this.props.openUserView, "ehhh");
-	      if (!_this.props.currentNode._private) {
-	        return false;
-	      } else {
-	        return _this.props.openUserView;
-	      }
-	    };
-
-	    _this.initModule = function () {
-	      if (!_this.props.currentNode._private) {
-	        return false;
-	      } else {
-	        return _this.props.openModuleView;
-	      }
-	    };
-
-	    _this.state = {
-	      description: "",
-	      videoDesc: "",
-	      currentVideos: [],
-	      currentArticles: []
-	    };
-	    return _this;
+	    }, _temp), _possibleConstructorReturn(_this, _ret);
 	  }
 
 	  _createClass(User, [{
@@ -76065,7 +76045,7 @@
 	      var cancel = [_react2.default.createElement(_FlatButton2.default, {
 	        label: 'Back to galactic view',
 	        primary: true,
-	        onTouchTap: this.handleRequestClosePrompt
+	        onTouchTap: this.props.closeModule
 	      })];
 
 	      var contentStyle = {
@@ -76076,7 +76056,7 @@
 	        justifyContent: 'center'
 	      };
 
-	      console.log(this.props);
+	      console.log(this.props.moduleDescription);
 
 	      return _react2.default.createElement(
 	        'div',
@@ -76087,7 +76067,7 @@
 	            modal: false,
 	            bodyStyle: styles.dialogBody,
 	            contentStyle: styles.dialog,
-	            open: this.initPrompt(),
+	            open: this.props.openUserView,
 	            onRequestClose: this.handleClose },
 	          _react2.default.createElement(
 	            'div',
@@ -76106,7 +76086,7 @@
 	                'LAUNCH'
 	              )
 	            ),
-	            _react2.default.createElement(_markdown2.default, { style: styles.description, markdown: this.state.description }),
+	            _react2.default.createElement(_markdown2.default, { style: styles.description, markdown: this.props.moduleDescription }),
 	            _react2.default.createElement('img', { style: styles.rocketImg, src: 'http://clipartix.com/wp-content/uploads/2016/05/Rocket-clip-art-free-clip-art-microsoft-clip-art-christmas-clip-2.png' })
 	          )
 	        ),
@@ -76115,7 +76095,7 @@
 	          {
 	            modal: true,
 	            contentStyle: styles.dialogHuge,
-	            open: this.initModule(),
+	            open: this.props.openModuleView,
 	            actions: cancel,
 	            autoDetectWindowHeight: false },
 	          _react2.default.createElement(
@@ -76204,7 +76184,13 @@
 
 	function mapStateToProps(state) {
 	  console.log(state, "mapping state to props in user.view.js");
-	  return { currentArticles: state.selectNode.currentArticles, currentVideos: state.selectNode.currentVideos, previousNode: state.selectNode.previousNode, currentNode: state.selectNode.currentNode, openUserView: state.selectNode.openUserView };
+	  return { openModuleView: state.selectNode.openModuleView,
+	    moduleDescription: state.selectNode.moduleDescription,
+	    currentArticles: state.selectNode.currentArticles,
+	    currentVideos: state.selectNode.currentVideos,
+	    previousNode: state.selectNode.previousNode,
+	    currentNode: state.selectNode.currentNode,
+	    openUserView: state.selectNode.openUserView };
 	}
 
 	exports.default = (0, _reactRedux.connect)(mapStateToProps, actions)(User);
@@ -79757,7 +79743,7 @@
 /* 678 */
 /***/ function(module, exports, __webpack_require__) {
 
-	"use strict";
+	'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
 		value: true
@@ -79779,7 +79765,7 @@
 			case _actionList.CLOSE_USER_VIEW:
 				return _extends({}, state, { openUserView: action.payload.openUserView });
 			case _actionList.USER_OPEN_MODULE:
-				return _extends({}, state, { openModuleView: action.payload.openModuleView });
+				return _extends({}, state, { openModuleView: action.payload.openModuleView, openUserView: action.payload.openUserView });
 			case _actionList.USER_CLOSE_MODULE:
 				return _extends({}, state, { openModuleView: action.payload.openModuleView });
 			default:
@@ -79794,7 +79780,10 @@
 		previousNode: {},
 		cy: {},
 		currentArticles: [],
-		currentVideos: []
+		currentVideos: [],
+		moduleDescription: '',
+		openUserView: false,
+		openModuleView: false
 	};
 
 /***/ }

@@ -97,15 +97,6 @@ const styles = {
 
 
 class User extends Component {
-  constructor(props){
-    super(props)
-    this.state = {
-      description: "",
-      videoDesc: "",
-      currentVideos: [],
-      currentArticles: [],
-    }
-  }
 
   handleCloseModule = () => {
     this.props.closeModule()
@@ -119,23 +110,6 @@ class User extends Component {
     this.props.closeUserView()
   };
 
-  initPrompt = () => {
-    console.log(this.props.openUserView, "ehhh")
-    if(!this.props.currentNode._private){
-      return false
-    } else {
-      return this.props.openUserView
-    }
-  }
-
-  initModule = () =>{
-    if(!this.props.currentNode._private){
-      return false
-    } else {
-      return this.props.openModuleView
-   }
-  }
-
   render(){
 
     const opts = {
@@ -147,7 +121,7 @@ class User extends Component {
       <FlatButton
           label="Back to galactic view"
           primary={true}
-          onTouchTap={this.handleRequestClosePrompt}
+          onTouchTap={this.props.closeModule}
       />
     ];
 
@@ -159,7 +133,8 @@ class User extends Component {
       justifyContent: 'center'
     }
 
-    console.log(this.props)
+    console.log(this.props.moduleDescription)
+
 
     return(
   		<div>
@@ -167,7 +142,7 @@ class User extends Component {
           modal={false}
           bodyStyle= {styles.dialogBody}
           contentStyle= {styles.dialog}
-          open={this.initPrompt()}
+          open={this.props.openUserView}
           onRequestClose={this.handleClose}>
 
           <div>
@@ -175,14 +150,14 @@ class User extends Component {
               <RaisedButton onClick = {this.handleClosePrompt} backgroundColor ='#ff0000' style={styles.buttonDecline}>ABORT</RaisedButton>
           	  <RaisedButton onClick = {this.handleOpenModule} backgroundColor ='#3ed715' style={styles.buttonAccept}>LAUNCH</RaisedButton> 
             </Paper >
-            <MarkdownParser style={styles.description} markdown={this.state.description}/>
+            <MarkdownParser style={styles.description} markdown={this.props.moduleDescription}/>
           	<img style={styles.rocketImg} src = 'http://clipartix.com/wp-content/uploads/2016/05/Rocket-clip-art-free-clip-art-microsoft-clip-art-christmas-clip-2.png' />
           </div>
         </Dialog>
         <Dialog
           modal={true}
           contentStyle={styles.dialogHuge}
-          open={this.initModule()}
+          open={this.props.openModuleView}
           actions={cancel}
           autoDetectWindowHeight = {false}>
         	<Tabs>
@@ -236,7 +211,13 @@ class User extends Component {
 
 function mapStateToProps(state){
   console.log(state, "mapping state to props in user.view.js")
-  return ({currentArticles: state.selectNode.currentArticles, currentVideos: state.selectNode.currentVideos, previousNode: state.selectNode.previousNode, currentNode: state.selectNode.currentNode, openUserView: state.selectNode.openUserView })
+  return ({openModuleView: state.selectNode.openModuleView, 
+          moduleDescription: state.selectNode.moduleDescription, 
+          currentArticles: state.selectNode.currentArticles, 
+          currentVideos: state.selectNode.currentVideos, 
+          previousNode: state.selectNode.previousNode, 
+          currentNode: state.selectNode.currentNode, 
+          openUserView: state.selectNode.openUserView })
 }
 
 export default connect(mapStateToProps, actions)(User)
