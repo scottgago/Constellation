@@ -13,7 +13,7 @@ export default function(state = INITIAL_STATE, action) {
 		case REGISTER_CY:
 			return {...state, cy: action.payload.cy}
 		case SELECT_NODE: 
-			return {...state, currentNode : action.payload.currentNode, previousNode : action.payload.previousNode}
+			return {...state, currentNode : action.payload.currentNode, view: action.payload.view, previousNode : action.payload.previousNode}
 		default:
 			return state;
 	}

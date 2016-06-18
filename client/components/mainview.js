@@ -406,7 +406,7 @@ class MainView extends Component {
     })
 
 
-    bind.props.selectNode({ currentNode: evtTarget, previousNode: holder })
+    bind.props.selectNode({ currentNode: evtTarget, previousNode: holder, view: true })
 
      
 
