@@ -9,6 +9,9 @@ import {Tabs, Tab} from 'material-ui/Tabs';
 import Divider from 'material-ui/Divider';
 import YouTube from 'react-youtube';
 
+import { connect } from 'react-redux';
+import * as actions from '../actions/reducerActions';
+
 var MarkdownEditor = require('react-markdown-editor').MarkdownEditor;
 import TextField from 'material-ui/TextField';
 
@@ -93,15 +96,11 @@ const styles = {
 
 
 
-export default class User extends Component {
+class User extends Component {
   constructor(props){
     super(props)
     this.state = {
-      cy : null,
-      currentNode: {},
-      openPrompt: false,
       description: "",
-      open: false,
       videoDesc: "",
       currentVideos: [],
       currentArticles: [],
@@ -109,36 +108,20 @@ export default class User extends Component {
   }
 
   componentWillReceiveProps = (value) => {
-    if(value.props.currentNode && value.props.view){
-      if(value.props.currentNode._private.data.videos.length){
-      	this.setState({
-      		openPrompt: value.props.view,
-      		cy: value.props.cy,
-      		currentNode: value.props.currentNode,
-      		description: value.props.currentNode._private.data.description,
-      		currentVideos: value.props.currentNode._private.data.videos,
-          currentArticles: value.props.currentNode._private.data.articles
-      	})
-      }
-      if(!value.props.currentNode._private.data.videos.length){
-        this.setState({
-          openPrompt: value.props.view,
-          cy: value.props.cy,
-          currentNode: value.props.currentNode,
-          description: value.props.currentNode._private.data.description,
-          videoDesc: "",
-          currentVideos: []
-        })
-      }
+
+    if(this.props.currentNode._private){
+      this.setState({
+        description: this.props.currentNode._private.data.description,
+        currentVideos: this.props.currentNode._private.data.description.videos,
+        currentArticles: this.props.currentNode._private.data.description.articles,
+
+      })
     }
+
   }
 
   handleClose = () => {
-    this.setState({
-      openPrompt: false,
-      description: "",
-      currentNode: null
-  	});
+    this.props.closeUserView()
   };
 
   handleOpen = () => {
@@ -149,16 +132,16 @@ export default class User extends Component {
   };
 
   handleRequestClosePrompt = () => {
-    this.setState({
-      cy : null,
-      currentNode: {},
-      openPrompt: false,
-      description: "",
-      open: false,
-      videoDesc: "",
-      currentVideos: []
-    });
+    this.props.closeUserView()
   };
+
+  init = () => {
+    if(!this.props.openUserView){
+      return false
+    } else {
+      return this.props.openUserView
+    }
+  }
 
   render(){
 
@@ -175,20 +158,24 @@ export default class User extends Component {
       />
     ];
 
-    const contentStyle = {
-    minWidth: 640,
-    height: '100%',
-    minHeight: 480,
-    alignItems: 'center',
-    justifyContent: 'center'
-  }
+
+
+    console.log(this.props , "lollies")
+
+      const contentStyle = {
+      minWidth: 640,
+      height: '100%',
+      minHeight: 480,
+      alignItems: 'center',
+      justifyContent: 'center'
+    }
     return(
   		<div>
   		  <Dialog
           modal={false}
           bodyStyle= {styles.dialogBody}
           contentStyle= {styles.dialog}
-          open={this.state.openPrompt}
+          open={this.init()}
           onRequestClose={this.handleClose}>
 
           <div>
@@ -203,7 +190,7 @@ export default class User extends Component {
         <Dialog
           modal={true}
           contentStyle={styles.dialogHuge}
-          open={this.state.open}
+          open={this.props.openModule}
           actions={cancel}
           autoDetectWindowHeight = {false}>
         	<Tabs>
@@ -254,3 +241,16 @@ export default class User extends Component {
   	)
   }
 }
+
+function mapStateToProps(state){
+  console.log(state, "mapping state to props in user.view.js")
+  if(state.selectNode.currentNode._private){
+    console.log(state.selectNode.currentNode._private.data.id)
+  }
+  if(state.selectNode.previousNode._private){
+    console.log(state.selectNode.previousNode._private.data.id)
+  }
+  return ({previousNode: state.selectNode.previousNode, currentNode: state.selectNode.currentNode, openUserView: state.selectNode.openUserView })
+}
+
+export default connect(mapStateToProps, actions)(User)

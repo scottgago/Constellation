@@ -1,4 +1,4 @@
-import { SELECT_NODE, REGISTER_CY } from '../actions/actionList'
+import { SELECT_NODE, REGISTER_CY, CLOSE_USER_VIEW, USER_OPEN_MODULE, USER_CLOSE_MODULE } from '../actions/actionList'
 
 
 const INITIAL_STATE = {
@@ -13,7 +13,11 @@ export default function(state = INITIAL_STATE, action) {
 		case REGISTER_CY:
 			return {...state, cy: action.payload.cy}
 		case SELECT_NODE: 
-			return {...state, currentNode : action.payload.currentNode, view: action.payload.view, previousNode : action.payload.previousNode}
+			return {...state, currentNode : action.payload.currentNode, openUserView: action.payload.openUserView, previousNode : action.payload.previousNode}
+		case CLOSE_USER_VIEW:
+			return {...state, openUserView : action.payload.openUserView }
+		case USER_OPEN_MODULE:
+			return {...state, openModuleView: action.payload.openModuleView}
 		default:
 			return state;
 	}

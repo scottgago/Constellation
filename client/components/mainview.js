@@ -406,7 +406,7 @@ class MainView extends Component {
     })
 
 
-    bind.props.selectNode({ currentNode: evtTarget, previousNode: holder, view: true })
+    bind.props.selectNode({ currentNode: evtTarget, previousNode: holder, openUserView: true })
 
      
 
@@ -451,7 +451,7 @@ class MainView extends Component {
 }
 
 function mapStateToProps(state){
-  console.log(state, "lol, lol")
+  console.log(state, "mapping state to props in mainview.js")
   return {currentNode: state.selectNode.currentNode, previousNode: state.selectNode.previousNode, cy: state.selectNode.cy}
 }
 

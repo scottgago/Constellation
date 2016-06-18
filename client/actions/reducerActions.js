@@ -1,5 +1,5 @@
-import { ADMIN_CREATENODE, ADMIN_DELETENODE, ADMIN_ADDCONNECTIONS, 
-		 ADMIN_ADDVIDEO, ADMIN_ADDARTICLE, ADMIN_ADDDESCRIPTION, SELECT_NODE, REGISTER_CY } from './actionList'
+import { ADMIN_CREATENODE, ADMIN_DELETENODE, ADMIN_ADDCONNECTIONS, USER_OPEN_MODULE, USER_CLOSE_MODULE,
+		 ADMIN_ADDVIDEO, ADMIN_ADDARTICLE, ADMIN_ADDDESCRIPTION, SELECT_NODE, REGISTER_CY, CLOSE_USER_VIEW } from './actionList'
 
 export function createNode({cy, currentNode, id, name, description, styles, admins, width, height, type, connections}) {
 	
@@ -20,11 +20,23 @@ export function createNode({cy, currentNode, id, name, description, styles, admi
 	}
 }
 
-export function selectNode({currentNode, previousNode, view}){
-	return { type: SELECT_NODE, payload :  {currentNode: currentNode, previousNode: previousNode, view : view} }
+export function selectNode({currentNode, previousNode, openUserView}){
+	return { type: SELECT_NODE, payload :  {currentNode: currentNode, previousNode: previousNode, openUserView : openUserView} }
 }
 
 export function registerCY({cy}){
 	return { type: REGISTER_CY, payload : {cy: cy} }
+}
+
+export function closeUserView(){
+	return {type: CLOSE_USER_VIEW, payload: { openUserView: false } }
+}
+
+export function openModule(){
+	return {type: USER_OPEN_MODULE, payload : { openModuleView: true } }
+}
+
+export function closeModule(){
+	return {type: USER_CLOSE_MODULE, payload : { openModuleView: false } }
 }
 

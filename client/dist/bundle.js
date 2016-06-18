@@ -46047,7 +46047,7 @@
 	          });
 	        });
 
-	        bind.props.selectNode({ currentNode: evtTarget, previousNode: holder });
+	        bind.props.selectNode({ currentNode: evtTarget, previousNode: holder, openUserView: true });
 
 	        bind.setState({
 	          currentNode: evtTarget,
@@ -46090,7 +46090,7 @@
 	}(_react.Component);
 
 	function mapStateToProps(state) {
-	  console.log(state, "lol, lol");
+	  console.log(state, "mapping state to props in mainview.js");
 	  return { currentNode: state.selectNode.currentNode, previousNode: state.selectNode.previousNode, cy: state.selectNode.cy };
 	}
 
@@ -52921,6 +52921,9 @@
 	exports.createNode = createNode;
 	exports.selectNode = selectNode;
 	exports.registerCY = registerCY;
+	exports.closeUserView = closeUserView;
+	exports.openModule = openModule;
+	exports.closeModule = closeModule;
 
 	var _actionList = __webpack_require__(451);
 
@@ -52958,15 +52961,27 @@
 	function selectNode(_ref2) {
 		var currentNode = _ref2.currentNode;
 		var previousNode = _ref2.previousNode;
-		var view = _ref2.view;
+		var openUserView = _ref2.openUserView;
 
-		return { type: _actionList.SELECT_NODE, payload: { currentNode: currentNode, previousNode: previousNode, view: view } };
+		return { type: _actionList.SELECT_NODE, payload: { currentNode: currentNode, previousNode: previousNode, openUserView: openUserView } };
 	}
 
 	function registerCY(_ref3) {
 		var cy = _ref3.cy;
 
 		return { type: _actionList.REGISTER_CY, payload: { cy: cy } };
+	}
+
+	function closeUserView() {
+		return { type: _actionList.CLOSE_USER_VIEW, payload: { openUserView: false } };
+	}
+
+	function openModule() {
+		return { type: _actionList.USER_OPEN_MODULE, payload: { openModuleView: true } };
+	}
+
+	function closeModule() {
+		return { type: _actionList.USER_CLOSE_MODULE, payload: { openModuleView: false } };
 	}
 
 /***/ },
@@ -52988,6 +53003,11 @@
 
 	var SELECT_NODE = exports.SELECT_NODE = "SELECT_NODE";
 	var REGISTER_CY = exports.REGISTER_CY = "REGISTER_CY";
+
+	var CLOSE_USER_VIEW = exports.CLOSE_USER_VIEW = "CLOSE_USER_VIEW";
+	var USER_OPEN_MODULE = exports.USER_OPEN_MODULE = "USER_OPEN_MODULE";
+
+	var USER_CLOSE_MODULE = exports.USER_CLOSE_MODULE = "USER_CLOSE_MODULE";
 
 /***/ },
 /* 452 */
@@ -75885,9 +75905,17 @@
 
 	var _reactYoutube2 = _interopRequireDefault(_reactYoutube);
 
+	var _reactRedux = __webpack_require__(341);
+
+	var _reducerActions = __webpack_require__(450);
+
+	var actions = _interopRequireWildcard(_reducerActions);
+
 	var _TextField = __webpack_require__(421);
 
 	var _TextField2 = _interopRequireDefault(_TextField);
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -75988,36 +76016,19 @@
 	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(User).call(this, props));
 
 	    _this.componentWillReceiveProps = function (value) {
-	      if (value.props.currentNode && value.props.view) {
-	        if (value.props.currentNode._private.data.videos.length) {
-	          _this.setState({
-	            openPrompt: value.props.view,
-	            cy: value.props.cy,
-	            currentNode: value.props.currentNode,
-	            description: value.props.currentNode._private.data.description,
-	            currentVideos: value.props.currentNode._private.data.videos,
-	            currentArticles: value.props.currentNode._private.data.articles
-	          });
-	        }
-	        if (!value.props.currentNode._private.data.videos.length) {
-	          _this.setState({
-	            openPrompt: value.props.view,
-	            cy: value.props.cy,
-	            currentNode: value.props.currentNode,
-	            description: value.props.currentNode._private.data.description,
-	            videoDesc: "",
-	            currentVideos: []
-	          });
-	        }
+
+	      if (_this.props.currentNode._private) {
+	        _this.setState({
+	          description: _this.props.currentNode._private.data.description,
+	          currentVideos: _this.props.currentNode._private.data.description.videos,
+	          currentArticles: _this.props.currentNode._private.data.description.articles
+
+	        });
 	      }
 	    };
 
 	    _this.handleClose = function () {
-	      _this.setState({
-	        openPrompt: false,
-	        description: "",
-	        currentNode: null
-	      });
+	      _this.props.closeUserView();
 	    };
 
 	    _this.handleOpen = function () {
@@ -76028,23 +76039,19 @@
 	    };
 
 	    _this.handleRequestClosePrompt = function () {
-	      _this.setState({
-	        cy: null,
-	        currentNode: {},
-	        openPrompt: false,
-	        description: "",
-	        open: false,
-	        videoDesc: "",
-	        currentVideos: []
-	      });
+	      _this.props.closeUserView();
+	    };
+
+	    _this.init = function () {
+	      if (!_this.props.openUserView) {
+	        return false;
+	      } else {
+	        return _this.props.openUserView;
+	      }
 	    };
 
 	    _this.state = {
-	      cy: null,
-	      currentNode: {},
-	      openPrompt: false,
 	      description: "",
-	      open: false,
 	      videoDesc: "",
 	      currentVideos: [],
 	      currentArticles: []
@@ -76067,6 +76074,8 @@
 	        onTouchTap: this.handleRequestClosePrompt
 	      })];
 
+	      console.log(this.props, "lollies");
+
 	      var contentStyle = {
 	        minWidth: 640,
 	        height: '100%',
@@ -76083,7 +76092,7 @@
 	            modal: false,
 	            bodyStyle: styles.dialogBody,
 	            contentStyle: styles.dialog,
-	            open: this.state.openPrompt,
+	            open: this.init(),
 	            onRequestClose: this.handleClose },
 	          _react2.default.createElement(
 	            'div',
@@ -76111,7 +76120,7 @@
 	          {
 	            modal: true,
 	            contentStyle: styles.dialogHuge,
-	            open: this.state.open,
+	            open: this.props.openModule,
 	            actions: cancel,
 	            autoDetectWindowHeight: false },
 	          _react2.default.createElement(
@@ -76198,7 +76207,18 @@
 	  return User;
 	}(_react.Component);
 
-	exports.default = User;
+	function mapStateToProps(state) {
+	  console.log(state, "mapping state to props in user.view.js");
+	  if (state.selectNode.currentNode._private) {
+	    console.log(state.selectNode.currentNode._private.data.id);
+	  }
+	  if (state.selectNode.previousNode._private) {
+	    console.log(state.selectNode.previousNode._private.data.id);
+	  }
+	  return { previousNode: state.selectNode.previousNode, currentNode: state.selectNode.currentNode, openUserView: state.selectNode.openUserView };
+	}
+
+	exports.default = (0, _reactRedux.connect)(mapStateToProps, actions)(User);
 
 /***/ },
 /* 631 */
@@ -79765,7 +79785,11 @@
 			case _actionList.REGISTER_CY:
 				return _extends({}, state, { cy: action.payload.cy });
 			case _actionList.SELECT_NODE:
-				return _extends({}, state, { currentNode: action.payload.currentNode, previousNode: action.payload.previousNode });
+				return _extends({}, state, { currentNode: action.payload.currentNode, openUserView: action.payload.openUserView, previousNode: action.payload.previousNode });
+			case _actionList.CLOSE_USER_VIEW:
+				return _extends({}, state, { openUserView: action.payload.openUserView });
+			case _actionList.USER_OPEN_MODULE:
+				return _extends({}, state, { openModuleView: action.payload.openModuleView });
 			default:
 				return state;
 		}
