@@ -3,8 +3,7 @@ import { ADMIN_CREATENODE, ADMIN_DELETENODE, ADMIN_ADDCONNECTIONS, USER_OPEN_MOD
 
 export function createNode({cy, currentNode, id, name, description, styles, admins, width, height, type, connections}) {
 	
-	return function(dispatch) {
-			dispatch({ type: ADMIN_CREATENODE, payload: {
+	return { type: ADMIN_CREATENODE, payload: {
 				cy: cy,
 				currentNode : currentNode,
 				id : id,
@@ -16,9 +15,10 @@ export function createNode({cy, currentNode, id, name, description, styles, admi
 				height: height,
 				type: type, 
 				connections: connections
-			}})
-	}
+			}
+	}    
 }
+
 
 export function selectNode({moduleDescription, currentNode, previousNode, openUserView, currentArticles, currentVideos}){
 	return { type: SELECT_NODE, payload :  {moduleDescription: moduleDescription, currentArticles: currentArticles, currentVideos: currentVideos, currentNode: currentNode, previousNode: previousNode, openUserView : openUserView} }

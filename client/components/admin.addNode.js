@@ -159,8 +159,6 @@ class AddNode extends Component {
 
 	handleChangeText = (e, value) => {
     this.state.newNodeName = value
-    console.log(this.props)
-    
   }
 
   contentChange = (e,value) => {
@@ -168,7 +166,6 @@ class AddNode extends Component {
   }
 
   starChange = (e,value) => {
-  	console.log(value)
   	if(value === "star1"){
   		this.setState({
   			starType: './assets/imgs/star (1).png'
@@ -196,50 +193,49 @@ class AddNode extends Component {
 
   onConfirm = (e, value) => {
 
-    console.log(this.props.createNode)
-
-    if(this.state.newNodeName.length){
-
-      
-
-    var anchor = this
+    this.props.createNode({cy: this.props.cy, 
+                           currentNode: this.props.currentNode, 
+                           id: this.state.newNodeName,
+                           description: this.state.markdownDescription,
+                           width: this.state.starWidth,
+                           height: this.state.starHeight,
+                           connections: this.state.selectedConnections
+                         })
     
-      var newNodeName = this.state.newNodeName
-      var currentNode = this.state.currentNode._private.data.id
+    var newNodeName = this.state.newNodeName
+    var currentNode = this.state.currentNode._private.data.id
 
-      var newNode = this.state.cy.add([
-        {
-          group: 'nodes',
-          data: {
-            id : newNodeName,
-            admins: ['scott'],
-            description: anchor.state.markdownDescription,
-            videos: [],
-            articles: [],
-            styles: {
-              width: anchor.state.starWidth,
-              height: anchor.state.starHeight
-            }
-          },
-        }
-      ])['0'].style({
-      	'backgroundImage' : this.state.starType,
-        'width'           : this.state.starWidth,
-        'height'          : this.state.starHeight
-      }).addClass('gps_ring')
-
-      console.log(this.state.selectedConnections)
-
-      this.state.selectedConnections.forEach((edge) => {
-        this.state.cy.add({
-          group: 'edges',
-          data: {
-            id: edge+newNodeName,
-            source: newNodeName,
-            target: edge
+    var newNode = this.props.cy.add([
+      {
+        group: 'nodes',
+        data: {
+          id : newNodeName,
+          admins: ['scott'],
+          description: anchor.state.markdownDescription,
+          videos: [],
+          articles: [],
+          styles: {
+            width: anchor.state.starWidth,
+            height: anchor.state.starHeight
           }
-        })
+        },
+      }
+    ])['0'].style({
+    	'backgroundImage' : this.state.starType,
+      'width'           : this.state.starWidth,
+      'height'          : this.state.starHeight
+    })
+
+    this.state.selectedConnections.forEach((edge) => {
+      this.props.cy.add({
+        group: 'edges',
+        data: {
+          id: edge+newNodeName,
+          source: newNodeName,
+          target: edge
+        }
       })
+    })
 
       /**
 
@@ -248,9 +244,7 @@ class AddNode extends Component {
 
       **/
 
-      this.props.
-
-      this.state.cy.layout()
+      this.props.cy.layout()
       this.setState({
         create: false,
         currentNode : null,
@@ -270,7 +264,7 @@ class AddNode extends Component {
 			})})
       return
     }
-    this.setState({
+    anchor.setState({
       error : true
     }, ()=>{this.state.error = false})
     
@@ -363,7 +357,6 @@ class AddNode extends Component {
 }
 
 function mapStateToProps(state){
-  console.log(state, "eeeeh")
   return { currentNode : state.adminAdd.currentNode, cy: state.adminAdd.cy }
 }
 

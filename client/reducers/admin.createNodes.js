@@ -1,8 +1,14 @@
 import { ADMIN_CREATENODE, ADMIN_DELETENODE } from '../actions/actionList';
 
 const INITIAL_STATE = {
-	cy: {},
-	currentNode :{}
+  newNodeName: '',
+  width: 100,
+  length: 100,
+  starType: "./assets/imgs/star (1).png",
+  error: false,
+  selectedConnections: [],
+  selectedEdhes: [],
+  markdownDescription: '',
 }
 
 
