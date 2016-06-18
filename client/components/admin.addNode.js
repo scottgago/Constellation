@@ -121,19 +121,6 @@ class AddNode extends Component {
     console.log(this.props.dispatch)
 	}
 
-	componentWillReceiveProps = (props) =>{
-
-   
-		if(props.status.create){
-			this.setState({
-				cy: props.status.cy,
-				create: true,
-				currentNode: props.status.currentNode,
-        selectedConnections: [props.status.currentNode._private.data.id]
-			})
-		}
-	}
-
   onChangeSlider = (e, value) => {
 
     this.setState({
@@ -149,12 +136,7 @@ class AddNode extends Component {
   }
 
 	handleRequestClosePrompt = () => {
-    this.setState({
-      currentNode : null,
-      newNodeName: "",
-      create: false,
-      markdownDescription: ""
-    });
+    this.props.closeCreate()
   };
 
 	handleChangeText = (e, value) => {
@@ -193,49 +175,17 @@ class AddNode extends Component {
 
   onConfirm = (e, value) => {
 
+    console.log(this.props)
+
     this.props.createNode({cy: this.props.cy, 
                            currentNode: this.props.currentNode, 
                            id: this.state.newNodeName,
                            description: this.state.markdownDescription,
                            width: this.state.starWidth,
                            height: this.state.starHeight,
-                           connections: this.state.selectedConnections
+                           connections: this.state.selectedConnections,
+                           type: this.state.starType
                          })
-    
-    var newNodeName = this.state.newNodeName
-    var currentNode = this.state.currentNode._private.data.id
-
-    var newNode = this.props.cy.add([
-      {
-        group: 'nodes',
-        data: {
-          id : newNodeName,
-          admins: ['scott'],
-          description: anchor.state.markdownDescription,
-          videos: [],
-          articles: [],
-          styles: {
-            width: anchor.state.starWidth,
-            height: anchor.state.starHeight
-          }
-        },
-      }
-    ])['0'].style({
-    	'backgroundImage' : this.state.starType,
-      'width'           : this.state.starWidth,
-      'height'          : this.state.starHeight
-    })
-
-    this.state.selectedConnections.forEach((edge) => {
-      this.props.cy.add({
-        group: 'edges',
-        data: {
-          id: edge+newNodeName,
-          source: newNodeName,
-          target: edge
-        }
-      })
-    })
 
       /**
 
@@ -256,17 +206,7 @@ class AddNode extends Component {
         starType: "./assets/imgs/star (1).png",
         edit: false,
         passToEditNode: newNode
-			},
-		  () => {this.setState({
-				passToEditNode: null,
-				edit: false,
-				passToEditNode: null
-			})})
-      return
-    }
-    anchor.setState({
-      error : true
-    }, ()=>{this.state.error = false})
+			})
     
   }
 
@@ -291,7 +231,7 @@ class AddNode extends Component {
 	      modal={false}
 	      actions={cancel}
 				contentStyle ={style.dialogBody}
-	      open={this.state.create}>
+	      open={this.props.create}>
 	        <div style = {style.dialogBody}>
 		        <Tabs style={style.contentDiv}>
 		          <Tab label="Content" >
@@ -303,9 +243,9 @@ class AddNode extends Component {
 		              </Paper>
                   <AddAdmin />
                   <AddConnections 
-                    currentNode={this.state.currentNode} 
-                    create = {this.state.create}
-                    cy = {this.state.cy}
+                    currentNode={this.props.currentNode} 
+                    create = {this.props.create}
+                    cy = {this.props.cy}
                     selectedEdges = {this.selectedEdges}/>
                 </div>
 		          </Tab>
@@ -357,7 +297,8 @@ class AddNode extends Component {
 }
 
 function mapStateToProps(state){
-  return { currentNode : state.adminAdd.currentNode, cy: state.adminAdd.cy }
+  console.log(state, "creating")
+  return { create: state.adminAdd.create, currentNode : state.selectNode.currentNode, cy: state.selectNode.cy }
 }
 
 export default connect(mapStateToProps, actions)(AddNode)

@@ -46046,6 +46046,7 @@
 
 	        console.log(evtTarget._private.data);
 	        bind.props.selectNode({ moduleDescription: evtTarget._private.data.description, currentArticles: evtTarget._private.data.articles, currentVideos: evtTarget._private.data.videos, currentNode: evtTarget, previousNode: holder, openUserView: true });
+	        bind.props.openAdmin();
 
 	        bind.setState({
 	          currentNode: evtTarget,
@@ -46070,6 +46071,7 @@
 	        });
 	      });
 	      this.props.registerCY({ cy: cy });
+
 	      console.log(this.props, "this is new");
 	    }
 	  }, {
@@ -46110,6 +46112,8 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
+	var _reactRedux = __webpack_require__(341);
+
 	var _TextField = __webpack_require__(421);
 
 	var _TextField2 = _interopRequireDefault(_TextField);
@@ -46144,11 +46148,15 @@
 
 	var _Paper2 = _interopRequireDefault(_Paper);
 
+	var _reducerActions = __webpack_require__(622);
+
+	var actions = _interopRequireWildcard(_reducerActions);
+
 	var _markdown = __webpack_require__(447);
 
 	var _markdown2 = _interopRequireDefault(_markdown);
 
-	var _admin = __webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"./admin.addNode\""); e.code = 'MODULE_NOT_FOUND'; throw e; }()));
+	var _admin = __webpack_require__(449);
 
 	var _admin2 = _interopRequireDefault(_admin);
 
@@ -46157,6 +46165,8 @@
 	var _admin4 = _interopRequireDefault(_admin3);
 
 	var _Table = __webpack_require__(451);
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -46202,87 +46212,29 @@
 	var Admin = function (_Component) {
 	  _inherits(Admin, _Component);
 
-	  function Admin(props) {
+	  function Admin() {
+	    var _Object$getPrototypeO;
+
+	    var _temp, _this, _ret;
+
 	    _classCallCheck(this, Admin);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Admin).call(this, props));
+	    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+	      args[_key] = arguments[_key];
+	    }
 
-	    _this.handleRequestOpenCreate = function () {
-	      _this.setState({
-	        openPrompt: false,
-	        create: true,
-	        markdownDescription: ""
-
-	      }, function () {
-	        _this.setState({
-	          create: false
-	        });
-	      });
-	    };
-
-	    _this.handleRequestClosePrompt = function () {
-	      _this.setState({
-	        openPrompt: false,
-	        currentNode: null,
-	        newNodeName: false,
-	        edit: false,
-	        create: false,
-	        markdownDescription: ""
-	      });
-	    };
-
-	    _this.handleRequestOpenEdit = function () {
-	      _this.setState({
-	        openPrompt: false,
-	        edit: true
-	      }, function () {
-	        _this.setState({
-	          edit: false
-	        });
-	      });
-	    };
-
-	    _this.onChangeSlider = function (e, value) {
-	      _this.state.cy.$("#" + _this.state.currentNode._private.data.id).style({
-	        'width': 100 * value,
-	        'height': 100 * value,
-	        'border-width': 30 * value
-	      });
-	    };
-
-	    _this.componentWillReceiveProps = function (value) {
-	      if (value.props.currentNode) {
-	        _this.setState({
-	          openPrompt: value.props.view,
-	          cy: value.props.cy,
-	          addVideo: false,
-	          addArticle: false,
-	          launchPageText: "# Curator mode\nBe in awe of the power you hold! Seriously, people are looking to you to feed their intellects.\n*Note: no pressure*\n # Create\n ## Style\n Name your node and make it pretty here! Once your node is created, it will be automatically connected to the node you created it from. If you'd like to add any additional features and content to your new node, you can select it from the main view and edit it from there.\n## Description\nProvide a brief description of your node here. Try not to go too much in depth about the content. Instead, outline objectives and common concepts covered in the node. This is your chance to get the explorers interested in learning about the concepts you worked hard to curate!\n## Confirm\n Preview your node and any TODOS, then type confirm in the command box to launch your node. \n# Edit\n## Style\n Change the styling of your node here\n## Content\nHere you can add, remove, and edit any resources currently on the node. \n## Markdown\nModify any of the markdown content on this node\n## Confirm\nConfirm your changes here!",
-	          currentNode: value.props.currentNode,
-	          markdownDescription: value.props.currentNode._private.data.description,
-	          currentVideos: value.props.currentNode._private.data.videos
-
-	        });
-	      }
-	    };
-
-	    _this.handleOpen = function () {
+	    return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_Object$getPrototypeO = Object.getPrototypeOf(Admin)).call.apply(_Object$getPrototypeO, [this].concat(args))), _this), _this.handleRequestOpenCreate = function () {
+	      _this.props.openCreate();
+	      _this.props.closeAdmin();
+	    }, _this.handleRequestClosePrompt = function () {
+	      _this.props.closeAdmin();
+	    }, _this.handleRequestOpenEdit = function () {
+	      _this.props.openEdit();
+	    }, _this.handleOpen = function () {
 	      _this.setState({ open: true });
-	    };
-
-	    _this.handleClose = function () {
-	      _this.setState({ open: false });
-	    };
-
-	    _this.state = {
-	      cy: null,
-	      currentNode: null,
-	      newNodeName: "",
-	      openPrompt: false,
-	      edit: false,
-	      create: false
-	    };
-	    return _this;
+	    }, _this.handleClose = function () {
+	      _this.props.closeAdmin();
+	    }, _temp), _possibleConstructorReturn(_this, _ret);
 	  }
 
 	  _createClass(Admin, [{
@@ -46313,17 +46265,13 @@
 	        null,
 	        _react2.default.createElement(_admin2.default, { status: this.state }),
 	        _react2.default.createElement(_admin4.default, { status: this.state }),
-	        _react2.default.createElement(
-	          _Dialog2.default,
-	          {
-	            actions: actions,
-	            modal: false,
-	            contentStyle: style.alignCenter,
-	            bodyStyle: style.alignCenter,
-	            open: this.state.openPrompt,
-	            onRequestClose: this.handleClose },
-	          _react2.default.createElement(_markdown2.default, { markdown: this.state.launchPageText })
-	        )
+	        _react2.default.createElement(_Dialog2.default, {
+	          actions: actions,
+	          modal: false,
+	          contentStyle: style.alignCenter,
+	          bodyStyle: style.alignCenter,
+	          open: this.props.openAdminView,
+	          onRequestClose: this.handleClose })
 	      );
 	    }
 	  }]);
@@ -46332,6 +46280,16 @@
 	}(_react.Component);
 
 	exports.default = Admin;
+
+
+	function mapStateToProps(state) {
+	  console.log(state, "creating");
+	  return { openAdminView: state.selectNode.openAdminView, create: state.adminAdd.create, currentNode: state.selectNode.currentNode, cy: state.selectNode.cy };
+	}
+
+	exports.default = (0, _reactRedux.connect)(mapStateToProps, actions)(Admin);
+
+	//<MarkdownParser markdown={this.state.launchPageText}/>}
 
 /***/ },
 /* 421 */
@@ -52443,7 +52401,407 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 449 */,
+/* 449 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _blackBox;
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactRedux = __webpack_require__(341);
+
+	var _reducerActions = __webpack_require__(622);
+
+	var actions = _interopRequireWildcard(_reducerActions);
+
+	var _Dialog = __webpack_require__(443);
+
+	var _Dialog2 = _interopRequireDefault(_Dialog);
+
+	var _FlatButton = __webpack_require__(440);
+
+	var _FlatButton2 = _interopRequireDefault(_FlatButton);
+
+	var _Tabs = __webpack_require__(431);
+
+	var _Paper = __webpack_require__(390);
+
+	var _Paper2 = _interopRequireDefault(_Paper);
+
+	var _TextField = __webpack_require__(421);
+
+	var _TextField2 = _interopRequireDefault(_TextField);
+
+	var _Divider = __webpack_require__(445);
+
+	var _Divider2 = _interopRequireDefault(_Divider);
+
+	var _RadioButton = __webpack_require__(672);
+
+	var _favorite = __webpack_require__(677);
+
+	var _favorite2 = _interopRequireDefault(_favorite);
+
+	var _favoriteBorder = __webpack_require__(678);
+
+	var _favoriteBorder2 = _interopRequireDefault(_favoriteBorder);
+
+	var _admin = __webpack_require__(450);
+
+	var _admin2 = _interopRequireDefault(_admin);
+
+	var _Snackbar = __webpack_require__(436);
+
+	var _Snackbar2 = _interopRequireDefault(_Snackbar);
+
+	var _Table = __webpack_require__(451);
+
+	var _admin3 = __webpack_require__(619);
+
+	var _admin4 = _interopRequireDefault(_admin3);
+
+	var _admin5 = __webpack_require__(620);
+
+	var _admin6 = _interopRequireDefault(_admin5);
+
+	var _Slider = __webpack_require__(429);
+
+	var _Slider2 = _interopRequireDefault(_Slider);
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+	var MarkdownEditor = __webpack_require__(578).MarkdownEditor;
+
+	var style = {
+	  contentDiv: {
+	    width: '100%',
+	    height: '100%'
+	  },
+
+	  sliderStyle: {
+	    maxWidth: '75%',
+	    position: 'absolute',
+	    width: '90%',
+	    top: 400
+	  },
+	  imageContent: {
+	    height: 100,
+	    width: 100,
+	    left: 500,
+	    margin: "auto",
+	    position: 'absolute',
+	    top: 160
+	  },
+	  dialogBody: {
+	    minWidth: 1000,
+	    maxWidth: 'none',
+	    minHeight: 600
+	  },
+	  headline: {
+	    fontSize: 24,
+	    paddingTop: 16,
+	    marginBottom: 12,
+	    fontWeight: 400,
+	    opacity: 1
+	  },
+	  textStyle: {
+	    marginLeft: 20
+	  },
+	  floatLeft: {
+	    float: 'left',
+	    maxWidth: '15%',
+	    width: '15%',
+	    height: 400
+	  },
+	  blackBox: (_blackBox = {
+	    maxWidth: '85%',
+	    width: '75%',
+	    height: '100%'
+	  }, _defineProperty(_blackBox, 'height', 400), _defineProperty(_blackBox, 'float', 'left'), _defineProperty(_blackBox, 'backgroundImage', 'url(./assets/imgs/pEeUsp1.jpg)'), _defineProperty(_blackBox, 'overflow', 'none'), _blackBox),
+	  marginTop: {
+	    marginTop: 25,
+	    marginLeft: 25,
+	    width: '100%'
+	  },
+	  radioButtonTop: {
+	    marginTop: 30,
+	    marginBottom: 75,
+	    maxWidth: '10%'
+	  },
+	  radioButton: {
+	    marginBottom: 75,
+	    maxWidth: '10%'
+	  },
+	  nodeList: {
+	    marginTop: 15,
+	    float: 'right',
+	    width: '48%',
+	    height: 450,
+	    right: 0,
+	    overflow: "scroll"
+	  }
+	};
+
+	var AddNode = function (_Component) {
+	  _inherits(AddNode, _Component);
+
+	  function AddNode(props) {
+	    _classCallCheck(this, AddNode);
+
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(AddNode).call(this, props));
+
+	    _this.onChangeSlider = function (e, value) {
+
+	      _this.setState({
+	        starWidth: style.imageContent.width = 100 + value * 500,
+	        starHeight: style.imageContent.height = 100 + value * 500
+	      });
+
+	      style.imageContent.width = 100 + value * 500;
+	      style.imageContent.height = 100 + value * 500;
+	      style.imageContent.left = 500 - value * 500 / 2;
+	      style.imageContent.top = 160 - value * 500 / 2;
+	    };
+
+	    _this.handleRequestClosePrompt = function () {
+	      _this.props.closeCreate();
+	    };
+
+	    _this.handleChangeText = function (e, value) {
+	      _this.state.newNodeName = value;
+	    };
+
+	    _this.contentChange = function (e, value) {
+	      _this.state.markdownDescription = e;
+	    };
+
+	    _this.starChange = function (e, value) {
+	      if (value === "star1") {
+	        _this.setState({
+	          starType: './assets/imgs/star (1).png'
+	        });
+	      }
+	      if (value === "star2") {
+	        _this.setState({
+	          starType: './assets/imgs/star.png'
+	        });
+	      }
+	      if (value === "star3") {
+	        _this.setState({
+	          starType: './assets/imgs/8902697.png'
+	        });
+	      }
+	    };
+
+	    _this.selectedEdges = function (value) {
+	      _this.state.selectedConnections = value;
+	    };
+
+	    _this.selectedNodes = function (nodes) {
+	      _this.state.selectedConnections = nodes;
+	    };
+
+	    _this.onConfirm = function (e, value) {
+
+	      console.log(_this.props);
+
+	      _this.props.createNode({ cy: _this.props.cy,
+	        currentNode: _this.props.currentNode,
+	        id: _this.state.newNodeName,
+	        description: _this.state.markdownDescription,
+	        width: _this.state.starWidth,
+	        height: _this.state.starHeight,
+	        connections: _this.state.selectedConnections,
+	        type: _this.state.starType
+	      });
+
+	      /**
+	       	Creates a new cytoscape node with all of current entered information. Will lead into the edit node
+	      	component immediately after execution
+	       **/
+
+	      _this.props.cy.layout();
+	      _this.setState({
+	        create: false,
+	        currentNode: null,
+	        newNodeName: "",
+	        selectedConnections: [],
+	        starWidth: 100,
+	        starHeight: 100,
+	        markdownDescription: "",
+	        starType: "./assets/imgs/star (1).png",
+	        edit: false,
+	        passToEditNode: newNode
+	      });
+	    };
+
+	    console.log(_this.props, "lol");
+	    _this.state = {
+	      create: false,
+	      cy: null,
+	      edit: false,
+	      starWidth: 100,
+	      starHeight: 100,
+	      currentNode: null,
+	      error: false,
+	      passToEditNode: null,
+	      selectedConnections: [],
+	      selectedEdges: _this.selectedEdges,
+	      newNodeName: "",
+	      markdownDescription: "",
+	      starType: "./assets/imgs/star (1).png"
+	    };
+
+	    console.log(_this.props.dispatch);
+	    return _this;
+	  }
+
+	  _createClass(AddNode, [{
+	    key: 'render',
+	    value: function render() {
+	      var cancel = [_react2.default.createElement(_FlatButton2.default, {
+	        label: 'Cancel',
+	        primary: true,
+	        onTouchTap: this.handleRequestClosePrompt
+	      }), _react2.default.createElement(_FlatButton2.default, {
+	        label: 'Create Node',
+	        primary: true,
+	        onTouchTap: this.onConfirm
+	      })];
+	      return _react2.default.createElement(
+	        'div',
+	        null,
+	        _react2.default.createElement(_admin2.default, { status: this.state }),
+	        _react2.default.createElement(
+	          _Dialog2.default,
+	          {
+	            title: 'Create Mode',
+	            modal: false,
+	            actions: cancel,
+	            contentStyle: style.dialogBody,
+	            open: this.props.create },
+	          _react2.default.createElement(
+	            'div',
+	            { style: style.dialogBody },
+	            _react2.default.createElement(
+	              _Tabs.Tabs,
+	              { style: style.contentDiv },
+	              _react2.default.createElement(
+	                _Tabs.Tab,
+	                { label: 'Content' },
+	                _react2.default.createElement(
+	                  'div',
+	                  null,
+	                  _react2.default.createElement(
+	                    'p',
+	                    null,
+	                    'Node name'
+	                  ),
+	                  _react2.default.createElement(
+	                    _Paper2.default,
+	                    { zDepth: 2 },
+	                    _react2.default.createElement(_TextField2.default, { hintText: 'Nodename', style: style.textStyle, onChange: this.handleChangeText, underlineShow: false }),
+	                    _react2.default.createElement(_Divider2.default, null)
+	                  ),
+	                  _react2.default.createElement(_admin4.default, null),
+	                  _react2.default.createElement(_admin6.default, {
+	                    currentNode: this.props.currentNode,
+	                    create: this.props.create,
+	                    cy: this.props.cy,
+	                    selectedEdges: this.selectedEdges })
+	                )
+	              ),
+	              _react2.default.createElement(
+	                _Tabs.Tab,
+	                { label: 'Description Markdown' },
+	                _react2.default.createElement(
+	                  'div',
+	                  null,
+	                  _react2.default.createElement(MarkdownEditor, { style: style.contentDiv, initialContent: 'Test', onContentChange: this.contentChange, iconsSet: 'materialize-ui' })
+	                )
+	              ),
+	              _react2.default.createElement(
+	                _Tabs.Tab,
+	                { label: 'Styling' },
+	                _react2.default.createElement(
+	                  'div',
+	                  { style: style.marginTop },
+	                  _react2.default.createElement(
+	                    _RadioButton.RadioButtonGroup,
+	                    { onChange: this.starChange, style: style.floatLeft, name: 'shipSpeed', defaultSelected: 'star1' },
+	                    _react2.default.createElement(_RadioButton.RadioButton, {
+	                      value: 'star1',
+	                      label: 'star1',
+	                      style: style.radioButtonTop
+	                    }),
+	                    _react2.default.createElement(_RadioButton.RadioButton, {
+	                      value: 'star2',
+	                      label: 'star2',
+	                      style: style.radioButton
+	                    }),
+	                    _react2.default.createElement(_RadioButton.RadioButton, {
+	                      value: 'star3',
+	                      label: 'star3',
+	                      style: style.radioButton
+	                    }),
+	                    _react2.default.createElement(_RadioButton.RadioButton, {
+	                      value: 'star4',
+	                      label: 'star4',
+	                      style: style.radioButton
+	                    })
+	                  )
+	                ),
+	                _react2.default.createElement(
+	                  'div',
+	                  { style: style.blackBox },
+	                  ' ',
+	                  _react2.default.createElement('img', { style: style.imageContent, src: this.state.starType }),
+	                  _react2.default.createElement(_Slider2.default, { name: 'slider0', defaultValue: 0, style: style.sliderStyle, onChange: this.onChangeSlider })
+	                )
+	              )
+	            )
+	          ),
+	          _react2.default.createElement(_Snackbar2.default, {
+	            open: this.state.error,
+	            message: "Node name was blank or invalid. Please enter a new node name",
+	            autoHideDuration: 4000
+	          })
+	        )
+	      );
+	    }
+	  }]);
+
+	  return AddNode;
+	}(_react.Component);
+
+	function mapStateToProps(state) {
+	  console.log(state, "creating");
+	  return { create: state.adminAdd.create, currentNode: state.selectNode.currentNode, cy: state.selectNode.cy };
+	}
+
+	exports.default = (0, _reactRedux.connect)(mapStateToProps, actions)(AddNode);
+
+/***/ },
 /* 450 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -74990,6 +75348,11 @@
 		value: true
 	});
 	exports.createNode = createNode;
+	exports.openAdmin = openAdmin;
+	exports.closeAdmin = closeAdmin;
+	exports.openCreate = openCreate;
+	exports.closeCreate = closeCreate;
+	exports.openEdit = openEdit;
 	exports.selectNode = selectNode;
 	exports.registerCY = registerCY;
 	exports.closeUserView = closeUserView;
@@ -75002,7 +75365,6 @@
 		var cy = _ref.cy;
 		var currentNode = _ref.currentNode;
 		var id = _ref.id;
-		var name = _ref.name;
 		var description = _ref.description;
 		var styles = _ref.styles;
 		var admins = _ref.admins;
@@ -75027,6 +75389,24 @@
 			}
 		};
 	}
+
+	function openAdmin() {
+		return { type: _actionList.ADMIN_OPEN_VIEW, payload: { openAdminView: true } };
+	}
+
+	function closeAdmin() {
+		return { type: _actionList.ADMIN_OPEN_VIEW, payload: { openAdminView: false } };
+	}
+
+	function openCreate() {
+		return { type: _actionList.ADMIN_OPENCREATE, payload: { create: true } };
+	}
+
+	function closeCreate() {
+		return { type: _actionList.ADMIN_CREATEDCOMPLETE, payload: { create: false } };
+	}
+
+	function openEdit() {}
 
 	function selectNode(_ref2) {
 		var moduleDescription = _ref2.moduleDescription;
@@ -75067,6 +75447,9 @@
 	  value: true
 	});
 	var ADMIN_CREATENODE = exports.ADMIN_CREATENODE = "ADMIN_CREATENODE";
+	var ADMIN_OPENCREATE = exports.ADMIN_OPENCREATE = "ADMIN_OPENCREATE";
+	var ADMIN_CREATEDCOMPLETE = exports.ADMIN_CREATEDCOMPLETE = "ADMIN_CREATEDCOMPLETE";
+
 	var ADMIN_DELETENODE = exports.ADMIN_DELETENODE = "ADMIN_DELETENODE";
 
 	var ADMIN_ADDCONNECTION = exports.ADMIN_ADDCONNECTION = "ADMIN_ADDCONNECTION";
@@ -75079,8 +75462,9 @@
 
 	var CLOSE_USER_VIEW = exports.CLOSE_USER_VIEW = "CLOSE_USER_VIEW";
 	var USER_OPEN_MODULE = exports.USER_OPEN_MODULE = "USER_OPEN_MODULE";
-
 	var USER_CLOSE_MODULE = exports.USER_CLOSE_MODULE = "USER_CLOSE_MODULE";
+	var ADMIN_OPEN_VIEW = exports.ADMIN_OPEN_VIEW = "ADMIN_OPEN_VIEW";
+	var ADMIN_CLOSE_VIEW = exports.ADMIN_CLOSE_VIEW = "ADMIN_CLOSE_VIEW";
 
 /***/ },
 /* 624 */
@@ -78576,12 +78960,16 @@
 	  var action = arguments[1];
 
 	  switch (action.type) {
+	    case _actionList.ADMIN_OPENCREATE:
+	      return _extends({}, state, { create: true });
+	    case _actionList.ADMIN_CLOSECREATE:
+	      return _extends({}, state, { create: false });
 	    case _actionList.ADMIN_CREATENODE:
 
 	      var newNode = action.payload.cy.add([{
 	        group: 'nodes',
 	        data: {
-	          id: action.payload.name,
+	          id: action.payload.id,
 	          admins: ['scott'],
 	          description: action.payload.markdownDescription,
 	          videos: [],
@@ -78602,9 +78990,9 @@
 	        action.payload.cy.add({
 	          group: 'edges',
 	          data: {
-	            id: edge + action.payload.name,
-	            source: newNodeName,
-	            target: action.payload.name
+	            id: edge + action.payload.id,
+	            source: action.payload.id,
+	            target: edge
 	          }
 	        });
 	      });
@@ -78628,8 +79016,9 @@
 	  starType: "./assets/imgs/star (1).png",
 	  error: false,
 	  selectedConnections: [],
-	  selectedEdhes: [],
-	  markdownDescription: ''
+	  selectedEdges: [],
+	  markdownDescription: '',
+	  create: false
 	};
 
 /***/ },
@@ -78657,6 +79046,8 @@
 				return _extends({}, state, { moduleDescription: action.payload.moduleDescription, currentArticles: action.payload.currentArticles, currentVideos: action.payload.currentVideos, currentNode: action.payload.currentNode, openUserView: action.payload.openUserView, previousNode: action.payload.previousNode });
 			case _actionList.CLOSE_USER_VIEW:
 				return _extends({}, state, { openUserView: action.payload.openUserView });
+			case _actionList.ADMIN_OPEN_VIEW:
+				return _extends({}, state, { openAdminView: action.payload.openAdminView });
 			case _actionList.USER_OPEN_MODULE:
 				return _extends({}, state, { openModuleView: action.payload.openModuleView, openUserView: action.payload.openUserView });
 			case _actionList.USER_CLOSE_MODULE:
@@ -78676,8 +79067,655 @@
 		currentVideos: [],
 		moduleDescription: '',
 		openUserView: false,
+		openAdminView: false,
 		openModuleView: false
 	};
+
+/***/ },
+/* 672 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.default = exports.RadioButtonGroup = exports.RadioButton = undefined;
+
+	var _RadioButton2 = __webpack_require__(673);
+
+	var _RadioButton3 = _interopRequireDefault(_RadioButton2);
+
+	var _RadioButtonGroup2 = __webpack_require__(676);
+
+	var _RadioButtonGroup3 = _interopRequireDefault(_RadioButtonGroup2);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	exports.RadioButton = _RadioButton3.default;
+	exports.RadioButtonGroup = _RadioButtonGroup3.default;
+	exports.default = _RadioButton3.default;
+
+/***/ },
+/* 673 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _simpleAssign = __webpack_require__(352);
+
+	var _simpleAssign2 = _interopRequireDefault(_simpleAssign);
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _transitions = __webpack_require__(355);
+
+	var _transitions2 = _interopRequireDefault(_transitions);
+
+	var _EnhancedSwitch = __webpack_require__(456);
+
+	var _EnhancedSwitch2 = _interopRequireDefault(_EnhancedSwitch);
+
+	var _radioButtonUnchecked = __webpack_require__(674);
+
+	var _radioButtonUnchecked2 = _interopRequireDefault(_radioButtonUnchecked);
+
+	var _radioButtonChecked = __webpack_require__(675);
+
+	var _radioButtonChecked2 = _interopRequireDefault(_radioButtonChecked);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	function getStyles(props, context) {
+	  var radioButton = context.muiTheme.radioButton;
+
+
+	  return {
+	    icon: {
+	      height: radioButton.size,
+	      width: radioButton.size
+	    },
+	    target: {
+	      transition: _transitions2.default.easeOut(),
+	      position: 'absolute',
+	      opacity: 1,
+	      transform: 'scale(1)',
+	      fill: radioButton.borderColor
+	    },
+	    fill: {
+	      position: 'absolute',
+	      opacity: 1,
+	      transform: 'scale(0)',
+	      transformOrigin: '50% 50%',
+	      transition: _transitions2.default.easeOut(),
+	      fill: radioButton.checkedColor
+	    },
+	    targetWhenChecked: {
+	      opacity: 0,
+	      transform: 'scale(0)'
+	    },
+	    fillWhenChecked: {
+	      opacity: 1,
+	      transform: 'scale(1)'
+	    },
+	    targetWhenDisabled: {
+	      fill: radioButton.disabledColor
+	    },
+	    fillWhenDisabled: {
+	      fill: radioButton.disabledColor
+	    },
+	    label: {
+	      color: props.disabled ? radioButton.labelDisabledColor : radioButton.labelColor
+	    },
+	    ripple: {
+	      color: props.checked ? radioButton.checkedColor : radioButton.borderColor
+	    }
+	  };
+	}
+
+	var RadioButton = function (_Component) {
+	  _inherits(RadioButton, _Component);
+
+	  function RadioButton() {
+	    var _Object$getPrototypeO;
+
+	    var _temp, _this, _ret;
+
+	    _classCallCheck(this, RadioButton);
+
+	    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+	      args[_key] = arguments[_key];
+	    }
+
+	    return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_Object$getPrototypeO = Object.getPrototypeOf(RadioButton)).call.apply(_Object$getPrototypeO, [this].concat(args))), _this), _this.handleStateChange = function () {}, _this.handleSwitch = function (event) {
+	      if (_this.props.onCheck) _this.props.onCheck(event, _this.props.value);
+	    }, _temp), _possibleConstructorReturn(_this, _ret);
+	  }
+
+	  // Only called when selected, not when unselected.
+
+
+	  _createClass(RadioButton, [{
+	    key: 'isChecked',
+	    value: function isChecked() {
+	      return this.refs.enhancedSwitch.isSwitched();
+	    }
+
+	    // Use RadioButtonGroup.setSelectedValue(newSelectionValue) to set a
+	    // RadioButton's checked value.
+
+	  }, {
+	    key: 'setChecked',
+	    value: function setChecked(newCheckedValue) {
+	      this.refs.enhancedSwitch.setSwitched(newCheckedValue);
+	    }
+	  }, {
+	    key: 'getValue',
+	    value: function getValue() {
+	      return this.refs.enhancedSwitch.getValue();
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render() {
+	      var _props = this.props;
+	      var checkedIcon = _props.checkedIcon;
+	      var checked = _props.checked;
+	      var iconStyle = _props.iconStyle;
+	      var labelStyle = _props.labelStyle;
+	      var labelPosition = _props.labelPosition;
+	      var onCheck = _props.onCheck;
+	      var // eslint-disable-line no-unused-vars
+	      uncheckedIcon = _props.uncheckedIcon;
+	      var disabled = _props.disabled;
+
+	      var other = _objectWithoutProperties(_props, ['checkedIcon', 'checked', 'iconStyle', 'labelStyle', 'labelPosition', 'onCheck', 'uncheckedIcon', 'disabled']);
+
+	      var styles = getStyles(this.props, this.context);
+
+	      var uncheckedStyles = (0, _simpleAssign2.default)(styles.target, checked && styles.targetWhenChecked, iconStyle, disabled && styles.targetWhenDisabled);
+
+	      var checkedStyles = (0, _simpleAssign2.default)(styles.fill, checked && styles.fillWhenChecked, iconStyle, disabled && styles.fillWhenDisabled);
+
+	      var uncheckedElement = _react2.default.isValidElement(uncheckedIcon) ? _react2.default.cloneElement(uncheckedIcon, {
+	        style: (0, _simpleAssign2.default)(uncheckedStyles, uncheckedIcon.props.style)
+	      }) : _react2.default.createElement(_radioButtonUnchecked2.default, { style: uncheckedStyles });
+
+	      var checkedElement = _react2.default.isValidElement(checkedIcon) ? _react2.default.cloneElement(checkedIcon, {
+	        style: (0, _simpleAssign2.default)(checkedStyles, checkedIcon.props.style)
+	      }) : _react2.default.createElement(_radioButtonChecked2.default, { style: checkedStyles });
+
+	      var mergedIconStyle = (0, _simpleAssign2.default)(styles.icon, iconStyle);
+	      var mergedLabelStyle = (0, _simpleAssign2.default)(styles.label, labelStyle);
+
+	      return _react2.default.createElement(_EnhancedSwitch2.default, _extends({}, other, {
+	        ref: 'enhancedSwitch',
+	        inputType: 'radio',
+	        checked: checked,
+	        switched: checked,
+	        disabled: disabled,
+	        rippleColor: styles.ripple.color,
+	        iconStyle: mergedIconStyle,
+	        labelStyle: mergedLabelStyle,
+	        labelPosition: labelPosition,
+	        onParentShouldUpdate: this.handleStateChange,
+	        onSwitch: this.handleSwitch,
+	        switchElement: _react2.default.createElement(
+	          'div',
+	          null,
+	          uncheckedElement,
+	          checkedElement
+	        )
+	      }));
+	    }
+	  }]);
+
+	  return RadioButton;
+	}(_react.Component);
+
+	RadioButton.propTypes = {
+	  /**
+	   * @ignore
+	   * checked if true
+	   * Used internally by `RadioButtonGroup`.
+	   */
+	  checked: _react.PropTypes.bool,
+	  /**
+	   * The icon element to show when the radio button is checked.
+	   */
+	  checkedIcon: _react.PropTypes.element,
+	  /**
+	   * If true, the radio button is disabled.
+	   */
+	  disabled: _react.PropTypes.bool,
+	  /**
+	   * Override the inline-styles of the icon element.
+	   */
+	  iconStyle: _react.PropTypes.object,
+	  /**
+	   * Override the inline-styles of the input element.
+	   */
+	  inputStyle: _react.PropTypes.object,
+	  /**
+	   * @ignore
+	   * Used internally by `RadioButtonGroup`. Use the `labelPosition` property of `RadioButtonGroup` instead.
+	   * Where the label will be placed next to the radio button.
+	   */
+	  labelPosition: _react.PropTypes.oneOf(['left', 'right']),
+	  /**
+	   * Override the inline-styles of the label element.
+	   */
+	  labelStyle: _react.PropTypes.object,
+	  /**
+	   * @ignore
+	   * Callback function fired when the radio button is checked. Note that this
+	   * function will not be called if the radio button is part of a
+	   * radio button group: in this case, use the `onChange` property of
+	   * `RadioButtonGroup`.
+	   *
+	   * @param {object} event `change` event targeting the element.
+	   * @param {string} value The element's `value`.
+	   */
+	  onCheck: _react.PropTypes.func,
+	  /**
+	   * Override the inline-styles of the root element.
+	   */
+	  style: _react.PropTypes.object,
+	  /**
+	   * The icon element to show when the radio button is unchecked.
+	   */
+	  uncheckedIcon: _react.PropTypes.element,
+	  /**
+	   * The value of the radio button.
+	   */
+	  value: _react.PropTypes.string
+	};
+	RadioButton.defaultProps = {
+	  checked: false,
+	  disabled: false,
+	  labelPosition: 'right'
+	};
+	RadioButton.contextTypes = {
+	  muiTheme: _react.PropTypes.object.isRequired
+	};
+	exports.default = RadioButton;
+
+/***/ },
+/* 674 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _pure = __webpack_require__(380);
+
+	var _pure2 = _interopRequireDefault(_pure);
+
+	var _SvgIcon = __webpack_require__(388);
+
+	var _SvgIcon2 = _interopRequireDefault(_SvgIcon);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var ToggleRadioButtonUnchecked = function ToggleRadioButtonUnchecked(props) {
+	  return _react2.default.createElement(
+	    _SvgIcon2.default,
+	    props,
+	    _react2.default.createElement('path', { d: 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z' })
+	  );
+	};
+	ToggleRadioButtonUnchecked = (0, _pure2.default)(ToggleRadioButtonUnchecked);
+	ToggleRadioButtonUnchecked.displayName = 'ToggleRadioButtonUnchecked';
+
+	exports.default = ToggleRadioButtonUnchecked;
+
+/***/ },
+/* 675 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _pure = __webpack_require__(380);
+
+	var _pure2 = _interopRequireDefault(_pure);
+
+	var _SvgIcon = __webpack_require__(388);
+
+	var _SvgIcon2 = _interopRequireDefault(_SvgIcon);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var ToggleRadioButtonChecked = function ToggleRadioButtonChecked(props) {
+	  return _react2.default.createElement(
+	    _SvgIcon2.default,
+	    props,
+	    _react2.default.createElement('path', { d: 'M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zm0-5C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z' })
+	  );
+	};
+	ToggleRadioButtonChecked = (0, _pure2.default)(ToggleRadioButtonChecked);
+	ToggleRadioButtonChecked.displayName = 'ToggleRadioButtonChecked';
+
+	exports.default = ToggleRadioButtonChecked;
+
+/***/ },
+/* 676 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _simpleAssign = __webpack_require__(352);
+
+	var _simpleAssign2 = _interopRequireDefault(_simpleAssign);
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _RadioButton = __webpack_require__(672);
+
+	var _RadioButton2 = _interopRequireDefault(_RadioButton);
+
+	var _warning = __webpack_require__(227);
+
+	var _warning2 = _interopRequireDefault(_warning);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var RadioButtonGroup = function (_Component) {
+	  _inherits(RadioButtonGroup, _Component);
+
+	  function RadioButtonGroup() {
+	    var _Object$getPrototypeO;
+
+	    var _temp, _this, _ret;
+
+	    _classCallCheck(this, RadioButtonGroup);
+
+	    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+	      args[_key] = arguments[_key];
+	    }
+
+	    return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_Object$getPrototypeO = Object.getPrototypeOf(RadioButtonGroup)).call.apply(_Object$getPrototypeO, [this].concat(args))), _this), _this.state = {
+	      numberCheckedRadioButtons: 0,
+	      selected: _this.props.valueSelected || _this.props.defaultSelected || ''
+	    }, _this.handleChange = function (event, newSelection) {
+	      _this.updateRadioButtons(newSelection);
+
+	      // Successful update
+	      if (_this.state.numberCheckedRadioButtons === 0) {
+	        if (_this.props.onChange) _this.props.onChange(event, newSelection);
+	      }
+	    }, _temp), _possibleConstructorReturn(_this, _ret);
+	  }
+
+	  _createClass(RadioButtonGroup, [{
+	    key: 'componentWillMount',
+	    value: function componentWillMount() {
+	      var _this2 = this;
+
+	      var cnt = 0;
+
+	      _react2.default.Children.forEach(this.props.children, function (option) {
+	        if (_this2.hasCheckAttribute(option)) cnt++;
+	      }, this);
+
+	      this.setState({ numberCheckedRadioButtons: cnt });
+	    }
+	  }, {
+	    key: 'componentWillReceiveProps',
+	    value: function componentWillReceiveProps(nextProps) {
+	      if (nextProps.hasOwnProperty('valueSelected')) {
+	        this.setState({
+	          selected: nextProps.valueSelected
+	        });
+	      }
+	    }
+	  }, {
+	    key: 'hasCheckAttribute',
+	    value: function hasCheckAttribute(radioButton) {
+	      return radioButton.props.hasOwnProperty('checked') && radioButton.props.checked;
+	    }
+	  }, {
+	    key: 'updateRadioButtons',
+	    value: function updateRadioButtons(newSelection) {
+	      if (this.state.numberCheckedRadioButtons === 0) {
+	        this.setState({ selected: newSelection });
+	      } else {
+	        process.env.NODE_ENV !== "production" ? (0, _warning2.default)(false, 'Cannot select a different radio button while another radio button\n        has the \'checked\' property set to true.') : void 0;
+	      }
+	    }
+	  }, {
+	    key: 'getSelectedValue',
+	    value: function getSelectedValue() {
+	      return this.state.selected;
+	    }
+	  }, {
+	    key: 'setSelectedValue',
+	    value: function setSelectedValue(newSelectionValue) {
+	      this.updateRadioButtons(newSelectionValue);
+	    }
+	  }, {
+	    key: 'clearValue',
+	    value: function clearValue() {
+	      this.setSelectedValue('');
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render() {
+	      var _this3 = this;
+
+	      var prepareStyles = this.context.muiTheme.prepareStyles;
+
+
+	      var options = _react2.default.Children.map(this.props.children, function (option) {
+	        var _option$props = option.props;
+	        var name = _option$props.name;
+	        var // eslint-disable-line no-unused-vars
+	        value = _option$props.value;
+	        var // eslint-disable-line no-unused-vars
+	        label = _option$props.label;
+	        var // eslint-disable-line no-unused-vars
+	        onCheck = _option$props.onCheck;
+
+	        var other = _objectWithoutProperties(_option$props, ['name', 'value', 'label', 'onCheck']);
+
+	        return _react2.default.createElement(_RadioButton2.default, _extends({}, other, {
+	          ref: option.props.value,
+	          name: _this3.props.name,
+	          key: option.props.value,
+	          value: option.props.value,
+	          label: option.props.label,
+	          labelPosition: _this3.props.labelPosition,
+	          onCheck: _this3.handleChange,
+	          checked: option.props.value === _this3.state.selected
+	        }));
+	      }, this);
+
+	      return _react2.default.createElement(
+	        'div',
+	        {
+	          style: prepareStyles((0, _simpleAssign2.default)({}, this.props.style)),
+	          className: this.props.className
+	        },
+	        options
+	      );
+	    }
+	  }]);
+
+	  return RadioButtonGroup;
+	}(_react.Component);
+
+	RadioButtonGroup.propTypes = {
+	  /**
+	   * Should be used to pass `RadioButton` components.
+	   */
+	  children: _react.PropTypes.node,
+	  /**
+	   * The CSS class name of the root element.
+	   */
+	  className: _react.PropTypes.string,
+	  /**
+	   * The `value` property (case-sensitive) of the radio button that will be
+	   * selected by default. This takes precedence over the `checked` property
+	   * of the `RadioButton` elements.
+	   */
+	  defaultSelected: _react.PropTypes.string,
+	  /**
+	   * Where the label will be placed for all child radio buttons.
+	   * This takes precedence over the `labelPosition` property of the
+	   * `RadioButton` elements.
+	   */
+	  labelPosition: _react.PropTypes.oneOf(['left', 'right']),
+	  /**
+	   * The name that will be applied to all child radio buttons.
+	   */
+	  name: _react.PropTypes.string.isRequired,
+	  /**
+	   * Callback function that is fired when a radio button has
+	   * been checked.
+	   *
+	   * @param {object} event `change` event targeting the selected
+	   * radio button.
+	   * @param {string} value The `value` of the selected radio button.
+	   */
+	  onChange: _react.PropTypes.func,
+	  /**
+	   * Override the inline-styles of the root element.
+	   */
+	  style: _react.PropTypes.object,
+	  /**
+	   * The `value` of the currently selected radio button.
+	   */
+	  valueSelected: _react.PropTypes.string
+	};
+	RadioButtonGroup.defaultProps = {
+	  style: {}
+	};
+	RadioButtonGroup.contextTypes = {
+	  muiTheme: _react.PropTypes.object.isRequired
+	};
+	exports.default = RadioButtonGroup;
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
+
+/***/ },
+/* 677 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _pure = __webpack_require__(380);
+
+	var _pure2 = _interopRequireDefault(_pure);
+
+	var _SvgIcon = __webpack_require__(388);
+
+	var _SvgIcon2 = _interopRequireDefault(_SvgIcon);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var ActionFavorite = function ActionFavorite(props) {
+	  return _react2.default.createElement(
+	    _SvgIcon2.default,
+	    props,
+	    _react2.default.createElement('path', { d: 'M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z' })
+	  );
+	};
+	ActionFavorite = (0, _pure2.default)(ActionFavorite);
+	ActionFavorite.displayName = 'ActionFavorite';
+
+	exports.default = ActionFavorite;
+
+/***/ },
+/* 678 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _pure = __webpack_require__(380);
+
+	var _pure2 = _interopRequireDefault(_pure);
+
+	var _SvgIcon = __webpack_require__(388);
+
+	var _SvgIcon2 = _interopRequireDefault(_SvgIcon);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var ActionFavoriteBorder = function ActionFavoriteBorder(props) {
+	  return _react2.default.createElement(
+	    _SvgIcon2.default,
+	    props,
+	    _react2.default.createElement('path', { d: 'M16.5 3c-1.74 0-3.41.81-4.5 2.09C10.91 3.81 9.24 3 7.5 3 4.42 3 2 5.42 2 8.5c0 3.78 3.4 6.86 8.55 11.54L12 21.35l1.45-1.32C18.6 15.36 22 12.28 22 8.5 22 5.42 19.58 3 16.5 3zm-4.4 15.55l-.1.1-.1-.1C7.14 14.24 4 11.39 4 8.5 4 6.5 5.5 5 7.5 5c1.54 0 3.04.99 3.57 2.36h1.87C13.46 5.99 14.96 5 16.5 5c2 0 3.5 1.5 3.5 3.5 0 2.89-3.14 5.74-7.9 10.05z' })
+	  );
+	};
+	ActionFavoriteBorder = (0, _pure2.default)(ActionFavoriteBorder);
+	ActionFavoriteBorder.displayName = 'ActionFavoriteBorder';
+
+	exports.default = ActionFavoriteBorder;
 
 /***/ }
 /******/ ]);

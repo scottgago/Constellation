@@ -407,7 +407,7 @@ class MainView extends Component {
 
     console.log(evtTarget._private.data)
     bind.props.selectNode({ moduleDescription: evtTarget._private.data.description, currentArticles: evtTarget._private.data.articles, currentVideos: evtTarget._private.data.videos, currentNode: evtTarget, previousNode: holder, openUserView: true })
-
+    bind.props.openAdmin()
      
 
   
@@ -438,6 +438,7 @@ class MainView extends Component {
     )
     });
     this.props.registerCY({cy : cy})
+
     console.log(this.props ,"this is new")
   }
 

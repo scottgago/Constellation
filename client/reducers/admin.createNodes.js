@@ -1,4 +1,4 @@
-import { ADMIN_CREATENODE, ADMIN_DELETENODE } from '../actions/actionList';
+import { ADMIN_CREATENODE, ADMIN_DELETENODE, ADMIN_OPENCREATE, ADMIN_CLOSECREATE } from '../actions/actionList';
 
 const INITIAL_STATE = {
   newNodeName: '',
@@ -7,19 +7,24 @@ const INITIAL_STATE = {
   starType: "./assets/imgs/star (1).png",
   error: false,
   selectedConnections: [],
-  selectedEdhes: [],
+  selectedEdges: [],
   markdownDescription: '',
+  create: false,
 }
 
 
 export default function(state = INITIAL_STATE, action) {
 	switch(action.type){
+    case ADMIN_OPENCREATE:
+      return {...state, create: true}
+    case ADMIN_CLOSECREATE:
+      return {...state, create: false}
 		case ADMIN_CREATENODE:
 
 			var newNode = action.payload.cy.add([{
           		group: 'nodes',
           		data: {
-            		id : action.payload.name,
+            		id : action.payload.id,
             		admins: ['scott'],
             		description: action.payload.markdownDescription,
             		videos: [],
@@ -41,9 +46,9 @@ export default function(state = INITIAL_STATE, action) {
         		action.payload.cy.add({
           			group : 'edges',
           			data  : {
-            			id     : edge+action.payload.name,
-            			source : newNodeName,
-            			target : action.payload.name
+            			id     : edge+action.payload.id,
+            			source : action.payload.id,
+            			target : edge
           			}
         		})
       		})
