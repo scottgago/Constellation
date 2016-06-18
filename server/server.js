@@ -16,12 +16,7 @@ app.use(express.static('../client'))
 app.get('*', function(req,res){
 	console.log(req.body)
 	// res.redirect('/mainview')
-	res.sendStatus(200)
-})
-
-app.post('*', function(req,res){
-	console.log("eh")
-	res.sendStatus(200)
+	res.end()
 })
 
 app.listen(3000, function(){

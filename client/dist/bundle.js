@@ -105,11 +105,8 @@
 			_react2.default.createElement(
 				_reactRouter.Router,
 				{ history: _reactRouter.browserHistory },
-				_react2.default.createElement(
-					_reactRouter.Route,
-					{ path: '/', component: _app2.default },
-					_react2.default.createElement(_reactRouter.Route, { path: '/mainview', component: _app2.default })
-				)
+				_react2.default.createElement(_reactRouter.Route, { path: '/', component: _app2.default }),
+				_react2.default.createElement(_reactRouter.Route, { path: '/mainview', component: _login2.default })
 			)
 		)
 	), document.getElementById('app'));
@@ -46047,7 +46044,8 @@
 	          });
 	        });
 
-	        bind.props.selectNode({ currentNode: evtTarget, previousNode: holder, openUserView: true });
+	        console.log(evtTarget._private.data);
+	        bind.props.selectNode({ moduleDescription: evtTarget._private.data.description, currentArticles: evtTarget._private.data.articles, currentVideos: evtTarget._private.data.videos, currentNode: evtTarget, previousNode: holder, openUserView: true });
 
 	        bind.setState({
 	          currentNode: evtTarget,
@@ -52962,8 +52960,10 @@
 		var currentNode = _ref2.currentNode;
 		var previousNode = _ref2.previousNode;
 		var openUserView = _ref2.openUserView;
+		var currentArticles = _ref2.currentArticles;
+		var currentVideos = _ref2.currentVideos;
 
-		return { type: _actionList.SELECT_NODE, payload: { currentNode: currentNode, previousNode: previousNode, openUserView: openUserView } };
+		return { type: _actionList.SELECT_NODE, payload: { currentArticles: currentArticles, currentVideos: currentVideos, currentNode: currentNode, previousNode: previousNode, openUserView: openUserView } };
 	}
 
 	function registerCY(_ref3) {
@@ -76015,38 +76015,32 @@
 
 	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(User).call(this, props));
 
-	    _this.componentWillReceiveProps = function (value) {
-
-	      if (_this.props.currentNode._private) {
-	        _this.setState({
-	          description: _this.props.currentNode._private.data.description,
-	          currentVideos: _this.props.currentNode._private.data.description.videos,
-	          currentArticles: _this.props.currentNode._private.data.description.articles
-
-	        });
-	      }
+	    _this.handleCloseModule = function () {
+	      _this.props.closeModule();
 	    };
 
-	    _this.handleClose = function () {
+	    _this.handleOpenModule = function () {
+	      _this.props.openModule();
+	    };
+
+	    _this.handleClosePrompt = function () {
 	      _this.props.closeUserView();
 	    };
 
-	    _this.handleOpen = function () {
-	      _this.setState({
-	        openPrompt: false,
-	        open: true
-	      });
-	    };
-
-	    _this.handleRequestClosePrompt = function () {
-	      _this.props.closeUserView();
-	    };
-
-	    _this.init = function () {
-	      if (!_this.props.openUserView) {
+	    _this.initPrompt = function () {
+	      console.log(_this.props.openUserView, "ehhh");
+	      if (!_this.props.currentNode._private) {
 	        return false;
 	      } else {
 	        return _this.props.openUserView;
+	      }
+	    };
+
+	    _this.initModule = function () {
+	      if (!_this.props.currentNode._private) {
+	        return false;
+	      } else {
+	        return _this.props.openModuleView;
 	      }
 	    };
 
@@ -76074,8 +76068,6 @@
 	        onTouchTap: this.handleRequestClosePrompt
 	      })];
 
-	      console.log(this.props, "lollies");
-
 	      var contentStyle = {
 	        minWidth: 640,
 	        height: '100%',
@@ -76083,6 +76075,9 @@
 	        alignItems: 'center',
 	        justifyContent: 'center'
 	      };
+
+	      console.log(this.props);
+
 	      return _react2.default.createElement(
 	        'div',
 	        null,
@@ -76092,7 +76087,7 @@
 	            modal: false,
 	            bodyStyle: styles.dialogBody,
 	            contentStyle: styles.dialog,
-	            open: this.init(),
+	            open: this.initPrompt(),
 	            onRequestClose: this.handleClose },
 	          _react2.default.createElement(
 	            'div',
@@ -76102,12 +76097,12 @@
 	              { style: styles.dialog, zDepth: 2 },
 	              _react2.default.createElement(
 	                _RaisedButton2.default,
-	                { onClick: this.handleClose, backgroundColor: '#ff0000', style: styles.buttonDecline },
+	                { onClick: this.handleClosePrompt, backgroundColor: '#ff0000', style: styles.buttonDecline },
 	                'ABORT'
 	              ),
 	              _react2.default.createElement(
 	                _RaisedButton2.default,
-	                { onClick: this.handleOpen, backgroundColor: '#3ed715', style: styles.buttonAccept },
+	                { onClick: this.handleOpenModule, backgroundColor: '#3ed715', style: styles.buttonAccept },
 	                'LAUNCH'
 	              )
 	            ),
@@ -76120,7 +76115,7 @@
 	          {
 	            modal: true,
 	            contentStyle: styles.dialogHuge,
-	            open: this.props.openModule,
+	            open: this.initModule(),
 	            actions: cancel,
 	            autoDetectWindowHeight: false },
 	          _react2.default.createElement(
@@ -76132,7 +76127,7 @@
 	              _react2.default.createElement(
 	                _Tabs.Tabs,
 	                { styles: styles.dialogBody, tabItemContainerStyle: styles.topTab },
-	                this.state.currentVideos.map(function (value) {
+	                this.props.currentVideos.map(function (value) {
 	                  return _react2.default.createElement(
 	                    _Tabs.Tab,
 	                    { label: value.name },
@@ -76166,7 +76161,7 @@
 	              _react2.default.createElement(
 	                _Tabs.Tabs,
 	                { tabItemContainerStyle: styles.topTab },
-	                this.state.currentArticles.map(function (value) {
+	                this.props.currentArticles.map(function (value) {
 	                  return _react2.default.createElement(
 	                    _Tabs.Tab,
 	                    { label: value.name },
@@ -76209,13 +76204,7 @@
 
 	function mapStateToProps(state) {
 	  console.log(state, "mapping state to props in user.view.js");
-	  if (state.selectNode.currentNode._private) {
-	    console.log(state.selectNode.currentNode._private.data.id);
-	  }
-	  if (state.selectNode.previousNode._private) {
-	    console.log(state.selectNode.previousNode._private.data.id);
-	  }
-	  return { previousNode: state.selectNode.previousNode, currentNode: state.selectNode.currentNode, openUserView: state.selectNode.openUserView };
+	  return { currentArticles: state.selectNode.currentArticles, currentVideos: state.selectNode.currentVideos, previousNode: state.selectNode.previousNode, currentNode: state.selectNode.currentNode, openUserView: state.selectNode.openUserView };
 	}
 
 	exports.default = (0, _reactRedux.connect)(mapStateToProps, actions)(User);
@@ -79768,7 +79757,7 @@
 /* 678 */
 /***/ function(module, exports, __webpack_require__) {
 
-	'use strict';
+	"use strict";
 
 	Object.defineProperty(exports, "__esModule", {
 		value: true
@@ -79780,15 +79769,18 @@
 		var state = arguments.length <= 0 || arguments[0] === undefined ? INITIAL_STATE : arguments[0];
 		var action = arguments[1];
 
+		console.log(action, "logging action");
 
 		switch (action.type) {
 			case _actionList.REGISTER_CY:
 				return _extends({}, state, { cy: action.payload.cy });
 			case _actionList.SELECT_NODE:
-				return _extends({}, state, { currentNode: action.payload.currentNode, openUserView: action.payload.openUserView, previousNode: action.payload.previousNode });
+				return _extends({}, state, { moduleDescription: action.payload.moduleDescription, currentArticles: action.payload.currentArticles, currentVideos: action.payload.currentVideos, currentNode: action.payload.currentNode, openUserView: action.payload.openUserView, previousNode: action.payload.previousNode });
 			case _actionList.CLOSE_USER_VIEW:
 				return _extends({}, state, { openUserView: action.payload.openUserView });
 			case _actionList.USER_OPEN_MODULE:
+				return _extends({}, state, { openModuleView: action.payload.openModuleView });
+			case _actionList.USER_CLOSE_MODULE:
 				return _extends({}, state, { openModuleView: action.payload.openModuleView });
 			default:
 				return state;
@@ -79800,7 +79792,9 @@
 	var INITIAL_STATE = {
 		currentNode: {},
 		previousNode: {},
-		cy: {}
+		cy: {},
+		currentArticles: [],
+		currentVideos: []
 	};
 
 /***/ }

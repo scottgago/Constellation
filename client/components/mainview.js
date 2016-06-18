@@ -405,8 +405,8 @@ class MainView extends Component {
       })
     })
 
-
-    bind.props.selectNode({ currentNode: evtTarget, previousNode: holder, openUserView: true })
+    console.log(evtTarget._private.data)
+    bind.props.selectNode({ moduleDescription: evtTarget._private.data.description, currentArticles: evtTarget._private.data.articles, currentVideos: evtTarget._private.data.videos, currentNode: evtTarget, previousNode: holder, openUserView: true })
 
      
 

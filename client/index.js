@@ -25,9 +25,8 @@ ReactDOM.render(
 	<Provider store = {store} >
 		<MuiThemeProvider muiTheme={getMuiTheme()}>
 		 	<Router history={browserHistory}>
-				<Route path ='/' component={App}>
-					<Route path='/mainview' component={App} />
-				</Route>
+				<Route path ='/' component={App} />
+				<Route path='/mainview' component={Login} />
 			</Router>
 		</MuiThemeProvider>
 	</Provider>

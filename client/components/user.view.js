@@ -107,40 +107,33 @@ class User extends Component {
     }
   }
 
-  componentWillReceiveProps = (value) => {
+  handleCloseModule = () => {
+    this.props.closeModule()
+  };
 
-    if(this.props.currentNode._private){
-      this.setState({
-        description: this.props.currentNode._private.data.description,
-        currentVideos: this.props.currentNode._private.data.description.videos,
-        currentArticles: this.props.currentNode._private.data.description.articles,
+  handleOpenModule = () => {
+    this.props.openModule()
+  };
 
-      })
-    }
-
-  }
-
-  handleClose = () => {
+  handleClosePrompt = () => {
     this.props.closeUserView()
   };
 
-  handleOpen = () => {
-    this.setState({
-    	openPrompt: false,
-    	open: true
-    });
-  };
-
-  handleRequestClosePrompt = () => {
-    this.props.closeUserView()
-  };
-
-  init = () => {
-    if(!this.props.openUserView){
+  initPrompt = () => {
+    console.log(this.props.openUserView, "ehhh")
+    if(!this.props.currentNode._private){
       return false
     } else {
       return this.props.openUserView
     }
+  }
+
+  initModule = () =>{
+    if(!this.props.currentNode._private){
+      return false
+    } else {
+      return this.props.openModuleView
+   }
   }
 
   render(){
@@ -158,10 +151,6 @@ class User extends Component {
       />
     ];
 
-
-
-    console.log(this.props , "lollies")
-
       const contentStyle = {
       minWidth: 640,
       height: '100%',
@@ -169,19 +158,22 @@ class User extends Component {
       alignItems: 'center',
       justifyContent: 'center'
     }
+
+    console.log(this.props)
+
     return(
   		<div>
   		  <Dialog
           modal={false}
           bodyStyle= {styles.dialogBody}
           contentStyle= {styles.dialog}
-          open={this.init()}
+          open={this.initPrompt()}
           onRequestClose={this.handleClose}>
 
           <div>
             <Paper style={styles.dialog} zDepth={2}>
-              <RaisedButton onClick = {this.handleClose} backgroundColor ='#ff0000' style={styles.buttonDecline}>ABORT</RaisedButton>
-          	  <RaisedButton onClick = {this.handleOpen} backgroundColor ='#3ed715' style={styles.buttonAccept}>LAUNCH</RaisedButton> 
+              <RaisedButton onClick = {this.handleClosePrompt} backgroundColor ='#ff0000' style={styles.buttonDecline}>ABORT</RaisedButton>
+          	  <RaisedButton onClick = {this.handleOpenModule} backgroundColor ='#3ed715' style={styles.buttonAccept}>LAUNCH</RaisedButton> 
             </Paper >
             <MarkdownParser style={styles.description} markdown={this.state.description}/>
           	<img style={styles.rocketImg} src = 'http://clipartix.com/wp-content/uploads/2016/05/Rocket-clip-art-free-clip-art-microsoft-clip-art-christmas-clip-2.png' />
@@ -190,13 +182,13 @@ class User extends Component {
         <Dialog
           modal={true}
           contentStyle={styles.dialogHuge}
-          open={this.props.openModule}
+          open={this.initModule()}
           actions={cancel}
           autoDetectWindowHeight = {false}>
         	<Tabs>
             <Tab label="Content" >
               <Tabs styles = {styles.dialogBody} tabItemContainerStyle={styles.topTab}>
-              {this.state.currentVideos.map(function(value){
+              {this.props.currentVideos.map(function(value){
                 return (<Tab label={value.name}>
                  <div style={styles.floatLeft}>
                   <Paper zDepth={2}>
@@ -217,7 +209,7 @@ class User extends Component {
             </Tab>
             <Tab label="Documentation">
               <Tabs tabItemContainerStyle={styles.topTab}>
-              {this.state.currentArticles.map((value)=>{
+              {this.props.currentArticles.map((value)=>{
                 return ( <Tab label = {value.name}>
                   <div style={styles.dialogHugePlayer}>
                     <iframe style={styles.dialogHugePlayer} src={value.url} height={'50%'} width={'100%'}/>
@@ -244,13 +236,7 @@ class User extends Component {
 
 function mapStateToProps(state){
   console.log(state, "mapping state to props in user.view.js")
-  if(state.selectNode.currentNode._private){
-    console.log(state.selectNode.currentNode._private.data.id)
-  }
-  if(state.selectNode.previousNode._private){
-    console.log(state.selectNode.previousNode._private.data.id)
-  }
-  return ({previousNode: state.selectNode.previousNode, currentNode: state.selectNode.currentNode, openUserView: state.selectNode.openUserView })
+  return ({currentArticles: state.selectNode.currentArticles, currentVideos: state.selectNode.currentVideos, previousNode: state.selectNode.previousNode, currentNode: state.selectNode.currentNode, openUserView: state.selectNode.openUserView })
 }
 
 export default connect(mapStateToProps, actions)(User)
