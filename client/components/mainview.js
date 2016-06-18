@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import Admin from './admin.view'
 import User from './user.view'
 import Loading from './loading'
+import { connect } from 'react-redux';
+import * as actions from '../actions/reducerActions';
 
 
 
@@ -9,7 +11,7 @@ const style = {
 	
 }
 
-export default class MainView extends Component {
+class MainView extends Component {
 
   constructor(props){
 		super(props)
@@ -38,6 +40,8 @@ export default class MainView extends Component {
   }
 
   componentDidMount() {
+
+    console.log(this.props, "props")
 
   	var bind = this
     
@@ -356,8 +360,6 @@ export default class MainView extends Component {
           'overlay-color': '#ccc',
           'overlay-padding': 1,
           'overlay-opacity': 0
-
-
         }
       }],
     layout: {
@@ -369,7 +371,8 @@ export default class MainView extends Component {
   cy.on('tap', function(event){
 
     var evtTarget = event.cyTarget;
-    var holder = bind.state.currentNode
+    var holder = bind.props.currentNode
+    console.log(bind.props)
     
     if(evtTarget._private.ready || evtTarget._private.group === 'edges'){
       return
@@ -379,8 +382,8 @@ export default class MainView extends Component {
       'font-size': 80
     })
 
-    if(bind.state.previousNode){
-      bind.state.previousNode._private.edges.forEach((value)=>{
+    if(bind.props.previousNode._private){
+      bind.props.previousNode._private.edges.forEach((value)=>{
         value.style({
         'line-color' : '#ccc',
         'overlay-color' : '#ccc',
@@ -403,6 +406,8 @@ export default class MainView extends Component {
     })
 
 
+    bind.props.selectNode({ currentNode: evtTarget, previousNode: holder })
+
      
 
   
@@ -414,12 +419,12 @@ export default class MainView extends Component {
       cy : cy
     },
     ()=>{
-      if(bind.state.previousNode){
-      bind.state.previousNode._private.edges.forEach((value)=>{
-        bind.state.previousNode.style({
+      if(bind.props.previousNode._private){
+      bind.props.previousNode._private.edges.forEach((value)=>{
+        bind.props.previousNode.style({
           'font-size' : 40
         })
-        if( (value._private.data.source !== bind.state.currentNode._private.data.id) && (value._private.data.target !== bind.state.currentNode._private.data.id ))
+        if( (value._private.data.source !== bind.props.currentNode._private.data.id) && (value._private.data.target !== bind.props.currentNode._private.data.id ))
         value.style({
           'line-color' : '#ccc',
           'overlay-color' : '#ccc',
@@ -432,6 +437,8 @@ export default class MainView extends Component {
     }
     )
     });
+    this.props.registerCY({cy : cy})
+    console.log(this.props ,"this is new")
   }
 
   
@@ -443,7 +450,12 @@ export default class MainView extends Component {
   }
 }
 
+function mapStateToProps(state){
+  console.log(state, "lol, lol")
+  return {currentNode: state.selectNode.currentNode, previousNode: state.selectNode.previousNode, cy: state.selectNode.cy}
+}
 
+export default connect(mapStateToProps, actions)(MainView)
 
 
 

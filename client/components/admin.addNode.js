@@ -1,4 +1,9 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+
+import * as actions from '../actions/reducerActions';
+
+
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import {Tabs, Tab} from 'material-ui/Tabs';
@@ -92,10 +97,11 @@ const style = {
   }
 }
 
-export default class AddNode extends Component {
+class AddNode extends Component {
 	constructor(props){
-    console.log(props)
 		super(props)
+
+    console.log(this.props, "lol")
 		this.state = {
 			create: false,
 			cy: null,
@@ -111,6 +117,8 @@ export default class AddNode extends Component {
 			markdownDescription: "",
 			starType: "./assets/imgs/star (1).png"
 		}
+
+    console.log(this.props.dispatch)
 	}
 
 	componentWillReceiveProps = (props) =>{
@@ -151,6 +159,7 @@ export default class AddNode extends Component {
 
 	handleChangeText = (e, value) => {
     this.state.newNodeName = value
+    console.log(this.props)
     
   }
 
@@ -187,9 +196,12 @@ export default class AddNode extends Component {
 
   onConfirm = (e, value) => {
 
-    console.log(this.state.selectedConnections)
+    console.log(this.props.createNode)
 
     if(this.state.newNodeName.length){
+
+      
+
     var anchor = this
     
       var newNodeName = this.state.newNodeName
@@ -235,6 +247,8 @@ export default class AddNode extends Component {
       	component immediately after execution
 
       **/
+
+      this.props.
 
       this.state.cy.layout()
       this.setState({
@@ -347,3 +361,10 @@ export default class AddNode extends Component {
 	    )
 	}
 }
+
+function mapStateToProps(state){
+  console.log(state, "eeeeh")
+  return { currentNode : state.adminAdd.currentNode, cy: state.adminAdd.cy }
+}
+
+export default connect(mapStateToProps, actions)(AddNode)
