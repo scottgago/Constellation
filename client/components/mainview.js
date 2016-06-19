@@ -341,6 +341,7 @@ class MainView extends Component {
           'text-valign': 'top',
           'font-size': 40,
           'color': 'white',
+          'z-index': '-100',
           'width' : 100,
           'height' : 100,
           'background-fit' : 'contain',

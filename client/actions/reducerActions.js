@@ -24,7 +24,7 @@ export function openEdit(){
 }
 
 export function registerEdge({selectedEdges}){
-	return { type: ADMIN_CREATE_EDGES, payload: { selectedEdges: selectedEdges}}
+	return { type: ADMIN_CREATE_EDGES, payload: { edgesChanged: true, selectedEdges: selectedEdges}}
 }
 
 export function openAddArticle(){

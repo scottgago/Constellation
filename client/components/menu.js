@@ -11,8 +11,12 @@ import Drawer from 'material-ui/Drawer';
 const style = {
 	menubar : {
 		'backgroundColor': 'gray',
-		'opacity': .9
-	}
+		'opacity': .9,
+    'z-index': -1
+	},
+  containerStyle : {
+    maxWidth: '100%'
+  }
 }
 const menuItems = [
   { route: '/widgets', text: 'Widgets' },
@@ -42,8 +46,10 @@ export default class Menu extends Component {
           iconElementLeft={<IconButton onTouchTap={this.handleToggle}><MoreVertIcon /></IconButton>}/>
         <Drawer
           docked={false}
-          width={200}
+          containerStyle={style.containerStyle}
+          width={1680}
           open={this.state.open}
+          zDepth= {5}
           onRequestChange={(open) => this.setState({open})}>
             <MenuItem onTouchTap={this.handleClose}>Menu Item</MenuItem>
             <MenuItem onTouchTap={this.handleClose}>Menu Item 2</MenuItem>

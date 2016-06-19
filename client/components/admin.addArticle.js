@@ -112,7 +112,6 @@ class AddArticle extends Component {
         stepIndex: 0,
       })
 
-
       this.props.currentNode._private.data.articles.push({
         article: this.state.articleURL,
       })

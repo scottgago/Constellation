@@ -238,42 +238,41 @@ class AddNode extends Component {
 		            </div>
 		          </Tab>
 		          <Tab label="Styling">
-		                        <div style={style.marginTop}>
-    <RadioButtonGroup onChange={this.starChange} style = {style.floatLeft} name="shipSpeed" defaultSelected="star1">
-      <RadioButton
-        value="star1"
-        label="star1"
-        style={style.radioButtonTop}
-      />
-      <RadioButton
-        value="star2"
-        label="star2"
-        style={style.radioButton}
-      />
-      <RadioButton
-        value="star3"
-        label="star3"
-        style={style.radioButton}
-      />
-      <RadioButton
-        value="star4"
-        label="star4"
-        style={style.radioButton}
-      />
-    </RadioButtonGroup>
-  </div>
-  <div style={style.blackBox}> <img style={style.imageContent} src={this.state.starType}/>
-  <Slider name="slider0" defaultValue={0} style={style.sliderStyle} onChange={this.onChangeSlider} />
-  </div>
+		            <div style={style.marginTop}>
+                  <RadioButtonGroup onChange={this.starChange} style = {style.floatLeft} name="shipSpeed" defaultSelected="star1">
+                    <RadioButton
+                      value="star1"
+                      label="star1"
+                      style={style.radioButtonTop}
+                    />
+                    <RadioButton
+                      value="star2"
+                      label="star2"
+                      style={style.radioButton}
+                    />
+                    <RadioButton
+                      value="star3"
+                      label="star3"
+                      style={style.radioButton}
+                    />
+                    <RadioButton
+                      value="star4"
+                      label="star4"
+                      style={style.radioButton}
+                    />
+                  </RadioButtonGroup>
+                </div>
+                <div style={style.blackBox}> <img style={style.imageContent} src={this.state.starType}/>
+                  <Slider name="slider0" defaultValue={0} style={style.sliderStyle} onChange={this.onChangeSlider} />
+                </div>
 		          </Tab>
 		        </Tabs>
 	        </div>
           <Snackbar
           open={this.state.error}
           message={"Node name was blank or invalid. Please enter a new node name"}
-          autoHideDuration={4000}
-        />
-	    </Dialog>
+          autoHideDuration={4000} />
+	     </Dialog>
 	    </div>
 	    )
 	}

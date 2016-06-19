@@ -8,6 +8,7 @@ const INITIAL_STATE = {
   selectedConnections: [],
   selectedEdges: [],
   markdownDescription: '',
+  articleDescription: '',
   edit: false,
   addVideo: false,
   addArticle: false

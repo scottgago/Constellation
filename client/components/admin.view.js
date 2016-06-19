@@ -111,7 +111,7 @@ export default class Admin extends Component {
             bodyStyle={style.alignCenter}
             open={this.props.openAdminView}
             onRequestClose={this.handleClose}>
-            
+          <MarkdownParser markdown={"# Curator mode\nBe in awe of the power you hold! Seriously, people are looking to you to feed their intellects.\n*Note: no pressure*\n # Create\n ## Style\n Name your node and make it pretty here! Once your node is created, it will be automatically connected to the node you created it from. If you'd like to add any additional features and content to your new node, you can select it from the main view and edit it from there.\n## Description\nProvide a brief description of your node here. Try not to go too much in depth about the content. Instead, outline objectives and common concepts covered in the node. This is your chance to get the explorers interested in learning about the concepts you worked hard to curate!\n## Confirm\n Preview your node and any TODOS, then type confirm in the command box to launch your node. \n# Edit\n## Style\n Change the styling of your node here\n## Content\nHere you can add, remove, and edit any resources currently on the node. \n## Markdown\nModify any of the markdown content on this node\n## Confirm\nConfirm your changes here!"}/>}
         </Dialog>
       </div>
     )
@@ -126,5 +126,4 @@ function mapStateToProps(state){
 
 export default connect(mapStateToProps, actions)(Admin)
 
-//<MarkdownParser markdown={this.state.launchPageText}/>}
 

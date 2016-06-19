@@ -17,96 +17,14 @@ export default class Login extends Component {
 	render () {
 					return (
 
-      <div>
-        <div id="logo">
-          <h1 id="loginHeader"><i> Constellations</i></h1>
-        </div>
-        <section className="stark-login">
-          <form onSubmit={this.submit}>
-            <div id="fade-box">
-              <input type="text" name="username" id="username" placeholder="Username" required />
-              <input type="password" placeholder="Password" required />
-              <button>Log In</button>
-            </div>
-          </form>
-          <div className="hexagons">
-            <span>⬢</span>
-            <span>⬢</span>
-            <span>⬢</span>
-            <span>⬢</span>
-            <span>⬢</span>
-            <span>⬢</span>
-            <span>⬢</span>
-            <span>⬢</span>
-            <span>⬢</span>
-            <span>⬢</span>
-            <span>⬢</span>
-            <span>⬢</span>
-            <br />
-            <span>⬢</span>
-            <span>⬢</span>
-            <span>⬢</span>
-            <span>⬢</span>
-            <span>⬢</span>
-            <span>⬢</span>
-            <span>⬢</span>
-            <span>⬢</span>
-            <span>⬢</span>
-            <span>⬢</span>
-            <span>⬢</span>
-            <br />
-            <span>⬢</span>
-            <span>⬢</span>
-            <span>⬢</span>
-            <span>⬢</span>
-            <span>⬢</span>
-            <span>⬢</span>
-            <span>⬢</span>
-            <span>⬢</span>
-            <span>⬢</span>
-            <span>⬢</span>
-            <span>⬢</span>
-            <span>⬢</span>
-            <br />
-            <span>⬢</span>
-            <span>⬢</span>
-            <span>⬢</span>
-            <span>⬢</span>
-            <span>⬢</span>
-            <span>⬢</span>
-            <span>⬢</span>
-            <span>⬢</span>
-            <span>⬢</span>
-            <span>⬢</span>
-            <span>⬢</span>
-            <br />
-            <span>⬢</span>
-            <span>⬢</span>
-            <span>⬢</span>
-            <span>⬢</span>
-            <span>⬢</span>
-            <span>⬢</span>
-            <span>⬢</span>
-            <span>⬢</span>
-            <span>⬢</span>
-            <span>⬢</span>
-            <span>⬢</span>
-            <span>⬢</span>
-          </div>
-        </section>
-        <div id="circle1">
-          <div id="inner-cirlce1">
-            <h2> </h2>
-          </div>
-        </div>
-        <ul>
-          <li />
-          <li />
-          <li />
-          <li />
-          <li />
-        </ul>
-      </div>
+      <div className="Login-Form">
+				<form Method="Post">
+					<input Type="Text" Name="Username" Placeholder="Username"/>
+					<input Type="Password" Name="Password" Placeholder="Password"/>
+					<button Type="Submit" className="Button">Login</button>
+					<p className="Recovery-Text">Forget your <a Href="#" className="Recovery-Link">Account/Password?</a></p>
+				</form>
+			</div>
 
     )
 				}

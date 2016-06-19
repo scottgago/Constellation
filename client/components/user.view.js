@@ -16,6 +16,28 @@ var MarkdownEditor = require('react-markdown-editor').MarkdownEditor;
 import TextField from 'material-ui/TextField';
 
 const styles = {
+  containerStyle : {
+    maxWidth: '100%',
+    display: 'block ',
+    position: 'absolute',
+    zIndex:1000000
+    
+  },
+  backButton: {
+    position: 'fixed',
+    bottom: 0,
+    right: 0,
+    margin: 5
+  },
+  innerDiv : {
+    top: 0,
+    bottom: 0,
+    right: 0,
+    left:0, 
+    backgroundColor: 'black',
+    position: 'relative',
+    display: 'block',
+  },
   dialog: {
   	alignItems: 'center',
   	justifyContent: 'center',
@@ -49,16 +71,21 @@ const styles = {
 	floatLeft: {
 		float: 'left',
     width: '49%',
-		maxWidth: "50%",
-		marginTop: 10
+		maxWidth: "49%",
+		marginTop: 10,
+    marginLeft: 10
 	},
 	floatRight: {
 		float: 'right',
-		maxWidth: "50%",
+		maxWidth: "49%",
     width: '49%',
     marginTop: 10,
-    height: 575,
-		overflow: 'scroll'
+    bottom: 0, 
+    height: '100%',
+		overflow: 'scroll',
+    display: 'block',
+    marginRight: 10,
+    padding: 10
 
 	},
   topTab : {
@@ -98,17 +125,39 @@ const styles = {
 
 class User extends Component {
 
+  constructor(props){
+    super(props)
+    this.state = {
+        open: false
+        navigateNext: false
+    }
+  }
+
   handleCloseModule = () => {
     this.props.closeModule()
   };
 
   handleOpenModule = () => {
+    // document.getElementById("cy").style.pointerEvents = "none"
+    // document.getElementById("cy").style.zIndex = -1400
     this.props.openModule()
   };
+
+  handleToggleNext = (event) => {
+    console.log(event.currentTarget)
+    this.setState({
+      targetEl : event.currentTarget
+    })
+  }
 
   handleClosePrompt = () => {
     this.props.closeUserView()
   };
+
+  handleOpenDrawer = (open, reason) =>{
+    console.log(open)
+    console.log("eh?")
+  }
 
   render(){
 
@@ -116,6 +165,11 @@ class User extends Component {
       height: 390,
       width: '100%',
     };
+
+    const anchors = {
+      anchorOrigin: {"horizontal":"left","vertical":"top"}
+      targetOrigin: {"horizontal":"middle","vertical":"bottom"}
+    }
 
     const cancel = [
       <FlatButton
@@ -145,37 +199,42 @@ class User extends Component {
           open={this.props.openUserView}
           onRequestClose={this.handleClose}>
 
+
           <div>
-            <Paper style={styles.dialog} zDepth={2}>
+            <Paper style={styles.dialog} >
               <RaisedButton onClick = {this.handleClosePrompt} backgroundColor ='#ff0000' style={styles.buttonDecline}>ABORT</RaisedButton>
-          	  <RaisedButton onClick = {this.handleOpenModule} backgroundColor ='#3ed715' style={styles.buttonAccept}>LAUNCH</RaisedButton> 
+              <RaisedButton onClick = {this.handleOpenModule} backgroundColor ='#3ed715' style={styles.buttonAccept}>LAUNCH</RaisedButton> 
             </Paper >
             <MarkdownParser style={styles.description} markdown={this.props.moduleDescription}/>
-          	<img style={styles.rocketImg} src = 'http://clipartix.com/wp-content/uploads/2016/05/Rocket-clip-art-free-clip-art-microsoft-clip-art-christmas-clip-2.png' />
+            <img style={styles.rocketImg} src = 'http://clipartix.com/wp-content/uploads/2016/05/Rocket-clip-art-free-clip-art-microsoft-clip-art-christmas-clip-2.png' />
           </div>
         </Dialog>
-        <Dialog
-          modal={true}
-          contentStyle={styles.dialogHuge}
-          open={this.props.openModuleView}
-          actions={cancel}
-          autoDetectWindowHeight = {false}>
-        	<Tabs>
+          <Drawer
+            docked={true}
+            containerStyle={styles.containerStyle}
+            overlayStyle={styles.containerStyle}
+            onRequestChange={(open) => {(()=>{console.log("fuck")})()}}
+            width={1680}
+            open={this.props.openModuleView}>
+            
+        	 <Tabs>
             <Tab label="Content" >
-              <Tabs styles = {styles.dialogBody} tabItemContainerStyle={styles.topTab}>
+              <Tabs>
               {this.props.currentVideos.map(function(value){
                 return (<Tab label={value.name}>
+                <div style={styles.contentDiv}>
                  <div style={styles.floatLeft}>
-                  <Paper zDepth={2}>
+                  <Paper >
                     <YouTube
                      videoId={value.video}
                      opts={opts} />
                     </Paper>
                   </div>
                   <div>
-                    <Paper style={styles.floatRight} zDepth={2}>
+                    <Paper style={styles.floatRight} >
                       <MarkdownParser style={styles.markdownMargins} markdown={value.markdown}/>
                     </Paper>
+                  </div>
                   </div>
                 </Tab>)
               })}
@@ -198,12 +257,31 @@ class User extends Component {
               <div>
                 <h2 style={styles.headline}>Questions</h2>
                 <p>Please confirm your edit by typing 'confirm' in the textbox below </p>
-                <Paper zDepth={2}>
+                <Paper >
                 </Paper>
               </div>
             </Tab>
           </Tabs>
-        </Dialog>
+
+      <div style={styles.backButton} >            
+      <FlatButton  label="Back to Galactic View"/>
+      <Popover
+          open={this.state.navigateNext}
+          anchorEl={this.state.anchorEl}
+          anchorOrigin={{"horizontal":"left","vertical":"top"}}
+          targetOrigin={{"horizontal":"middle","vertical":"bottom"}}
+          onRequestClose={this.handleRequestClose}
+        >
+          <Menu>
+            <MenuItem primaryText="Refresh" />
+            <MenuItem primaryText="Help &amp; feedback" />
+            <MenuItem primaryText="Settings" />
+            <MenuItem primaryText="Sign out" />
+          </Menu>
+        </Popover>
+      <FlatButton  onTouchTap = {this.handleToggleNext} label="Next Nodes"/>
+      </div>
+      </Drawer>
       </div>
   	)
   }

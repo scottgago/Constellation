@@ -36595,7 +36595,11 @@
 	var style = {
 	  menubar: {
 	    'backgroundColor': 'gray',
-	    'opacity': .9
+	    'opacity': .9,
+	    'z-index': -1
+	  },
+	  containerStyle: {
+	    maxWidth: '100%'
 	  }
 	};
 	var menuItems = [{ route: '/widgets', text: 'Widgets' }, { route: 'survey', text: 'Survey' }, { route: 'about', text: 'About' }];
@@ -36642,8 +36646,10 @@
 	          _Drawer2.default,
 	          {
 	            docked: false,
-	            width: 200,
+	            containerStyle: style.containerStyle,
+	            width: 1680,
 	            open: this.state.open,
+	            zDepth: 5,
 	            onRequestChange: function onRequestChange(open) {
 	              return _this2.setState({ open: open });
 	            } },
@@ -45647,7 +45653,7 @@
 
 	var _admin2 = _interopRequireDefault(_admin);
 
-	var _user = __webpack_require__(627);
+	var _user = __webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"./user.view\""); e.code = 'MODULE_NOT_FOUND'; throw e; }()));
 
 	var _user2 = _interopRequireDefault(_user);
 
@@ -45981,6 +45987,7 @@
 	            'text-valign': 'top',
 	            'font-size': 40,
 	            'color': 'white',
+	            'z-index': '-100',
 	            'width': 100,
 	            'height': 100,
 	            'background-fit': 'contain',
@@ -46261,13 +46268,18 @@
 	        null,
 	        _react2.default.createElement(_admin2.default, { status: this.state }),
 	        _react2.default.createElement(_admin4.default, { status: this.state }),
-	        _react2.default.createElement(_Dialog2.default, {
-	          actions: actions,
-	          modal: false,
-	          contentStyle: style.alignCenter,
-	          bodyStyle: style.alignCenter,
-	          open: this.props.openAdminView,
-	          onRequestClose: this.handleClose })
+	        _react2.default.createElement(
+	          _Dialog2.default,
+	          {
+	            actions: actions,
+	            modal: false,
+	            contentStyle: style.alignCenter,
+	            bodyStyle: style.alignCenter,
+	            open: this.props.openAdminView,
+	            onRequestClose: this.handleClose },
+	          _react2.default.createElement(_markdown2.default, { markdown: "# Curator mode\nBe in awe of the power you hold! Seriously, people are looking to you to feed their intellects.\n*Note: no pressure*\n # Create\n ## Style\n Name your node and make it pretty here! Once your node is created, it will be automatically connected to the node you created it from. If you'd like to add any additional features and content to your new node, you can select it from the main view and edit it from there.\n## Description\nProvide a brief description of your node here. Try not to go too much in depth about the content. Instead, outline objectives and common concepts covered in the node. This is your chance to get the explorers interested in learning about the concepts you worked hard to curate!\n## Confirm\n Preview your node and any TODOS, then type confirm in the command box to launch your node. \n# Edit\n## Style\n Change the styling of your node here\n## Content\nHere you can add, remove, and edit any resources currently on the node. \n## Markdown\nModify any of the markdown content on this node\n## Confirm\nConfirm your changes here!" }),
+	          '}'
+	        )
 	      );
 	    }
 	  }]);
@@ -46284,8 +46296,6 @@
 	}
 
 	exports.default = (0, _reactRedux.connect)(mapStateToProps, actions)(Admin);
-
-	//<MarkdownParser markdown={this.state.launchPageText}/>}
 
 /***/ },
 /* 421 */
@@ -51091,7 +51101,7 @@
 	function registerEdge(_ref2) {
 		var selectedEdges = _ref2.selectedEdges;
 
-		return { type: _actionList.ADMIN_CREATE_EDGES, payload: { selectedEdges: selectedEdges } };
+		return { type: _actionList.ADMIN_CREATE_EDGES, payload: { edgesChanged: true, selectedEdges: selectedEdges } };
 	}
 
 	function openAddArticle() {
@@ -52935,8 +52945,7 @@
 	          _react2.default.createElement(_Snackbar2.default, {
 	            open: this.state.error,
 	            message: "Node name was blank or invalid. Please enter a new node name",
-	            autoHideDuration: 4000
-	          })
+	            autoHideDuration: 4000 })
 	        )
 	      );
 	    }
@@ -54183,7 +54192,7 @@
 	    }
 
 	    return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_Object$getPrototypeO = Object.getPrototypeOf(EditNode)).call.apply(_Object$getPrototypeO, [this].concat(args))), _this), _this.onChangeSlider = function (e, value) {
-	      _this.state.currentNode.style({
+	      _this.props.currentNode.style({
 	        'width': 100 + value * 500,
 	        'height': 100 + value * 500
 	      });
@@ -54544,7 +54553,6 @@
 
 	function mapStateToProps(state) {
 	  console.log("MAPPING STATE TO PROPS IN EDITNODE");
-	  console.log(state);
 	  return { markdownDescription: state.adminEdit.markdownDescription, selectedEdges: state.adminAdd.selectedEdges, edit: state.adminEdit.edit, currentVideos: state.selectNode.currentVideos, currentArticles: state.selectNode.currentArticles, currentNode: state.selectNode.currentNode, cy: state.selectNode.cy };
 	}
 
@@ -74755,14 +74763,10 @@
 	var AddAdmin = function (_Component) {
 	  _inherits(AddAdmin, _Component);
 
-	  function AddAdmin(props) {
+	  function AddAdmin() {
 	    _classCallCheck(this, AddAdmin);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(AddAdmin).call(this, props));
-
-	    _this.state = {};
-
-	    return _this;
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(AddAdmin).apply(this, arguments));
 	  }
 
 	  _createClass(AddAdmin, [{
@@ -75181,343 +75185,7 @@
 	exports.default = (0, _reactRedux.connect)(mapStateToProps, actions)(AddConnections);
 
 /***/ },
-/* 627 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _react = __webpack_require__(1);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _Dialog = __webpack_require__(443);
-
-	var _Dialog2 = _interopRequireDefault(_Dialog);
-
-	var _FlatButton = __webpack_require__(440);
-
-	var _FlatButton2 = _interopRequireDefault(_FlatButton);
-
-	var _Paper = __webpack_require__(390);
-
-	var _Paper2 = _interopRequireDefault(_Paper);
-
-	var _RaisedButton = __webpack_require__(427);
-
-	var _RaisedButton2 = _interopRequireDefault(_RaisedButton);
-
-	var _markdown = __webpack_require__(449);
-
-	var _markdown2 = _interopRequireDefault(_markdown);
-
-	var _Drawer = __webpack_require__(415);
-
-	var _Drawer2 = _interopRequireDefault(_Drawer);
-
-	var _Tabs = __webpack_require__(431);
-
-	var _Divider = __webpack_require__(445);
-
-	var _Divider2 = _interopRequireDefault(_Divider);
-
-	var _reactYoutube = __webpack_require__(484);
-
-	var _reactYoutube2 = _interopRequireDefault(_reactYoutube);
-
-	var _reactRedux = __webpack_require__(341);
-
-	var _reducerActions = __webpack_require__(447);
-
-	var actions = _interopRequireWildcard(_reducerActions);
-
-	var _TextField = __webpack_require__(421);
-
-	var _TextField2 = _interopRequireDefault(_TextField);
-
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var MarkdownEditor = __webpack_require__(587).MarkdownEditor;
-
-
-	var styles = {
-	  dialog: {
-	    alignItems: 'center',
-	    justifyContent: 'center',
-	    overflow: 'scroll'
-	  },
-	  dialogBody: {
-	    minWidth: 600,
-	    minHeight: 600,
-	    overflow: 'scroll'
-	  },
-	  dialogHuge: {
-	    position: 'fixed',
-	    top: 0,
-	    left: 0,
-	    bottom: 0,
-	    right: 0,
-	    overflow: 'auto',
-	    minHeight: 600,
-	    width: '100%',
-	    maxWidth: 'none'
-	  },
-	  dialogHugePlayer: {
-	    minHeight: 580
-	  },
-	  rocketImg: {
-	    opacity: .2,
-	    maxHeight: '100%',
-	    position: 'fixed',
-	    maxWidth: '100%'
-	  },
-	  floatLeft: {
-	    float: 'left',
-	    width: '49%',
-	    maxWidth: "50%",
-	    marginTop: 10
-	  },
-	  floatRight: {
-	    float: 'right',
-	    maxWidth: "50%",
-	    width: '49%',
-	    marginTop: 10,
-	    height: 575,
-	    overflow: 'scroll'
-
-	  },
-	  topTab: {
-	    height: 35,
-	    textAlign: 'top'
-	  },
-	  markdownMargins: {
-	    margin: 3
-	  },
-	  buttonDecline: {
-	    width: '50%',
-	    color: 'white'
-	  },
-	  buttonAccept: {
-	    width: '50%',
-	    color: 'white'
-	  },
-	  description: {
-	    background: 'transparent'
-	  },
-	  loginRow: {
-	    flexDirection: 'row'
-	  },
-	  headline: {
-	    fontSize: 24,
-	    paddingTop: 16,
-	    marginBottom: 12,
-	    fontWeight: 400,
-	    opacity: 1
-	  },
-	  textStyle: {
-	    marginLeft: 20
-	  }
-	};
-
-	var User = function (_Component) {
-	  _inherits(User, _Component);
-
-	  function User() {
-	    var _Object$getPrototypeO;
-
-	    var _temp, _this, _ret;
-
-	    _classCallCheck(this, User);
-
-	    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-	      args[_key] = arguments[_key];
-	    }
-
-	    return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_Object$getPrototypeO = Object.getPrototypeOf(User)).call.apply(_Object$getPrototypeO, [this].concat(args))), _this), _this.handleCloseModule = function () {
-	      _this.props.closeModule();
-	    }, _this.handleOpenModule = function () {
-	      _this.props.openModule();
-	    }, _this.handleClosePrompt = function () {
-	      _this.props.closeUserView();
-	    }, _temp), _possibleConstructorReturn(_this, _ret);
-	  }
-
-	  _createClass(User, [{
-	    key: 'render',
-	    value: function render() {
-
-	      var opts = {
-	        height: 390,
-	        width: '100%'
-	      };
-
-	      var cancel = [_react2.default.createElement(_FlatButton2.default, {
-	        label: 'Back to galactic view',
-	        primary: true,
-	        onTouchTap: this.props.closeModule
-	      })];
-
-	      var contentStyle = {
-	        minWidth: 640,
-	        height: '100%',
-	        minHeight: 480,
-	        alignItems: 'center',
-	        justifyContent: 'center'
-	      };
-
-	      console.log("RENDERING USERVIEW");
-
-	      return _react2.default.createElement(
-	        'div',
-	        null,
-	        _react2.default.createElement(
-	          _Dialog2.default,
-	          {
-	            modal: false,
-	            bodyStyle: styles.dialogBody,
-	            contentStyle: styles.dialog,
-	            open: this.props.openUserView,
-	            onRequestClose: this.handleClose },
-	          _react2.default.createElement(
-	            'div',
-	            null,
-	            _react2.default.createElement(
-	              _Paper2.default,
-	              { style: styles.dialog, zDepth: 2 },
-	              _react2.default.createElement(
-	                _RaisedButton2.default,
-	                { onClick: this.handleClosePrompt, backgroundColor: '#ff0000', style: styles.buttonDecline },
-	                'ABORT'
-	              ),
-	              _react2.default.createElement(
-	                _RaisedButton2.default,
-	                { onClick: this.handleOpenModule, backgroundColor: '#3ed715', style: styles.buttonAccept },
-	                'LAUNCH'
-	              )
-	            ),
-	            _react2.default.createElement(_markdown2.default, { style: styles.description, markdown: this.props.moduleDescription }),
-	            _react2.default.createElement('img', { style: styles.rocketImg, src: 'http://clipartix.com/wp-content/uploads/2016/05/Rocket-clip-art-free-clip-art-microsoft-clip-art-christmas-clip-2.png' })
-	          )
-	        ),
-	        _react2.default.createElement(
-	          _Dialog2.default,
-	          {
-	            modal: true,
-	            contentStyle: styles.dialogHuge,
-	            open: this.props.openModuleView,
-	            actions: cancel,
-	            autoDetectWindowHeight: false },
-	          _react2.default.createElement(
-	            _Tabs.Tabs,
-	            null,
-	            _react2.default.createElement(
-	              _Tabs.Tab,
-	              { label: 'Content' },
-	              _react2.default.createElement(
-	                _Tabs.Tabs,
-	                { styles: styles.dialogBody, tabItemContainerStyle: styles.topTab },
-	                this.props.currentVideos.map(function (value) {
-	                  return _react2.default.createElement(
-	                    _Tabs.Tab,
-	                    { label: value.name },
-	                    _react2.default.createElement(
-	                      'div',
-	                      { style: styles.floatLeft },
-	                      _react2.default.createElement(
-	                        _Paper2.default,
-	                        { zDepth: 2 },
-	                        _react2.default.createElement(_reactYoutube2.default, {
-	                          videoId: value.video,
-	                          opts: opts })
-	                      )
-	                    ),
-	                    _react2.default.createElement(
-	                      'div',
-	                      null,
-	                      _react2.default.createElement(
-	                        _Paper2.default,
-	                        { style: styles.floatRight, zDepth: 2 },
-	                        _react2.default.createElement(_markdown2.default, { style: styles.markdownMargins, markdown: value.markdown })
-	                      )
-	                    )
-	                  );
-	                })
-	              )
-	            ),
-	            _react2.default.createElement(
-	              _Tabs.Tab,
-	              { label: 'Documentation' },
-	              _react2.default.createElement(
-	                _Tabs.Tabs,
-	                { tabItemContainerStyle: styles.topTab },
-	                this.props.currentArticles.map(function (value) {
-	                  return _react2.default.createElement(
-	                    _Tabs.Tab,
-	                    { label: value.name },
-	                    _react2.default.createElement(
-	                      'div',
-	                      { style: styles.dialogHugePlayer },
-	                      _react2.default.createElement('iframe', { style: styles.dialogHugePlayer, src: value.url, height: '50%', width: '100%' })
-	                    )
-	                  );
-	                })
-	              )
-	            ),
-	            _react2.default.createElement(
-	              _Tabs.Tab,
-	              { label: 'Questions' },
-	              _react2.default.createElement(
-	                'div',
-	                null,
-	                _react2.default.createElement(
-	                  'h2',
-	                  { style: styles.headline },
-	                  'Questions'
-	                ),
-	                _react2.default.createElement(
-	                  'p',
-	                  null,
-	                  'Please confirm your edit by typing \'confirm\' in the textbox below '
-	                ),
-	                _react2.default.createElement(_Paper2.default, { zDepth: 2 })
-	              )
-	            )
-	          )
-	        )
-	      );
-	    }
-	  }]);
-
-	  return User;
-	}(_react.Component);
-
-	function mapStateToProps(state) {
-	  console.log("MAPPING STATE TO PROPS IN USERVIEW");
-	  return { openModuleView: state.selectNode.openModuleView,
-	    moduleDescription: state.selectNode.moduleDescription,
-	    currentArticles: state.selectNode.currentArticles,
-	    currentVideos: state.selectNode.currentVideos,
-	    previousNode: state.selectNode.previousNode,
-	    currentNode: state.selectNode.currentNode,
-	    openUserView: state.selectNode.openUserView };
-	}
-
-	exports.default = (0, _reactRedux.connect)(mapStateToProps, actions)(User);
-
-/***/ },
+/* 627 */,
 /* 628 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -76007,7 +75675,7 @@
 	'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
-	  value: true
+		value: true
 	});
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -76033,384 +75701,53 @@
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 	var Login = function (_Component) {
-	  _inherits(Login, _Component);
+		_inherits(Login, _Component);
 
-	  function Login(props) {
-	    _classCallCheck(this, Login);
+		function Login(props) {
+			_classCallCheck(this, Login);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Login).call(this, props));
+			var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Login).call(this, props));
 
-	    _this.submit = function (e) {
-	      console.log(e);
-	    };
+			_this.submit = function (e) {
+				console.log(e);
+			};
 
-	    _this.state = {};
-	    return _this;
-	  }
+			_this.state = {};
+			return _this;
+		}
 
-	  _createClass(Login, [{
-	    key: 'render',
-	    value: function render() {
-	      return _react2.default.createElement(
-	        'div',
-	        null,
-	        _react2.default.createElement(
-	          'div',
-	          { id: 'logo' },
-	          _react2.default.createElement(
-	            'h1',
-	            { id: 'loginHeader' },
-	            _react2.default.createElement(
-	              'i',
-	              null,
-	              ' Constellations'
-	            )
-	          )
-	        ),
-	        _react2.default.createElement(
-	          'section',
-	          { className: 'stark-login' },
-	          _react2.default.createElement(
-	            'form',
-	            { onSubmit: this.submit },
-	            _react2.default.createElement(
-	              'div',
-	              { id: 'fade-box' },
-	              _react2.default.createElement('input', { type: 'text', name: 'username', id: 'username', placeholder: 'Username', required: true }),
-	              _react2.default.createElement('input', { type: 'password', placeholder: 'Password', required: true }),
-	              _react2.default.createElement(
-	                'button',
-	                null,
-	                'Log In'
-	              )
-	            )
-	          ),
-	          _react2.default.createElement(
-	            'div',
-	            { className: 'hexagons' },
-	            _react2.default.createElement(
-	              'span',
-	              null,
-	              '⬢'
-	            ),
-	            _react2.default.createElement(
-	              'span',
-	              null,
-	              '⬢'
-	            ),
-	            _react2.default.createElement(
-	              'span',
-	              null,
-	              '⬢'
-	            ),
-	            _react2.default.createElement(
-	              'span',
-	              null,
-	              '⬢'
-	            ),
-	            _react2.default.createElement(
-	              'span',
-	              null,
-	              '⬢'
-	            ),
-	            _react2.default.createElement(
-	              'span',
-	              null,
-	              '⬢'
-	            ),
-	            _react2.default.createElement(
-	              'span',
-	              null,
-	              '⬢'
-	            ),
-	            _react2.default.createElement(
-	              'span',
-	              null,
-	              '⬢'
-	            ),
-	            _react2.default.createElement(
-	              'span',
-	              null,
-	              '⬢'
-	            ),
-	            _react2.default.createElement(
-	              'span',
-	              null,
-	              '⬢'
-	            ),
-	            _react2.default.createElement(
-	              'span',
-	              null,
-	              '⬢'
-	            ),
-	            _react2.default.createElement(
-	              'span',
-	              null,
-	              '⬢'
-	            ),
-	            _react2.default.createElement('br', null),
-	            _react2.default.createElement(
-	              'span',
-	              null,
-	              '⬢'
-	            ),
-	            _react2.default.createElement(
-	              'span',
-	              null,
-	              '⬢'
-	            ),
-	            _react2.default.createElement(
-	              'span',
-	              null,
-	              '⬢'
-	            ),
-	            _react2.default.createElement(
-	              'span',
-	              null,
-	              '⬢'
-	            ),
-	            _react2.default.createElement(
-	              'span',
-	              null,
-	              '⬢'
-	            ),
-	            _react2.default.createElement(
-	              'span',
-	              null,
-	              '⬢'
-	            ),
-	            _react2.default.createElement(
-	              'span',
-	              null,
-	              '⬢'
-	            ),
-	            _react2.default.createElement(
-	              'span',
-	              null,
-	              '⬢'
-	            ),
-	            _react2.default.createElement(
-	              'span',
-	              null,
-	              '⬢'
-	            ),
-	            _react2.default.createElement(
-	              'span',
-	              null,
-	              '⬢'
-	            ),
-	            _react2.default.createElement(
-	              'span',
-	              null,
-	              '⬢'
-	            ),
-	            _react2.default.createElement('br', null),
-	            _react2.default.createElement(
-	              'span',
-	              null,
-	              '⬢'
-	            ),
-	            _react2.default.createElement(
-	              'span',
-	              null,
-	              '⬢'
-	            ),
-	            _react2.default.createElement(
-	              'span',
-	              null,
-	              '⬢'
-	            ),
-	            _react2.default.createElement(
-	              'span',
-	              null,
-	              '⬢'
-	            ),
-	            _react2.default.createElement(
-	              'span',
-	              null,
-	              '⬢'
-	            ),
-	            _react2.default.createElement(
-	              'span',
-	              null,
-	              '⬢'
-	            ),
-	            _react2.default.createElement(
-	              'span',
-	              null,
-	              '⬢'
-	            ),
-	            _react2.default.createElement(
-	              'span',
-	              null,
-	              '⬢'
-	            ),
-	            _react2.default.createElement(
-	              'span',
-	              null,
-	              '⬢'
-	            ),
-	            _react2.default.createElement(
-	              'span',
-	              null,
-	              '⬢'
-	            ),
-	            _react2.default.createElement(
-	              'span',
-	              null,
-	              '⬢'
-	            ),
-	            _react2.default.createElement(
-	              'span',
-	              null,
-	              '⬢'
-	            ),
-	            _react2.default.createElement('br', null),
-	            _react2.default.createElement(
-	              'span',
-	              null,
-	              '⬢'
-	            ),
-	            _react2.default.createElement(
-	              'span',
-	              null,
-	              '⬢'
-	            ),
-	            _react2.default.createElement(
-	              'span',
-	              null,
-	              '⬢'
-	            ),
-	            _react2.default.createElement(
-	              'span',
-	              null,
-	              '⬢'
-	            ),
-	            _react2.default.createElement(
-	              'span',
-	              null,
-	              '⬢'
-	            ),
-	            _react2.default.createElement(
-	              'span',
-	              null,
-	              '⬢'
-	            ),
-	            _react2.default.createElement(
-	              'span',
-	              null,
-	              '⬢'
-	            ),
-	            _react2.default.createElement(
-	              'span',
-	              null,
-	              '⬢'
-	            ),
-	            _react2.default.createElement(
-	              'span',
-	              null,
-	              '⬢'
-	            ),
-	            _react2.default.createElement(
-	              'span',
-	              null,
-	              '⬢'
-	            ),
-	            _react2.default.createElement(
-	              'span',
-	              null,
-	              '⬢'
-	            ),
-	            _react2.default.createElement('br', null),
-	            _react2.default.createElement(
-	              'span',
-	              null,
-	              '⬢'
-	            ),
-	            _react2.default.createElement(
-	              'span',
-	              null,
-	              '⬢'
-	            ),
-	            _react2.default.createElement(
-	              'span',
-	              null,
-	              '⬢'
-	            ),
-	            _react2.default.createElement(
-	              'span',
-	              null,
-	              '⬢'
-	            ),
-	            _react2.default.createElement(
-	              'span',
-	              null,
-	              '⬢'
-	            ),
-	            _react2.default.createElement(
-	              'span',
-	              null,
-	              '⬢'
-	            ),
-	            _react2.default.createElement(
-	              'span',
-	              null,
-	              '⬢'
-	            ),
-	            _react2.default.createElement(
-	              'span',
-	              null,
-	              '⬢'
-	            ),
-	            _react2.default.createElement(
-	              'span',
-	              null,
-	              '⬢'
-	            ),
-	            _react2.default.createElement(
-	              'span',
-	              null,
-	              '⬢'
-	            ),
-	            _react2.default.createElement(
-	              'span',
-	              null,
-	              '⬢'
-	            ),
-	            _react2.default.createElement(
-	              'span',
-	              null,
-	              '⬢'
-	            )
-	          )
-	        ),
-	        _react2.default.createElement(
-	          'div',
-	          { id: 'circle1' },
-	          _react2.default.createElement(
-	            'div',
-	            { id: 'inner-cirlce1' },
-	            _react2.default.createElement(
-	              'h2',
-	              null,
-	              ' '
-	            )
-	          )
-	        ),
-	        _react2.default.createElement(
-	          'ul',
-	          null,
-	          _react2.default.createElement('li', null),
-	          _react2.default.createElement('li', null),
-	          _react2.default.createElement('li', null),
-	          _react2.default.createElement('li', null),
-	          _react2.default.createElement('li', null)
-	        )
-	      );
-	    }
-	  }]);
+		_createClass(Login, [{
+			key: 'render',
+			value: function render() {
+				return _react2.default.createElement(
+					'div',
+					{ className: 'Login-Form' },
+					_react2.default.createElement(
+						'form',
+						{ Method: 'Post' },
+						_react2.default.createElement('input', { Type: 'Text', Name: 'Username', Placeholder: 'Username' }),
+						_react2.default.createElement('input', { Type: 'Password', Name: 'Password', Placeholder: 'Password' }),
+						_react2.default.createElement(
+							'button',
+							{ Type: 'Submit', className: 'Button' },
+							'Login'
+						),
+						_react2.default.createElement(
+							'p',
+							{ className: 'Recovery-Text' },
+							'Forget your ',
+							_react2.default.createElement(
+								'a',
+								{ Href: '#', className: 'Recovery-Link' },
+								'Account/Password?'
+							)
+						)
+					)
+				);
+			}
+		}]);
 
-	  return Login;
+		return Login;
 	}(_react.Component);
 
 	exports.default = Login;
@@ -79502,7 +78839,7 @@
 	    case _actionList.ADMIN_OPENCREATE:
 	      return _extends({}, state, { create: true });
 	    case _actionList.ADMIN_CREATE_EDGES:
-	      return _extends({}, state, { selectedEdges: action.payload.selectedEdges });
+	      return _extends({}, state, { edgesChanged: true, selectedEdges: action.payload.selectedEdges });
 	    case _actionList.ADMIN_CREATEDCOMPLETE:
 	      return _extends({}, state, { create: false });
 	    case _actionList.ADMIN_CREATENODE:
@@ -79561,7 +78898,9 @@
 	  currentVideo: '2g811Eo7K8U',
 	  selectedEdges: [],
 	  markdownDescription: '',
-	  create: false
+	  create: false,
+	  edgesChanged: false
+
 	};
 
 /***/ },
@@ -79657,6 +78996,7 @@
 		selectedConnections: [],
 		selectedEdges: [],
 		markdownDescription: '',
+		articleDescription: '',
 		edit: false,
 		addVideo: false,
 		addArticle: false

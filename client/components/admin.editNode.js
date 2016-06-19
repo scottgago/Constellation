@@ -58,7 +58,7 @@ const style = {
 class EditNode extends Component {
 
   onChangeSlider = (e, value) => {
-    this.state.currentNode.style({
+    this.props.currentNode.style({
       'width': 100 + value*500,
       'height': 100 + value*500,
     })
@@ -267,7 +267,6 @@ class EditNode extends Component {
 
 function mapStateToProps(state){
   console.log("MAPPING STATE TO PROPS IN EDITNODE")
-  console.log(state)
   return { markdownDescription: state.adminEdit.markdownDescription, selectedEdges: state.adminAdd.selectedEdges, edit: state.adminEdit.edit, currentVideos: state.selectNode.currentVideos, currentArticles: state.selectNode.currentArticles, currentNode : state.selectNode.currentNode, cy: state.selectNode.cy }
 }
 

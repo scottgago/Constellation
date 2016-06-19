@@ -14,15 +14,6 @@ const style = {
 
 export default class AddAdmin extends Component {
 
-  constructor(props){
-    super(props)
-    this.state = {
-
-    }
-
-  }
-
-
   render(){
     return(
       <div style={style.adminList}>
