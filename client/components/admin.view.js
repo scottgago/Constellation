@@ -73,6 +73,8 @@ export default class Admin extends Component {
 
   render () {
 
+    console.log("RENDERING ADMINVIEW")
+
      const actions = [
       <FlatButton
         label="Edit"
@@ -118,7 +120,7 @@ export default class Admin extends Component {
 }
 
 function mapStateToProps(state){
-  console.log(state, "creating")
+  console.log("MAPPING STATE TO PROPS IN ADMINVIEW")
   return { openAdminView: state.selectNode.openAdminView, create: state.adminAdd.create, currentNode : state.selectNode.currentNode, cy: state.selectNode.cy }
 }
 

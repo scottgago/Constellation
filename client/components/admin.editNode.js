@@ -12,10 +12,7 @@ import AdminAddVideo from './admin.addVideo';
 import AdminAddArticle from './admin.addArticle';
 import AddAdmin from './admin.addAdmins';
 import AddConnections from './admin.addConnections'
-
-
 import { connect } from 'react-redux';
-
 import * as actions from '../actions/reducerActions';
 
 var MarkdownEditor = require('react-markdown-editor').MarkdownEditor;
@@ -148,6 +145,7 @@ class EditNode extends Component {
   }
 
   render(){
+    console.log("RENDERING EDITNODE")
     const cancel = [
       <FlatButton
           label="Submit Changes"
@@ -255,7 +253,7 @@ class EditNode extends Component {
               </Tab>
               <Tab label="Markdown">
                 <div>
-                  <MarkdownEditor initialContent={this.props.moduleDescription} onContentChange ={this.contentChange} iconsSet="materialize-ui"/>
+                  <MarkdownEditor initialContent={this.props.markdownDescription} onContentChange ={this.contentChange} iconsSet="materialize-ui"/>
                   <RaisedButton style = {style.submitButton} > Submit markdown changes </RaisedButton>
                 </div>
               </Tab>
@@ -268,8 +266,9 @@ class EditNode extends Component {
 }
 
 function mapStateToProps(state){
-  console.log(state.selectNode)
-  return { selectedEdges: state.adminAdd.selectedEdges, edit: state.adminEdit.edit, currentVideos: state.selectNode.currentVideos, currentArticles: state.selectNode.currentArticles, currentNode : state.selectNode.currentNode, cy: state.selectNode.cy }
+  console.log("MAPPING STATE TO PROPS IN EDITNODE")
+  console.log(state)
+  return { markdownDescription: state.adminEdit.markdownDescription, selectedEdges: state.adminAdd.selectedEdges, edit: state.adminEdit.edit, currentVideos: state.selectNode.currentVideos, currentArticles: state.selectNode.currentArticles, currentNode : state.selectNode.currentNode, cy: state.selectNode.cy }
 }
 
 export default connect(mapStateToProps, actions)(EditNode)

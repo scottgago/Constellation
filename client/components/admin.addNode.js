@@ -101,7 +101,6 @@ class AddNode extends Component {
 	constructor(props){
 		super(props)
 
-    console.log(this.props, "lol")
 		this.state = {
 			create: false,
 			cy: null,
@@ -117,8 +116,6 @@ class AddNode extends Component {
 			markdownDescription: "",
 			starType: "./assets/imgs/star (1).png"
 		}
-
-    console.log(this.props.dispatch)
 	}
 
   onChangeSlider = (e, value) => {
@@ -167,8 +164,6 @@ class AddNode extends Component {
 
   onConfirm = (e, value) => {
 
-    console.log(this.props)
-
     this.props.createNode({cy: this.props.cy, 
                            currentNode: this.props.currentNode, 
                            id: this.state.newNodeName,
@@ -202,6 +197,7 @@ class AddNode extends Component {
   }
 
 	render(){
+    console.log("RENDERING ADDNODE")
 		const cancel = [
 		  <FlatButton
 		      label="Cancel"
@@ -284,7 +280,7 @@ class AddNode extends Component {
 }
 
 function mapStateToProps(state){
-  console.log(state, "creating")
+  console.log("MAPPING STATE TO PROPS IN ADDNODE")
   return { selectedEdges: state.adminAdd.selectedEdges, create: state.adminAdd.create, currentNode : state.selectNode.currentNode, cy: state.selectNode.cy }
 }
 

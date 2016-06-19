@@ -41,8 +41,6 @@ class MainView extends Component {
 
   componentDidMount() {
 
-    console.log(this.props, "props")
-
   	var bind = this
     
   	var cy = cytoscape({
@@ -372,7 +370,6 @@ class MainView extends Component {
 
     var evtTarget = event.cyTarget;
     var holder = bind.props.currentNode
-    console.log(bind.props)
     
     if(evtTarget._private.ready || evtTarget._private.group === 'edges'){
       return
@@ -405,7 +402,6 @@ class MainView extends Component {
       })
     })
 
-    console.log(evtTarget._private.data)
     bind.props.selectNode({ moduleDescription: evtTarget._private.data.description, currentArticles: evtTarget._private.data.articles, currentVideos: evtTarget._private.data.videos, currentNode: evtTarget, previousNode: holder, openUserView: true })
     bind.props.openAdmin()
      
@@ -439,20 +435,20 @@ class MainView extends Component {
     });
     this.props.registerCY({cy : cy})
 
-    console.log(this.props ,"this is new")
   }
 
   
   render () {
+    console.log("RENDERING MAINVIEW")
     return <div id="cy">
-      <Admin props={this.state} />
-      <User props={this.state} />
+      <Admin  />
+      <User  />
     </div>
   }
 }
 
 function mapStateToProps(state){
-  console.log(state, "mapping state to props in mainview.js")
+  console.log("MAPPING STATE TO PROPS IN MAINVIEW")
   return {currentNode: state.selectNode.currentNode, previousNode: state.selectNode.previousNode, cy: state.selectNode.cy}
 }
 

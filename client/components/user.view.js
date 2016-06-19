@@ -133,7 +133,7 @@ class User extends Component {
       justifyContent: 'center'
     }
 
-    console.log(this.props.moduleDescription)
+    console.log("RENDERING USERVIEW")
 
 
     return(
@@ -210,7 +210,7 @@ class User extends Component {
 }
 
 function mapStateToProps(state){
-  console.log(state, "mapping state to props in user.view.js")
+  console.log("MAPPING STATE TO PROPS IN USERVIEW")
   return ({openModuleView: state.selectNode.openModuleView, 
           moduleDescription: state.selectNode.moduleDescription, 
           currentArticles: state.selectNode.currentArticles, 

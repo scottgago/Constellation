@@ -94,10 +94,6 @@
 		return f;
 	});
 
-	console.log(store);
-
-	console.log("eh?");
-
 	_reactDom2.default.render(_react2.default.createElement(
 		_reactRedux.Provider,
 		{ store: store },
@@ -36518,8 +36514,6 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	console.log("eh");
-
 	var App = function (_Component) {
 		_inherits(App, _Component);
 
@@ -45716,8 +45710,6 @@
 	    key: 'componentDidMount',
 	    value: function componentDidMount() {
 
-	      console.log(this.props, "props");
-
 	      var bind = this;
 
 	      var cy = cytoscape({
@@ -46016,7 +46008,6 @@
 
 	        var evtTarget = event.cyTarget;
 	        var holder = bind.props.currentNode;
-	        console.log(bind.props);
 
 	        if (evtTarget._private.ready || evtTarget._private.group === 'edges') {
 	          return;
@@ -46048,7 +46039,6 @@
 	          });
 	        });
 
-	        console.log(evtTarget._private.data);
 	        bind.props.selectNode({ moduleDescription: evtTarget._private.data.description, currentArticles: evtTarget._private.data.articles, currentVideos: evtTarget._private.data.videos, currentNode: evtTarget, previousNode: holder, openUserView: true });
 	        bind.props.openAdmin();
 
@@ -46075,17 +46065,16 @@
 	        });
 	      });
 	      this.props.registerCY({ cy: cy });
-
-	      console.log(this.props, "this is new");
 	    }
 	  }, {
 	    key: 'render',
 	    value: function render() {
+	      console.log("RENDERING MAINVIEW");
 	      return _react2.default.createElement(
 	        'div',
 	        { id: 'cy' },
-	        _react2.default.createElement(_admin2.default, { props: this.state }),
-	        _react2.default.createElement(_user2.default, { props: this.state })
+	        _react2.default.createElement(_admin2.default, null),
+	        _react2.default.createElement(_user2.default, null)
 	      );
 	    }
 	  }]);
@@ -46094,7 +46083,7 @@
 	}(_react.Component);
 
 	function mapStateToProps(state) {
-	  console.log(state, "mapping state to props in mainview.js");
+	  console.log("MAPPING STATE TO PROPS IN MAINVIEW");
 	  return { currentNode: state.selectNode.currentNode, previousNode: state.selectNode.previousNode, cy: state.selectNode.cy };
 	}
 
@@ -46246,6 +46235,8 @@
 	    key: 'render',
 	    value: function render() {
 
+	      console.log("RENDERING ADMINVIEW");
+
 	      var actions = [_react2.default.createElement(_FlatButton2.default, {
 	        label: 'Edit',
 	        primary: true,
@@ -46288,7 +46279,7 @@
 
 
 	function mapStateToProps(state) {
-	  console.log(state, "creating");
+	  console.log("MAPPING STATE TO PROPS IN ADMINVIEW");
 	  return { openAdminView: state.selectNode.openAdminView, create: state.adminAdd.create, currentNode: state.selectNode.currentNode, cy: state.selectNode.cy };
 	}
 
@@ -52792,8 +52783,6 @@
 
 	    _this.onConfirm = function (e, value) {
 
-	      console.log(_this.props);
-
 	      _this.props.createNode({ cy: _this.props.cy,
 	        currentNode: _this.props.currentNode,
 	        id: _this.state.newNodeName,
@@ -52823,7 +52812,6 @@
 	      _this.props.closeCreate();
 	    };
 
-	    console.log(_this.props, "lol");
 	    _this.state = {
 	      create: false,
 	      cy: null,
@@ -52839,14 +52827,13 @@
 	      markdownDescription: "",
 	      starType: "./assets/imgs/star (1).png"
 	    };
-
-	    console.log(_this.props.dispatch);
 	    return _this;
 	  }
 
 	  _createClass(AddNode, [{
 	    key: 'render',
 	    value: function render() {
+	      console.log("RENDERING ADDNODE");
 	      var cancel = [_react2.default.createElement(_FlatButton2.default, {
 	        label: 'Cancel',
 	        primary: true,
@@ -52959,7 +52946,7 @@
 	}(_react.Component);
 
 	function mapStateToProps(state) {
-	  console.log(state, "creating");
+	  console.log("MAPPING STATE TO PROPS IN ADDNODE");
 	  return { selectedEdges: state.adminAdd.selectedEdges, create: state.adminAdd.create, currentNode: state.selectNode.currentNode, cy: state.selectNode.cy };
 	}
 
@@ -54272,6 +54259,7 @@
 	  _createClass(EditNode, [{
 	    key: 'render',
 	    value: function render() {
+	      console.log("RENDERING EDITNODE");
 	      var cancel = [_react2.default.createElement(_FlatButton2.default, {
 	        label: 'Submit Changes',
 	        primary: true,
@@ -54536,7 +54524,7 @@
 	                _react2.default.createElement(
 	                  'div',
 	                  null,
-	                  _react2.default.createElement(MarkdownEditor, { initialContent: this.props.moduleDescription, onContentChange: this.contentChange, iconsSet: 'materialize-ui' }),
+	                  _react2.default.createElement(MarkdownEditor, { initialContent: this.props.markdownDescription, onContentChange: this.contentChange, iconsSet: 'materialize-ui' }),
 	                  _react2.default.createElement(
 	                    _RaisedButton2.default,
 	                    { style: style.submitButton },
@@ -54555,8 +54543,9 @@
 	}(_react.Component);
 
 	function mapStateToProps(state) {
-	  console.log(state.selectNode);
-	  return { selectedEdges: state.adminAdd.selectedEdges, edit: state.adminEdit.edit, currentVideos: state.selectNode.currentVideos, currentArticles: state.selectNode.currentArticles, currentNode: state.selectNode.currentNode, cy: state.selectNode.cy };
+	  console.log("MAPPING STATE TO PROPS IN EDITNODE");
+	  console.log(state);
+	  return { markdownDescription: state.adminEdit.markdownDescription, selectedEdges: state.adminAdd.selectedEdges, edit: state.adminEdit.edit, currentVideos: state.selectNode.currentVideos, currentArticles: state.selectNode.currentArticles, currentNode: state.selectNode.currentNode, cy: state.selectNode.cy };
 	}
 
 	exports.default = (0, _reactRedux.connect)(mapStateToProps, actions)(EditNode);
@@ -74637,6 +74626,7 @@
 	    value: function render() {
 	      var _this2 = this;
 
+	      console.log("RENDERING ADDARTICLE");
 	      var _state = this.state;
 	      var finished = _state.finished;
 	      var stepIndex = _state.stepIndex;
@@ -74957,16 +74947,11 @@
 
 			_this.selectorFunction = function (value) {
 
-				// mark connection changes
-
 				var newList = [];
 
 				for (var i = 0; i < value.length; i++) {
 					newList.push(_this.state.availableConnections[value[i]]);
 				}
-
-				_this.state.selectedEdges = newList;
-				console.log(newList);
 
 				_this.props.registerEdge({ selectedEdges: newList });
 			};
@@ -74984,6 +74969,8 @@
 			key: 'render',
 			value: function render() {
 				var _this2 = this;
+
+				console.log("RENDERING ADDCONNECTION");
 
 				var checkAdd_root = function checkAdd_root() {
 
@@ -75391,7 +75378,7 @@
 	        justifyContent: 'center'
 	      };
 
-	      console.log(this.props.moduleDescription);
+	      console.log("RENDERING USERVIEW");
 
 	      return _react2.default.createElement(
 	        'div',
@@ -75518,7 +75505,7 @@
 	}(_react.Component);
 
 	function mapStateToProps(state) {
-	  console.log(state, "mapping state to props in user.view.js");
+	  console.log("MAPPING STATE TO PROPS IN USERVIEW");
 	  return { openModuleView: state.selectNode.openModuleView,
 	    moduleDescription: state.selectNode.moduleDescription,
 	    currentArticles: state.selectNode.currentArticles,
@@ -76066,7 +76053,7 @@
 	    value: function render() {
 	      return _react2.default.createElement(
 	        'div',
-	        { id: 'container' },
+	        null,
 	        _react2.default.createElement(
 	          'div',
 	          { id: 'logo' },
@@ -79511,7 +79498,6 @@
 	  var state = arguments.length <= 0 || arguments[0] === undefined ? INITIAL_STATE : arguments[0];
 	  var action = arguments[1];
 
-	  console.log(action.payload);
 	  switch (action.type) {
 	    case _actionList.ADMIN_OPENCREATE:
 	      return _extends({}, state, { create: true });
@@ -79594,7 +79580,6 @@
 		var state = arguments.length <= 0 || arguments[0] === undefined ? INITIAL_STATE : arguments[0];
 		var action = arguments[1];
 
-		console.log(action, "logging action");
 
 		switch (action.type) {
 			case _actionList.REGISTER_CY:
@@ -79644,7 +79629,6 @@
 		var state = arguments.length <= 0 || arguments[0] === undefined ? INITIAL_STATE : arguments[0];
 		var action = arguments[1];
 
-		console.log(action.type);
 		switch (action.type) {
 			case _actionList.ADMIN_OPEN_EDIT:
 				return _extends({}, state, { edit: true });

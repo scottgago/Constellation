@@ -31,23 +31,18 @@ class AddConnections extends Component {
 
 	selectorFunction = (value) => {
 
-		
-
-		// mark connection changes
-
 		var newList = []
 
 		for(var i = 0; i < value.length; i++){
 			newList.push(this.state.availableConnections[value[i]])
 		}
 
-		this.state.selectedEdges = newList
-		console.log(newList)
-
 		this.props.registerEdge({selectedEdges: newList})
 	}
 
 	render(){
+
+		console.log("RENDERING ADDCONNECTION")
 
 		const checkAdd_root = () => {
 

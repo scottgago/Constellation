@@ -164,6 +164,7 @@ class AddArticle extends Component {
   }
 
   render() {
+    console.log("RENDERING ADDARTICLE")
     const {finished, stepIndex} = this.state;
     return (
       <div>

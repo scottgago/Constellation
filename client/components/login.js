@@ -17,7 +17,7 @@ export default class Login extends Component {
 	render () {
 					return (
 
-      <div id = "container">
+      <div>
         <div id="logo">
           <h1 id="loginHeader"><i> Constellations</i></h1>
         </div>
