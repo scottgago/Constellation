@@ -11,7 +11,12 @@ import MarkdownParser from './markdown';
 import YouTube from 'react-youtube';
 import TextField from 'material-ui/TextField';
 import Divider from 'material-ui/Divider';
-import Paper from 'material-ui/Paper'
+import Paper from 'material-ui/Paper';
+
+import { connect } from 'react-redux';
+
+
+import * as actions from '../actions/reducerActions';
 
 
 var MarkdownEditor = require('react-markdown-editor').MarkdownEditor;
@@ -160,31 +165,20 @@ const style = {
  *
  * Linear steppers require users to complete one step in order to move on to the next.
  */
-export default class AddVideo extends Component {
+class AddVideo extends Component {
 
   constructor(props){
     super(props)
-    console.log(props, "newprops")
     this.state = {
       finished: false,
       stepIndex: 0,
       description : "",
-      openPrompt: false,
       currentNode: null,
       videoURL: "",
       currentVideo: "2g811Eo7K8U",
-      forceUpdate : props.status.confirmChange
     };
   }
 
-  componentWillReceiveProps = (value) => {
-    if(value.status.addVideo){
-      this.setState({
-        openPrompt: true,
-        currentNode: value.status.currentNode
-      })
-    }
-  }
 
   contentChange = (e,value) => {
     this.setState({
@@ -193,7 +187,6 @@ export default class AddVideo extends Component {
   }
 
   handleSubmit = () => {
-    console.log(this.state)
     this.setState({
       currentVideo : this.state.videoURL
     })
@@ -203,6 +196,10 @@ export default class AddVideo extends Component {
     this.setState({
       videoURL: value
     })
+  }
+
+  handleClose = () =>{
+    this.props.closeAddVideo()
   }
 
   handleNext = () => {
@@ -217,17 +214,15 @@ export default class AddVideo extends Component {
     });
     if(this.state.stepIndex === 2){
       this.setState({
-        openPrompt: false,
         stepIndex: 0,
-        
       })
 
-      this.state.currentNode._private.data.videos.push({
+      this.props.currentNode._private.data.videos.push({
         video: anchor.state.videoURL,
         markdown: anchor.state.description
       })
 
-      this.state.forceUpdate()
+      this.props.closeAddVideo()
     }
   };
 
@@ -265,7 +260,7 @@ export default class AddVideo extends Component {
                 </Paper>
                 </div>)
       case 1:
-        return <MarkdownEditor style = {style.contentDiv} initialContent={this.state.description} onContentChange ={this.contentChange} iconsSet="materialize-ui"/>
+        return <MarkdownEditor style = {style.contentDiv} initialContent={"this.state.description"} onContentChange ={this.contentChange} iconsSet="materialize-ui"/>
       case 2:
         return  (<div>
                 <div style={styles.floatLeft}>
@@ -305,7 +300,7 @@ export default class AddVideo extends Component {
       <div>
       <Dialog
           modal={false}
-          open={this.state.openPrompt}
+          open={this.props.addVideo}
           style={style.modalStyle}
           onRequestClose={this.handleClose}>
 
@@ -357,3 +352,11 @@ export default class AddVideo extends Component {
     );
   }
 }
+
+function mapStateToProps(state){
+  console.log("MAPPING PROPS TO STATE IN ADDVIDEO")
+  return { addVideo: state.adminEdit.addVideo, currentNode : state.selectNode.currentNode }
+}
+
+export default connect(mapStateToProps,actions)(AddVideo)
+

@@ -12,57 +12,16 @@ const style = {
   }
 }
 
-
-export default class AddConnections extends Component {
+class AddConnections extends Component {
 
 	constructor(props){
 		super(props)
 
 		this.state = {
-			currentNode : props.currentNode,
-			cy: props.cy,
-			edit: props.edit,
-			create: props.create,
 			edit_currentEdges: [],
 			currentSelected: [],
 			availableConnections: [],
-			selectedEdges: props.selectedEdges,
-			connectionChanges : props.connectionChanges
 		}
-	}
-
-	componentWillReceiveProps(nextProps) {
-
-		console.log("receiving props")
-
-		if(nextProps.connectionChanges){
-
-			return this.setState({
-	    	currentNode: nextProps.currentNode,
-				cy: nextProps.cy,
-				edit: nextProps.edit,
-				create: nextProps.create,
-				edit_currentEdges: [],
-				currentSelected: [],
-				selectedEdges: nextProps.selectedEdges,
-				connectionChanges : nextProps.connectionChanges
-	    })
-		}
-
-		this.setState({
-	    	currentNode: nextProps.currentNode,
-				cy: nextProps.cy,
-				edit: nextProps.edit,
-				create: nextProps.create,
-				edit_currentEdges: [],
-				currentSelected: [],
-				selectedEdges: nextProps.selectedEdges,
-		})
-
-
-
-
-	
 	}
 
 	selectorFunction = (value) => {
@@ -82,14 +41,14 @@ export default class AddConnections extends Component {
 
 		const checkAdd_root = () => {
 
-			if(!this.state.edit){
+			if(!this.props.edit){
 
 				this.state.availableConnections = [this.state.currentNode._private.data.id]
 
 				return (
 					<TableRow selected = {true} selectable={false}>
-						<TableRowColumn>{this.state.currentNode._private.data.id}</TableRowColumn>
-						<TableRowColumn>{this.state.currentNode._private.data.id}</TableRowColumn>
+						<TableRowColumn>{this.props.currentNode._private.data.id}</TableRowColumn>
+						<TableRowColumn>{this.props.currentNode._private.data.id}</TableRowColumn>
 						<TableRowColumn>Yes</TableRowColumn>
 					</TableRow>
 				)
@@ -125,7 +84,7 @@ export default class AddConnections extends Component {
 		}
 
 		const checkEdit_root = () => {
-			if(this.state.edit && this.state.cy){
+			if(this.props.edit){
 				
 				var currentEdges = []
 				this.state.availableConnections = []
@@ -213,3 +172,10 @@ export default class AddConnections extends Component {
 		)
 	}
 }
+
+function mapStateToProps(state){
+  console.log("MAPPING PROPS TO STATE IN ADDCONNECTIONS")
+  return { cy: state.selectNode.cy, currentNode : state.selectNode.currentNode }
+}
+
+export default connect(mapStateToProps,actions)(AddVideo)

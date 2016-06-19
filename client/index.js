@@ -21,6 +21,8 @@ const store = createStore(RootReducer, {},
 
 console.log(store)
 
+console.log("eh?")
+
 ReactDOM.render(
 	<Provider store = {store} >
 		<MuiThemeProvider muiTheme={getMuiTheme()}>

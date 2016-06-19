@@ -60,6 +60,7 @@ export default class Admin extends Component {
 
   handleRequestOpenEdit = () => {
     this.props.openEdit()
+    this.props.closeAdmin()
   };
 
   handleOpen = () => {
