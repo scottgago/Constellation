@@ -1,4 +1,4 @@
-import { ADMIN_CREATENODE, ADMIN_DELETENODE, ADMIN_OPENCREATE, ADMIN_CLOSECREATE } from '../actions/actionList';
+import { ADMIN_CREATEDCOMPLETE, ADMIN_CREATENODE, ADMIN_CREATE_EDGES, ADMIN_DELETENODE, ADMIN_OPENCREATE, ADMIN_CLOSECREATE } from '../actions/actionList';
 
 const INITIAL_STATE = {
   newNodeName: '',
@@ -7,6 +7,8 @@ const INITIAL_STATE = {
   starType: "./assets/imgs/star (1).png",
   error: false,
   selectedConnections: [],
+  videoURL: '',
+  currentVideo: '2g811Eo7K8U',
   selectedEdges: [],
   markdownDescription: '',
   create: false,
@@ -14,10 +16,13 @@ const INITIAL_STATE = {
 
 
 export default function(state = INITIAL_STATE, action) {
+  console.log(action.payload)
 	switch(action.type){
     case ADMIN_OPENCREATE:
       return {...state, create: true}
-    case ADMIN_CLOSECREATE:
+    case ADMIN_CREATE_EDGES:
+      return {...state, selectedEdges: action.payload.selectedEdges}
+    case ADMIN_CREATEDCOMPLETE:
       return {...state, create: false}
 		case ADMIN_CREATENODE:
 

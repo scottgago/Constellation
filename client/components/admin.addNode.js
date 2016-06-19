@@ -165,14 +165,6 @@ class AddNode extends Component {
   	}
   }
 
-  selectedEdges = (value) => {
-    this.state.selectedConnections = value
-  }
-
-  selectedNodes = (nodes) => {
-    this.state.selectedConnections = nodes
-  }
-
   onConfirm = (e, value) => {
 
     console.log(this.props)
@@ -183,7 +175,7 @@ class AddNode extends Component {
                            description: this.state.markdownDescription,
                            width: this.state.starWidth,
                            height: this.state.starHeight,
-                           connections: this.state.selectedConnections,
+                           connections: this.props.selectedEdges,
                            type: this.state.starType
                          })
 
@@ -197,16 +189,15 @@ class AddNode extends Component {
       this.props.cy.layout()
       this.setState({
         create: false,
-        currentNode : null,
         newNodeName: "",
-        selectedConnections: [], 
         starWidth: 100,
         starHeight: 100,
         markdownDescription: "",
         starType: "./assets/imgs/star (1).png",
         edit: false,
-        passToEditNode: newNode
 			})
+
+      this.props.closeCreate()
     
   }
 
@@ -242,11 +233,7 @@ class AddNode extends Component {
 		                <Divider />
 		              </Paper>
                   <AddAdmin />
-                  <AddConnections 
-                    currentNode={this.props.currentNode} 
-                    create = {this.props.create}
-                    cy = {this.props.cy}
-                    selectedEdges = {this.selectedEdges}/>
+                  <AddConnections />
                 </div>
 		          </Tab>
 		          <Tab label="Description Markdown">
@@ -298,7 +285,7 @@ class AddNode extends Component {
 
 function mapStateToProps(state){
   console.log(state, "creating")
-  return { create: state.adminAdd.create, currentNode : state.selectNode.currentNode, cy: state.selectNode.cy }
+  return { selectedEdges: state.adminAdd.selectedEdges, create: state.adminAdd.create, currentNode : state.selectNode.currentNode, cy: state.selectNode.cy }
 }
 
 export default connect(mapStateToProps, actions)(AddNode)

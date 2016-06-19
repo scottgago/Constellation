@@ -51046,6 +51046,7 @@
 	});
 	exports.createNode = createNode;
 	exports.openEdit = openEdit;
+	exports.registerEdge = registerEdge;
 	exports.openAddArticle = openAddArticle;
 	exports.closeAddArticle = closeAddArticle;
 	exports.openAddVideo = openAddVideo;
@@ -51096,6 +51097,12 @@
 		return { type: _actionList.ADMIN_OPEN_EDIT, payload: { edit: true } };
 	}
 
+	function registerEdge(_ref2) {
+		var selectedEdges = _ref2.selectedEdges;
+
+		return { type: _actionList.ADMIN_CREATE_EDGES, payload: { selectedEdges: selectedEdges } };
+	}
+
 	function openAddArticle() {
 		return { type: _actionList.ADMIN_OPEN_ADDARTICLE, payload: { addArticle: true } };
 	}
@@ -51132,19 +51139,19 @@
 		return { type: _actionList.ADMIN_CREATEDCOMPLETE, payload: { create: false } };
 	}
 
-	function selectNode(_ref2) {
-		var moduleDescription = _ref2.moduleDescription;
-		var currentNode = _ref2.currentNode;
-		var previousNode = _ref2.previousNode;
-		var openUserView = _ref2.openUserView;
-		var currentArticles = _ref2.currentArticles;
-		var currentVideos = _ref2.currentVideos;
+	function selectNode(_ref3) {
+		var moduleDescription = _ref3.moduleDescription;
+		var currentNode = _ref3.currentNode;
+		var previousNode = _ref3.previousNode;
+		var openUserView = _ref3.openUserView;
+		var currentArticles = _ref3.currentArticles;
+		var currentVideos = _ref3.currentVideos;
 
 		return { type: _actionList.SELECT_NODE, payload: { moduleDescription: moduleDescription, currentArticles: currentArticles, currentVideos: currentVideos, currentNode: currentNode, previousNode: previousNode, openUserView: openUserView } };
 	}
 
-	function registerCY(_ref3) {
-		var cy = _ref3.cy;
+	function registerCY(_ref4) {
+		var cy = _ref4.cy;
 
 		return { type: _actionList.REGISTER_CY, payload: { cy: cy } };
 	}
@@ -51173,6 +51180,7 @@
 	var ADMIN_CREATENODE = exports.ADMIN_CREATENODE = "ADMIN_CREATENODE";
 	var ADMIN_OPENCREATE = exports.ADMIN_OPENCREATE = "ADMIN_OPENCREATE";
 	var ADMIN_CREATEDCOMPLETE = exports.ADMIN_CREATEDCOMPLETE = "ADMIN_CREATEDCOMPLETE";
+	var ADMIN_CREATE_EDGES = exports.ADMIN_CREATE_EDGES = 'ADMIN_CREATE_EDGES';
 
 	var ADMIN_EDITNODE = exports.ADMIN_EDITNODE = "ADMIN_EDITNODE";
 	var ADMIN_OPEN_EDIT = exports.ADMIN_OPEN_EDIT = "ADMIN_OPEN_EDIT";
@@ -52782,14 +52790,6 @@
 	      }
 	    };
 
-	    _this.selectedEdges = function (value) {
-	      _this.state.selectedConnections = value;
-	    };
-
-	    _this.selectedNodes = function (nodes) {
-	      _this.state.selectedConnections = nodes;
-	    };
-
 	    _this.onConfirm = function (e, value) {
 
 	      console.log(_this.props);
@@ -52800,7 +52800,7 @@
 	        description: _this.state.markdownDescription,
 	        width: _this.state.starWidth,
 	        height: _this.state.starHeight,
-	        connections: _this.state.selectedConnections,
+	        connections: _this.props.selectedEdges,
 	        type: _this.state.starType
 	      });
 
@@ -52812,16 +52812,15 @@
 	      _this.props.cy.layout();
 	      _this.setState({
 	        create: false,
-	        currentNode: null,
 	        newNodeName: "",
-	        selectedConnections: [],
 	        starWidth: 100,
 	        starHeight: 100,
 	        markdownDescription: "",
 	        starType: "./assets/imgs/star (1).png",
-	        edit: false,
-	        passToEditNode: newNode
+	        edit: false
 	      });
+
+	      _this.props.closeCreate();
 	    };
 
 	    console.log(_this.props, "lol");
@@ -52893,11 +52892,7 @@
 	                    _react2.default.createElement(_Divider2.default, null)
 	                  ),
 	                  _react2.default.createElement(_admin4.default, null),
-	                  _react2.default.createElement(_admin6.default, {
-	                    currentNode: this.props.currentNode,
-	                    create: this.props.create,
-	                    cy: this.props.cy,
-	                    selectedEdges: this.selectedEdges })
+	                  _react2.default.createElement(_admin6.default, null)
 	                )
 	              ),
 	              _react2.default.createElement(
@@ -52965,7 +52960,7 @@
 
 	function mapStateToProps(state) {
 	  console.log(state, "creating");
-	  return { create: state.adminAdd.create, currentNode: state.selectNode.currentNode, cy: state.selectNode.cy };
+	  return { selectedEdges: state.adminAdd.selectedEdges, create: state.adminAdd.create, currentNode: state.selectNode.currentNode, cy: state.selectNode.cy };
 	}
 
 	exports.default = (0, _reactRedux.connect)(mapStateToProps, actions)(AddNode);
@@ -54218,63 +54213,57 @@
 	        currentArticles: [],
 	        currentNode: null,
 	        addVideo: false,
-	        addArticle: false,
-	        selectedConnections: []
+	        addArticle: false
 	      });
 	    }, _this.onSubmit = function () {
 
-	      if (_this.state.connectionChanges) {
+	      console.log("sup?");
 
-	        var addNodes = [];
+	      var addNodes = [];
 
-	        for (var i = 0; i < _this.props.selectedConnections.length; i++) {
-	          var flag = true;
+	      for (var i = 0; i < _this.props.selectedEdges.length; i++) {
+	        var flag = true;
 
-	          for (var j = 0; j < _this.props.currentNode._private.edges.length; j++) {
-	            if (_this.props.currentNode._private.edges[j]._private.data.source === _this.props.selectedConnections[i] || _this.props.currentNode._private.edges[j]._private.data.target === _this.props.selectedConnections[i]) {
-	              flag = false;
-	            }
-	          }
-	          if (flag) {
-	            addNodes.push(_this.props.selectedConnections[i]);
+	        for (var j = 0; j < _this.props.currentNode._private.edges.length; j++) {
+	          if (_this.props.currentNode._private.edges[j]._private.data.source === _this.props.selectedEdges[i] || _this.props.currentNode._private.edges[j]._private.data.target === _this.props.selectedEdges[i]) {
+	            flag = false;
 	          }
 	        }
-
-	        var cleanUp = [];
-
-	        for (var i = 0; i < _this.props.currentNode._private.edges.length; i++) {
-	          console.log(i);
-	          var flag = false;
-	          for (var j = 0; j < _this.props.selectedConnections.length; j++) {
-	            if (_this.props.currentNode._private.edges[i]._private.data.source === _this.props.selectedConnections[j] || _this.props.currentNode._private.edges[i]._private.data.target === _this.props.selectedConnections[j]) {
-	              flag = true;
-	            }
-	          }
-	          if (!flag) {
-	            cleanUp.push(_this.props.currentNode._private.edges[i]);
-	          }
-	        }
-
-	        for (var i = 0; i < cleanUp.length; i++) {
-	          _this.props.cy.remove(cleanUp[i]);
-	        }
-
-	        for (var i = 0; i < addNodes.length; i++) {
-
-	          _this.props.cy.add({
-	            group: 'edges',
-	            data: {
-	              id: _this.props.currentNode._private.data.id + addNodes[i],
-	              source: _this.props.currentNode._private.data.id,
-	              target: addNodes[i]
-	            }
-	          });
+	        if (flag) {
+	          addNodes.push(_this.props.selectedEdges[i]);
 	        }
 	      }
-	    }, _this.connectionChanges = function () {
-	      _this.state.connectionChanges = true;
-	    }, _this.selectedEdges = function (value) {
-	      _this.state.selectedConnections = value;
+
+	      var cleanUp = [];
+
+	      for (var i = 0; i < _this.props.currentNode._private.edges.length; i++) {
+	        var flag = false;
+	        for (var j = 0; j < _this.props.selectedEdges.length; j++) {
+	          if (_this.props.currentNode._private.edges[i]._private.data.source === _this.props.selectedEdges[j] || _this.props.currentNode._private.edges[i]._private.data.target === _this.props.selectedEdges[j]) {
+	            flag = true;
+	          }
+	        }
+	        if (!flag) {
+	          cleanUp.push(_this.props.currentNode._private.edges[i]);
+	        }
+	      }
+
+	      for (var i = 0; i < cleanUp.length; i++) {
+	        _this.props.cy.remove(cleanUp[i]);
+	      }
+
+	      for (var i = 0; i < addNodes.length; i++) {
+
+	        _this.props.cy.add({
+	          group: 'edges',
+	          data: {
+	            id: _this.props.currentNode._private.data.id + addNodes[i],
+	            source: _this.props.currentNode._private.data.id,
+	            target: addNodes[i]
+	          }
+	        });
+	      }
+	      _this.props.closeEdit();
 	    }, _this.handleCancel = function () {
 	      _this.props.closeEdit();
 	    }, _temp), _possibleConstructorReturn(_this, _ret);
@@ -54537,7 +54526,8 @@
 	                      style: style.textStyle,
 	                      onChange: this.handleChangeText, underlineShow: false }),
 	                    _react2.default.createElement(_Divider2.default, null)
-	                  )
+	                  ),
+	                  _react2.default.createElement(_admin8.default, null)
 	                )
 	              ),
 	              _react2.default.createElement(
@@ -54566,7 +54556,7 @@
 
 	function mapStateToProps(state) {
 	  console.log(state.selectNode);
-	  return { edit: state.adminEdit.edit, currentVideos: state.selectNode.currentVideos, currentArticles: state.selectNode.currentArticles, currentNode: state.selectNode.currentNode, cy: state.selectNode.cy };
+	  return { selectedEdges: state.adminAdd.selectedEdges, edit: state.adminEdit.edit, currentVideos: state.selectNode.currentVideos, currentArticles: state.selectNode.currentArticles, currentNode: state.selectNode.currentNode, cy: state.selectNode.cy };
 	}
 
 	exports.default = (0, _reactRedux.connect)(mapStateToProps, actions)(EditNode);
@@ -74930,6 +74920,14 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
+	var _reactRedux = __webpack_require__(341);
+
+	var _reducerActions = __webpack_require__(447);
+
+	var actions = _interopRequireWildcard(_reducerActions);
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -74959,21 +74957,25 @@
 
 			_this.selectorFunction = function (value) {
 
-				if (_this.state.connectionChanges) {
-					_this.state.connectionChanges();
-				}
+				// mark connection changes
 
 				var newList = [];
+
 				for (var i = 0; i < value.length; i++) {
 					newList.push(_this.state.availableConnections[value[i]]);
 				}
-				_this.state.selectedEdges(newList);
+
+				_this.state.selectedEdges = newList;
+				console.log(newList);
+
+				_this.props.registerEdge({ selectedEdges: newList });
 			};
 
 			_this.state = {
 				edit_currentEdges: [],
 				currentSelected: [],
-				availableConnections: []
+				availableConnections: [],
+				selectedEdges: []
 			};
 			return _this;
 		}
@@ -74985,9 +74987,9 @@
 
 				var checkAdd_root = function checkAdd_root() {
 
-					if (!_this2.props.edit) {
+					if (_this2.props.create) {
 
-						_this2.state.availableConnections = [_this2.state.currentNode._private.data.id];
+						_this2.state.availableConnections = [_this2.props.currentNode._private.data.id];
 
 						return _react2.default.createElement(
 							_Table.TableRow,
@@ -75013,12 +75015,12 @@
 
 				var checkAdd_all = function checkAdd_all() {
 
-					if (!_this2.state.edit && _this2.state.cy) {
+					if (_this2.props.create) {
 						var allNodes = [];
-						var newnodes = _this2.state.cy.nodes();
+						var newnodes = _this2.props.cy.nodes();
 
 						for (var i = 0; i < newnodes.length; i++) {
-							if (newnodes[i]._private.data.id !== _this2.state.currentNode._private.data.id) {
+							if (newnodes[i]._private.data.id !== _this2.props.currentNode._private.data.id) {
 								allNodes.push(newnodes[i]._private.data.id);
 								_this2.state.availableConnections.push(newnodes[i]._private.data.id);
 							}
@@ -75055,14 +75057,14 @@
 						var currentEdges = [];
 						_this2.state.availableConnections = [];
 						_this2.state.edit_currentEdges = [];
-						for (var i = 0; i < _this2.state.currentNode._private.edges.length; i++) {
-							if (_this2.state.currentNode._private.edges[i]._private.data.source === _this2.state.currentNode._private.data.id) {
-								currentEdges.push(_this2.state.currentNode._private.edges[i]._private.data.target);
-								_this2.state.availableConnections.push(_this2.state.currentNode._private.edges[i]._private.data.target);
+						for (var i = 0; i < _this2.props.currentNode._private.edges.length; i++) {
+							if (_this2.props.currentNode._private.edges[i]._private.data.source === _this2.props.currentNode._private.data.id) {
+								currentEdges.push(_this2.props.currentNode._private.edges[i]._private.data.target);
+								_this2.state.availableConnections.push(_this2.props.currentNode._private.edges[i]._private.data.target);
 								continue;
 							}
-							currentEdges.push(_this2.state.currentNode._private.edges[i]._private.data.source);
-							_this2.state.availableConnections.push(_this2.state.currentNode._private.edges[i]._private.data.source);
+							currentEdges.push(_this2.props.currentNode._private.edges[i]._private.data.source);
+							_this2.state.availableConnections.push(_this2.props.currentNode._private.edges[i]._private.data.source);
 						}
 
 						_this2.state.edit_currentEdges = currentEdges;
@@ -75093,13 +75095,11 @@
 
 				var checkEdit_all = function checkEdit_all() {
 
-					if (_this2.state.edit && _this2.state.cy) {
+					if (_this2.props.edit) {
 
 						var allNodes = [];
-						var newNodes = _this2.state.cy.nodes();
+						var newNodes = _this2.props.cy.nodes();
 						var holderObject = {};
-
-						console.log(_this2.state.edit_currentEdges, "lol?");
 
 						for (var i = 0; i < newNodes.length; i++) {
 							allNodes.push(newNodes[i]._private.data.id);
@@ -75110,7 +75110,7 @@
 						}
 
 						return allNodes.map(function (value) {
-							if (!holderObject[value] && value !== _this2.state.currentNode._private.data.id) {
+							if (!holderObject[value] && value !== _this2.props.currentNode._private.data.id) {
 								_this2.state.availableConnections.push(value);
 								return _react2.default.createElement(
 									_Table.TableRow,
@@ -75188,10 +75188,10 @@
 
 	function mapStateToProps(state) {
 		console.log("MAPPING PROPS TO STATE IN ADDCONNECTIONS");
-		return { cy: state.selectNode.cy, currentNode: state.selectNode.currentNode };
+		return { create: state.adminAdd.create, edit: state.adminEdit.edit, cy: state.selectNode.cy, currentNode: state.selectNode.currentNode };
 	}
 
-	exports.default = connect(mapStateToProps, actions)(AddVideo);
+	exports.default = (0, _reactRedux.connect)(mapStateToProps, actions)(AddConnections);
 
 /***/ },
 /* 627 */
@@ -79511,10 +79511,13 @@
 	  var state = arguments.length <= 0 || arguments[0] === undefined ? INITIAL_STATE : arguments[0];
 	  var action = arguments[1];
 
+	  console.log(action.payload);
 	  switch (action.type) {
 	    case _actionList.ADMIN_OPENCREATE:
 	      return _extends({}, state, { create: true });
-	    case _actionList.ADMIN_CLOSECREATE:
+	    case _actionList.ADMIN_CREATE_EDGES:
+	      return _extends({}, state, { selectedEdges: action.payload.selectedEdges });
+	    case _actionList.ADMIN_CREATEDCOMPLETE:
 	      return _extends({}, state, { create: false });
 	    case _actionList.ADMIN_CREATENODE:
 
@@ -79568,6 +79571,8 @@
 	  starType: "./assets/imgs/star (1).png",
 	  error: false,
 	  selectedConnections: [],
+	  videoURL: '',
+	  currentVideo: '2g811Eo7K8U',
 	  selectedEdges: [],
 	  markdownDescription: '',
 	  create: false

@@ -85,38 +85,37 @@ class EditNode extends Component {
       currentNode: null,
       addVideo: false,
       addArticle: false,
-      selectedConnections: []
     });
   };
 
   onSubmit = () =>{
 
-    if(this.state.connectionChanges){
+    console.log("sup?")
+
 
     var addNodes = []
 
-    for(var i = 0; i < this.props.selectedConnections.length; i++){
+    for(var i = 0; i < this.props.selectedEdges.length; i++){
       var flag = true
       
       for(var j = 0; j < this.props.currentNode._private.edges.length; j++){
-        if(this.props.currentNode._private.edges[j]._private.data.source === this.props.selectedConnections[i] ||
-           this.props.currentNode._private.edges[j]._private.data.target === this.props.selectedConnections[i]){
+        if(this.props.currentNode._private.edges[j]._private.data.source === this.props.selectedEdges[i] ||
+           this.props.currentNode._private.edges[j]._private.data.target === this.props.selectedEdges[i]){
             flag = false
         }
       }
       if(flag){
-        addNodes.push(this.props.selectedConnections[i])
+        addNodes.push(this.props.selectedEdges[i])
       }
     }
 
     var cleanUp = []
 
     for(var i = 0; i < this.props.currentNode._private.edges.length; i++){
-      console.log(i)
       var flag = false
-      for(var j = 0; j < this.props.selectedConnections.length; j++){
-        if(this.props.currentNode._private.edges[i]._private.data.source === this.props.selectedConnections[j] ||
-           this.props.currentNode._private.edges[i]._private.data.target === this.props.selectedConnections[j]){
+      for(var j = 0; j < this.props.selectedEdges.length; j++){
+        if(this.props.currentNode._private.edges[i]._private.data.source === this.props.selectedEdges[j] ||
+           this.props.currentNode._private.edges[i]._private.data.target === this.props.selectedEdges[j]){
             flag = true
         }
       }
@@ -141,15 +140,7 @@ class EditNode extends Component {
           }
         })
       }
-    }
-  }
-
-  connectionChanges = () => {
-    this.state.connectionChanges = true
-  }
-
-  selectedEdges = (value) => {
-    this.state.selectedConnections = value
+      this.props.closeEdit()
   }
 
   handleCancel = () => {
@@ -256,14 +247,10 @@ class EditNode extends Component {
                                onChange = {this.handleChangeText} underlineShow={false} />
                     <Divider />
                   </Paper>
-                  {// <AddAdmin />
-                  // <AddConnections currentNode={this.initConnections(this.state.currentNode)} 
-                  //                 edit = {this.state.edit}
-                  //                 cy = {this.state.cy}
-                  //                 selectedEdges = {this.selectedEdges}
-                  //                 selectedConnections = {this.state.selectedConnections}
-                  //                 connectionChanges = {this.connectionChanges} />
-                }
+                  <AddConnections />
+                  
+                  
+                
                 </div>
               </Tab>
               <Tab label="Markdown">
@@ -282,7 +269,7 @@ class EditNode extends Component {
 
 function mapStateToProps(state){
   console.log(state.selectNode)
-  return { edit: state.adminEdit.edit, currentVideos: state.selectNode.currentVideos, currentArticles: state.selectNode.currentArticles, currentNode : state.selectNode.currentNode, cy: state.selectNode.cy }
+  return { selectedEdges: state.adminAdd.selectedEdges, edit: state.adminEdit.edit, currentVideos: state.selectNode.currentVideos, currentArticles: state.selectNode.currentArticles, currentNode : state.selectNode.currentNode, cy: state.selectNode.cy }
 }
 
 export default connect(mapStateToProps, actions)(EditNode)

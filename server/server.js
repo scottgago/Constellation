@@ -14,7 +14,6 @@ app.use(cors())
 app.use(express.static('../client'))
 
 app.get('*', function(req,res){
-	console.log(req.body)
 	// res.redirect('/mainview')
 	res.end()
 })
