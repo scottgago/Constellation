@@ -239,12 +239,15 @@ class AddNode extends Component {
 		          </Tab>
 		          <Tab label="Styling">
 		            <div style={style.marginTop}>
+
                   <RadioButtonGroup onChange={this.starChange} style = {style.floatLeft} name="shipSpeed" defaultSelected="star1">
+
                     <RadioButton
                       value="star1"
                       label="star1"
                       style={style.radioButtonTop}
                     />
+
                     <RadioButton
                       value="star2"
                       label="star2"
