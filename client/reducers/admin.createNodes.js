@@ -12,8 +12,7 @@ const INITIAL_STATE = {
   selectedEdges: [],
   markdownDescription: '',
   create: false,
-  edgesChanged: false
-
+  
 }
 
 
@@ -22,7 +21,7 @@ export default function(state = INITIAL_STATE, action) {
     case ADMIN_OPENCREATE:
       return {...state, create: true}
     case ADMIN_CREATE_EDGES:
-      return {...state, edgesChanged: true, selectedEdges: action.payload.selectedEdges}
+      return {...state, selectedEdges: action.payload.selectedEdges}
     case ADMIN_CREATEDCOMPLETE:
       return {...state, create: false}
 		case ADMIN_CREATENODE:

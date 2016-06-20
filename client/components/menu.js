@@ -46,8 +46,6 @@ export default class Menu extends Component {
           iconElementLeft={<IconButton onTouchTap={this.handleToggle}><MoreVertIcon /></IconButton>}/>
         <Drawer
           docked={false}
-          containerStyle={style.containerStyle}
-          width={1680}
           open={this.state.open}
           zDepth= {5}
           onRequestChange={(open) => this.setState({open})}>

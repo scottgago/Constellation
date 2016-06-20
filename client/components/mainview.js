@@ -237,6 +237,16 @@ class MainView extends Component {
     		group: 'nodes',
       	data: { 
           id: 'JavaScript',
+          quizzes: [{
+            quizName: "",
+            questions: [
+            {
+              question: "What is a closure?",
+              options: ["A thing", "Athing2", "Athing3", "Athing4", "Athing5"],
+              answer: "Athing2"
+            }
+            ]
+          }],
           videos: [{
             name: "Introduction into Javascript",
             key: "jkTzHEtHd54",
@@ -406,6 +416,7 @@ class MainView extends Component {
     bind.props.selectNode({ moduleDescription: evtTarget._private.data.description, currentArticles: evtTarget._private.data.articles, currentVideos: evtTarget._private.data.videos, currentNode: evtTarget, previousNode: holder, openUserView: true })
     bind.props.openAdmin()
      
+    console.log(evtTarget)
 
   
 
@@ -413,6 +424,7 @@ class MainView extends Component {
       currentNode : evtTarget,
       previousNode : holder,
       view       : true,
+
       cy : cy
     },
     ()=>{

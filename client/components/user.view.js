@@ -8,6 +8,11 @@ import Drawer from 'material-ui/Drawer';
 import {Tabs, Tab} from 'material-ui/Tabs';
 import Divider from 'material-ui/Divider';
 import YouTube from 'react-youtube';
+import Popover from 'material-ui/Popover';
+import Menu from 'material-ui/Menu';
+import MenuItem from 'material-ui/MenuItem';
+
+import {Card, CardActions, CardHeader, CardText} from 'material-ui/Card';
 
 import { connect } from 'react-redux';
 import * as actions from '../actions/reducerActions';
@@ -20,8 +25,11 @@ const styles = {
     maxWidth: '100%',
     display: 'block ',
     position: 'absolute',
-    zIndex:1000000
+    zIndex: 9999
     
+  },
+  popoverStyle: {
+    zIndex: 1000000
   },
   backButton: {
     position: 'fixed',
@@ -128,7 +136,7 @@ class User extends Component {
   constructor(props){
     super(props)
     this.state = {
-        open: false
+        open: false,
         navigateNext: false
     }
   }
@@ -138,16 +146,16 @@ class User extends Component {
   };
 
   handleOpenModule = () => {
-    // document.getElementById("cy").style.pointerEvents = "none"
-    // document.getElementById("cy").style.zIndex = -1400
     this.props.openModule()
   };
 
   handleToggleNext = (event) => {
     console.log(event.currentTarget)
     this.setState({
-      targetEl : event.currentTarget
+      anchorEl : event.currentTarget,
+      lol: true
     })
+    console.log(this.state)
   }
 
   handleClosePrompt = () => {
@@ -165,11 +173,6 @@ class User extends Component {
       height: 390,
       width: '100%',
     };
-
-    const anchors = {
-      anchorOrigin: {"horizontal":"left","vertical":"top"}
-      targetOrigin: {"horizontal":"middle","vertical":"bottom"}
-    }
 
     const cancel = [
       <FlatButton
@@ -216,9 +219,12 @@ class User extends Component {
             onRequestChange={(open) => {(()=>{console.log("fuck")})()}}
             width={1680}
             open={this.props.openModuleView}>
+
             
         	 <Tabs>
+
             <Tab label="Content" >
+
               <Tabs>
               {this.props.currentVideos.map(function(value){
                 return (<Tab label={value.name}>
@@ -261,24 +267,31 @@ class User extends Component {
                 </Paper>
               </div>
             </Tab>
+            <Tab label="Quizzes">
+            <Card>
+              <CardHeader
+                title="Without Avatar"
+                subtitle="Subtitle"
+                actAsExpander={true}
+                showExpandableButton={true}
+              />
+              <CardText expandable={true}>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                Donec mattis pretium massa. Aliquam erat volutpat. Nulla facilisi.
+                Donec vulputate interdum sollicitudin. Nunc lacinia auctor quam sed pellentesque.
+                Aliquam dui mauris, mattis quis lacus id, pellentesque lobortis odio.
+              </CardText>
+              <CardActions expandable={true}>
+                <FlatButton label="Action1" />
+                <FlatButton label="Action2" />
+              </CardActions>
+            </Card>
+            </Tab>
           </Tabs>
 
       <div style={styles.backButton} >            
-      <FlatButton  label="Back to Galactic View"/>
-      <Popover
-          open={this.state.navigateNext}
-          anchorEl={this.state.anchorEl}
-          anchorOrigin={{"horizontal":"left","vertical":"top"}}
-          targetOrigin={{"horizontal":"middle","vertical":"bottom"}}
-          onRequestClose={this.handleRequestClose}
-        >
-          <Menu>
-            <MenuItem primaryText="Refresh" />
-            <MenuItem primaryText="Help &amp; feedback" />
-            <MenuItem primaryText="Settings" />
-            <MenuItem primaryText="Sign out" />
-          </Menu>
-        </Popover>
+      <FlatButton  onTouchTap={this.handleCloseModule} label="Back to Galactic View"/>
+      
       <FlatButton  onTouchTap = {this.handleToggleNext} label="Next Nodes"/>
       </div>
       </Drawer>
