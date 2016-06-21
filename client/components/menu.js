@@ -15,7 +15,7 @@ import Toggle from 'material-ui/Toggle';
 
 const style = {
 	menubar : {
-		'backgroundColor': '#7eabca',
+		'backgroundColor': '#05090c',
 	},
   containerStyle : {
     maxWidth: '100%'
@@ -24,7 +24,8 @@ const style = {
     display: 'flex',
     justifyContent:'center',
     alignContent:'center',
-    flexDirection:'column'
+    flexDirection:'column',
+    color: 'white'
 
   },
   menuItem:{
@@ -74,6 +75,9 @@ const style = {
     justifyContent:'center',
     alignContent:'center',
     flexDirection:'column'
+  },
+  toggleStyle: {
+    color: 'white'
   }
 }
 const menuItems = [
@@ -111,6 +115,7 @@ class Menu extends Component {
           iconElementRight={<Toggle
             label="Admin"
             onToggle={this.handleAdminToggle}
+            labelStyle ={style.toggleStyle}
           />}
         />
         <Drawer

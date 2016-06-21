@@ -12,6 +12,8 @@ import Popover from 'material-ui/Popover';
 import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem';
 
+import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
+
 import {Card, CardActions, CardHeader, CardText} from 'material-ui/Card';
 
 import { connect } from 'react-redux';
@@ -151,7 +153,13 @@ const styles = {
   }, 
   descPadding: {
     padding: 5
-  }
+  },
+  inkBarStyle: {
+    backgroundColor: "#c2ddf0"
+  },
+  radioButton: {
+    marginBottom: 16,
+  },
 }
 
 
@@ -249,11 +257,11 @@ class User extends Component {
             open={this.props.openModuleView}>
 
             
-        	 <Tabs tabItemContainerStyle={styles.tabsColor}>
+        	 <Tabs tabItemContainerStyle={styles.tabsColor} inkBarStyle={styles.inkBarStyle}>
 
             <Tab label="Content" >
 
-              <Tabs tabItemContainerStyle={styles.tabsColor2}>
+              <Tabs tabItemContainerStyle={styles.tabsColor2} inkBarStyle={styles.inkBarStyle}>
               {this.props.currentVideos.map(function(value){
                 return (<Tab label={value.name}>
                 <div style={styles.contentDiv}>
@@ -276,7 +284,7 @@ class User extends Component {
               </Tabs>
             </Tab>
             <Tab label="Documentation">
-              <Tabs tabItemContainerStyle={styles.tabsColor2}>
+              <Tabs tabItemContainerStyle={styles.tabsColor2} inkBarStyle={styles.inkBarStyle}>
               {this.props.currentArticles.map((value)=>{
                 return ( <Tab label = {value.name}>
                   <div style={styles.dialogHugePlayer}>
@@ -298,20 +306,16 @@ class User extends Component {
             <Tab label="Quizzes">
             <Card>
               <CardHeader
-                title="Without Avatar"
-                subtitle="Subtitle"
+                title="Closures"
+                subtitle="A quiz on closures"
                 actAsExpander={true}
                 showExpandableButton={true}
               />
               <CardText expandable={true}>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                Donec mattis pretium massa. Aliquam erat volutpat. Nulla facilisi.
-                Donec vulputate interdum sollicitudin. Nunc lacinia auctor quam sed pellentesque.
-                Aliquam dui mauris, mattis quis lacus id, pellentesque lobortis odio.
               </CardText>
               <CardActions expandable={true}>
-                <FlatButton label="Action1" />
-                <FlatButton label="Action2" />
+                <FlatButton label="Cancel" />
+                <FlatButton label="Submit" />
               </CardActions>
             </Card>
             </Tab>
