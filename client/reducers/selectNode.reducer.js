@@ -1,4 +1,4 @@
-import { ADMIN_OPEN_VIEW, ADMIN_CLOSE_VIEW, SELECT_NODE, REGISTER_CY, CLOSE_USER_VIEW, USER_OPEN_MODULE, FETCH_NODES, USER_CLOSE_MODULE } from '../actions/actionList'
+import { TOGGLE_ADMIN, ADMIN_OPEN_VIEW, ADMIN_CLOSE_VIEW, SELECT_NODE, REGISTER_CY, CLOSE_USER_VIEW, USER_OPEN_MODULE, FETCH_NODES, USER_CLOSE_MODULE } from '../actions/actionList'
 
 
 const INITIAL_STATE = {
@@ -11,12 +11,15 @@ const INITIAL_STATE = {
 	moduleDescription: '',
 	openUserView: false,
 	openAdminView: false,
-	openModuleView: false
+	openModuleView: false,
+	adminMode: false
 } 
 
 export default function(state = INITIAL_STATE, action) {
 	console.log("in reducer", action.payload)
 	switch(action.type){
+		case TOGGLE_ADMIN:
+		  return {...state, adminMode: action.payload.adminMode}
 		case FETCH_NODES:
 		  return {...state, nodes: action.payload.nodes}
 		case REGISTER_CY:

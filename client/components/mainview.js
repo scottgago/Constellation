@@ -121,11 +121,12 @@ class MainView extends Component {
       })
     })
 
-    console.log("are we getting here?")
     bind.props.selectNode({ moduleDescription: evtTarget._private.data.description, currentArticles: evtTarget._private.data.articles, currentVideos: evtTarget._private.data.videos, currentNode: evtTarget, previousNode: holder, openUserView: true })
-    bind.props.openAdmin()
+    
+    if(bind.props.adminMode){
+      bind.props.openAdmin()
+    }
      
-    console.log("done")
 
   
 
@@ -176,8 +177,7 @@ class MainView extends Component {
 
 function mapStateToProps(state){
   console.log("MAPPING STATE TO PROPS IN MAINVIEW")
-  console.log(state.selectNode)
-  return {nodes: state.selectNode.nodes, currentNode: state.selectNode.currentNode, previousNode: state.selectNode.previousNode, cy: state.selectNode.cy}
+  return {adminMode: state.selectNode.adminMode, nodes: state.selectNode.nodes, currentNode: state.selectNode.currentNode, previousNode: state.selectNode.previousNode, cy: state.selectNode.cy}
 }
 
 export default connect(mapStateToProps, actions)(MainView)

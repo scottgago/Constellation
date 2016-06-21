@@ -6,7 +6,11 @@ import MenuItem from 'material-ui/MenuItem';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import NavigationClose from 'material-ui/svg-icons/navigation/close';
 import Drawer from 'material-ui/Drawer';
-import FlatButton from 'material-ui/FlatButton'
+import FlatButton from 'material-ui/FlatButton';
+import { connect } from 'react-redux';
+import * as actions from '../actions/reducerActions';
+
+import Toggle from 'material-ui/Toggle';
 
 
 const style = {
@@ -15,6 +19,13 @@ const style = {
 	},
   containerStyle : {
     maxWidth: '100%'
+  },
+  rightIcon:{
+    display: 'flex',
+    justifyContent:'center',
+    alignContent:'center',
+    flexDirection:'column'
+
   },
   menuItem:{
     position: 'relative',
@@ -71,7 +82,7 @@ const menuItems = [
   { route: 'about', text: 'About' }
 ];
 
-export default class Menu extends Component {
+class Menu extends Component {
 
 	constructor(props) {
     super(props);
@@ -84,14 +95,24 @@ export default class Menu extends Component {
 
   handleClose = () => this.setState({open: false});
 
+  handleAdminToggle = (e,value) => {
+    this.props.toggleAdmin({adminMode: value})
+  }
+
 	render () {
+    console.log("RENDERING MENU")
 		return (
       <div>
   			<AppBar
           title="Constellations"
           style = {style.menubar}
-          iconElementLeft={<IconButton onTouchTap={this.handleToggle}><MoreVertIcon /></IconButton>}/>
-          iconElementRight={<FlatButton label="Logout" />}
+          iconStyleRight ={ style.rightIcon}
+          iconElementLeft={<IconButton onTouchTap={this.handleToggle}><MoreVertIcon /></IconButton>}
+          iconElementRight={<Toggle
+            label="Admin"
+            onToggle={this.handleAdminToggle}
+          />}
+        />
         <Drawer
           docked={false}
           open={this.state.open}
@@ -107,3 +128,10 @@ export default class Menu extends Component {
 			)
 	}
 }
+
+function mapStateToProps(state){
+  console.log("MAPPING STATE TO PROPS IN MENU")
+  return { }
+}
+
+export default connect(mapStateToProps, actions)(Menu)
