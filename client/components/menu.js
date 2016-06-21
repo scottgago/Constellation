@@ -6,13 +6,12 @@ import MenuItem from 'material-ui/MenuItem';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import NavigationClose from 'material-ui/svg-icons/navigation/close';
 import Drawer from 'material-ui/Drawer';
+import FlatButton from 'material-ui/FlatButton'
 
 
 const style = {
 	menubar : {
-		'backgroundColor': 'gray',
-		'opacity': .9,
-    'z-index': -1
+		'backgroundColor': '#7eabca',
 	},
   containerStyle : {
     maxWidth: '100%'
@@ -44,6 +43,7 @@ export default class Menu extends Component {
           title="Constellations"
           style = {style.menubar}
           iconElementLeft={<IconButton onTouchTap={this.handleToggle}><MoreVertIcon /></IconButton>}/>
+          iconElementRight={<FlatButton label="Logout" />}
         <Drawer
           docked={false}
           open={this.state.open}

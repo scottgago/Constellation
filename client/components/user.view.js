@@ -25,11 +25,11 @@ const styles = {
     maxWidth: '100%',
     display: 'block ',
     position: 'absolute',
-    zIndex: 9999
+    zIndex: 9999,
+
+    background: 'url(./assets/imgs/lol.jpg)',
+    backgroundSize: 'cover'
     
-  },
-  popoverStyle: {
-    zIndex: 1000000
   },
   backButton: {
     position: 'fixed',
@@ -49,13 +49,31 @@ const styles = {
   dialog: {
   	alignItems: 'center',
   	justifyContent: 'center',
-  	overflow: 'scroll',
+  	overflow: 'scroll', 
+    width: '80%',
+    maxWidth: 'none',
+  },
+
+  buttonDiv:{
+    minWidth: '100%',
+    marginBottom: 5
   },
 	dialogBody: {
-		minWidth: 600,
 		minHeight: 600,
-		overflow: 'scroll'
+		overflow: 'scroll',
+    background: 'url(./assets/imgs/new.png)',
+    backgroundSize: 'cover',
+    borderRadius: 3
 	},
+  tabsColor: {
+    backgroundColor: "#186dad"
+  },
+  tabsColor2: {
+    backgroundColor: "#7eabca"
+  },
+  dialogBackground: {
+    borderRadius: 500
+  },
 	dialogHuge : {
 		position: 'fixed',
 		top: 0,
@@ -104,19 +122,18 @@ const styles = {
     margin: 3
   },
 	buttonDecline: {
-		width: '50%',
+		minWidth: '50%',
 		color: 'white',
+
 	},
 	buttonAccept: {
-		width: '50%',
+		minWidth: '50%',
 		color: 'white',
 	},
 	description: {
-		background: 'transparent'
+    padding: 10,
+    marginTop: 10
 	},
-  loginRow: {
-  flexDirection: 'row'
-  },
   headline: {
     fontSize: 24,
     paddingTop: 16,
@@ -126,6 +143,14 @@ const styles = {
   },
   textStyle: {
     marginLeft: 20
+  },
+  launchDiv : {
+    maxWidth: '60%',
+    margin: '0 auto',
+    textColor: "white"
+  }, 
+  descPadding: {
+    padding: 5
   }
 }
 
@@ -155,7 +180,6 @@ class User extends Component {
       anchorEl : event.currentTarget,
       lol: true
     })
-    console.log(this.state)
   }
 
   handleClosePrompt = () => {
@@ -199,17 +223,21 @@ class User extends Component {
           modal={false}
           bodyStyle= {styles.dialogBody}
           contentStyle= {styles.dialog}
+          style={styles.dialogBackground}
           open={this.props.openUserView}
+          width={800}
           onRequestClose={this.handleClose}>
 
 
-          <div>
-            <Paper style={styles.dialog} >
+          <div style={styles.launchDiv}>
+            <Paper style={styles.buttonDiv} zDepth = {5} >
               <RaisedButton onClick = {this.handleClosePrompt} backgroundColor ='#ff0000' style={styles.buttonDecline}>ABORT</RaisedButton>
               <RaisedButton onClick = {this.handleOpenModule} backgroundColor ='#3ed715' style={styles.buttonAccept}>LAUNCH</RaisedButton> 
             </Paper >
-            <MarkdownParser style={styles.description} markdown={this.props.moduleDescription}/>
-            <img style={styles.rocketImg} src = 'http://clipartix.com/wp-content/uploads/2016/05/Rocket-clip-art-free-clip-art-microsoft-clip-art-christmas-clip-2.png' />
+
+            <Paper style= {styles.descPadding} zDepth = {2}>
+              <MarkdownParser style={styles.description} markdown={this.props.moduleDescription}/>
+            </Paper>
           </div>
         </Dialog>
           <Drawer
@@ -221,23 +249,23 @@ class User extends Component {
             open={this.props.openModuleView}>
 
             
-        	 <Tabs>
+        	 <Tabs tabItemContainerStyle={styles.tabsColor}>
 
             <Tab label="Content" >
 
-              <Tabs>
+              <Tabs tabItemContainerStyle={styles.tabsColor2}>
               {this.props.currentVideos.map(function(value){
                 return (<Tab label={value.name}>
                 <div style={styles.contentDiv}>
                  <div style={styles.floatLeft}>
-                  <Paper >
+                  <Paper zDepth = {4}>
                     <YouTube
                      videoId={value.video}
                      opts={opts} />
                     </Paper>
                   </div>
                   <div>
-                    <Paper style={styles.floatRight} >
+                    <Paper style={styles.floatRight} zDepth = {4} >
                       <MarkdownParser style={styles.markdownMargins} markdown={value.markdown}/>
                     </Paper>
                   </div>
@@ -248,7 +276,7 @@ class User extends Component {
               </Tabs>
             </Tab>
             <Tab label="Documentation">
-              <Tabs tabItemContainerStyle={styles.topTab}>
+              <Tabs tabItemContainerStyle={styles.tabsColor2}>
               {this.props.currentArticles.map((value)=>{
                 return ( <Tab label = {value.name}>
                   <div style={styles.dialogHugePlayer}>
@@ -289,10 +317,12 @@ class User extends Component {
             </Tab>
           </Tabs>
 
-      <div style={styles.backButton} >            
-      <FlatButton  onTouchTap={this.handleCloseModule} label="Back to Galactic View"/>
+      <div style={styles.backButton} > 
+      <Paper zDepth = {4}>           
+        <FlatButton  onTouchTap={this.handleCloseModule} label="Back to Galactic View"/>
       
-      <FlatButton  onTouchTap = {this.handleToggleNext} label="Next Nodes"/>
+        <FlatButton  onTouchTap = {this.handleToggleNext} label="Next Nodes"/>
+      </Paper>
       </div>
       </Drawer>
       </div>

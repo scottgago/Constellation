@@ -38,6 +38,22 @@ const style = {
     opacity: 1,
 
   },
+  actionsContainer : {
+    backgroundColor: "#d297d8"
+  },
+  editBackground: {
+
+    background: 'url(./assets/imgs/lol.jpg)',
+    backgroundSize: 'cover'
+  },
+  tabsColor: {
+    backgroundColor: "#6f2d6f"
+  },
+  editBackgroundBody: {
+
+    background: 'url(./assets/imgs/editbackground.png)',
+    backgroundSize: 'cover'
+  },
   submitButton: {
     width: '100%',
     height: 40
@@ -52,6 +68,9 @@ const style = {
   alignCenter : {
     alignItems: 'center',
     overflow: 'scroll'
+  },
+  actionButtons: {
+    color: 'white'
   }
 }
 
@@ -148,13 +167,15 @@ class EditNode extends Component {
     console.log("RENDERING EDITNODE")
     const cancel = [
       <FlatButton
+          label="Cancel"
+          onTouchTap={this.handleCancel}
+      />,
+      <FlatButton
           label="Submit Changes"
           primary={true}
           onTouchTap={this.onSubmit}
-      />,
-      <FlatButton
-          label="Cancel"
-          onTouchTap={this.handleCancel}
+          style = {style.actionButtons}
+
       />
 
     ];
@@ -163,26 +184,30 @@ class EditNode extends Component {
       <div>
         
         <Dialog
-          title="Edit Mode"
           modal={false}
           actions={cancel}
           open={this.props.edit}
+          bodyStyle={style.editBackgroundBody}
+          actionsContainerStyle={style.actionsContainer}
+          style={style.editBackground}
           contentStyle ={style.dialogBody}>
           <AdminAddVideo />
           <AdminAddArticle />
           <div style = {style.dialogBody}>
-            <Tabs style={style.contentDiv}>
+            <Tabs style={style.contentDiv} tabItemContainerStyle={style.tabsColor}>
               <Tab label="Style">
+              <Paper zDepth={2}>
                 <div style = {style.alignCenter}>
                   <h2 style={style.headline}>Styling</h2>
                   <p>Node size</p>
                   <Slider name="slider0" defaultValue={0} style={style.sliderStyle} onChange={this.onChangeSlider} />
                 </div>
+              </Paper>
               </Tab>
               <Tab label="Content" >
                 <div>
                   <p>Videos</p>
-                  <Paper zDepth={2}> 
+                  <Paper zDepth={5}> 
                     <RaisedButton onTouchTap = {this.handleAddVideo} style={style.contentDiv}>Add a video</RaisedButton>
                     <Table>
                       <TableHeader>
@@ -207,8 +232,8 @@ class EditNode extends Component {
                       </TableBody>
                     </Table>
                   </Paper>
-                  <p>Documentation</p>
                   <Paper zDepth={2}>
+                  <p>Documentation</p>
                     <RaisedButton onTouchTap = {this.handleAddArticle} style={style.contentDiv} >Add an article</RaisedButton>
                     <Table>
                       <TableHeader>
@@ -245,7 +270,9 @@ class EditNode extends Component {
                                onChange = {this.handleChangeText} underlineShow={false} />
                     <Divider />
                   </Paper>
-                  <AddConnections />
+                  <Paper zDepth={5}>
+                    <AddConnections />
+                  </Paper>
                   
                   
                 
