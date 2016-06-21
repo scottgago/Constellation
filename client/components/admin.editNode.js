@@ -70,7 +70,7 @@ const style = {
     overflow: 'scroll'
   },
   actionButtons: {
-    color: 'white'
+    color: '#6f2d6f'
   }
 }
 
@@ -270,9 +270,8 @@ class EditNode extends Component {
                                onChange = {this.handleChangeText} underlineShow={false} />
                     <Divider />
                   </Paper>
-                  <Paper zDepth={5}>
+                    <AddAdmin />
                     <AddConnections />
-                  </Paper>
                   
                   
                 

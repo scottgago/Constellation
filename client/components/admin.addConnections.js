@@ -1,6 +1,8 @@
 import {Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn} from 'material-ui/Table'
 import React, { Component } from 'react';
 
+import Paper from 'material-ui/Paper';
+
 import { connect } from 'react-redux';
 
 import * as actions from '../actions/reducerActions';
@@ -150,6 +152,7 @@ class AddConnections extends Component {
 		}
 
 		return (
+			
 			<div style={style.nodeList}>
 				<span>Node Connections</span>
 				<Table multiSelectable={true} onRowSelection={this.selectorFunction}>

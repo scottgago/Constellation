@@ -15,6 +15,54 @@ const style = {
 	},
   containerStyle : {
     maxWidth: '100%'
+  },
+  menuItem:{
+    position: 'relative',
+    maxHeight: '33.33%',
+    height: '33.33%',
+    width: '100%',
+    fontSize: 50,
+    color: 'white',
+    textAlign: 'center',
+    background: 'url("http://phandroid.s3.amazonaws.com/wp-content/uploads/2014/05/purple-nebula.jpg")',
+    backgroundSize: 'cover',
+    display: 'flex',
+    justifyContent:'center',
+    alignContent:'center',
+    flexDirection:'column'
+
+  },
+  menuItem2:{
+    position: 'relative',
+    maxHeight: '33.33%',
+    height: '33.33%',
+    width: '100%',
+
+    color: 'white',
+    background: 'url("https://wallpaperscraft.com/image/space_background_blue_dots_73340_3840x2400.jpg")',
+    fontSize: 50,
+    textAlign: 'center',
+    backgroundSize: 'cover',
+    display: 'flex',
+    justifyContent:'center',
+    alignContent:'center',
+    flexDirection:'column'
+  },
+  menuItem3:{
+    position: 'relative',
+    maxHeight: '33.33%',
+    height: '33.33%',
+    width: '100%',
+
+    color: 'white',
+    background: 'url("https://dncache-mauganscorp.netdna-ssl.com/thumbseg/1135/1135826-bigthumbnail.jpg")',
+    fontSize: 50,
+    textAlign: 'center',
+    backgroundSize: 'cover',
+    display: 'flex',
+    justifyContent:'center',
+    alignContent:'center',
+    flexDirection:'column'
   }
 }
 const menuItems = [
@@ -48,15 +96,12 @@ export default class Menu extends Component {
           docked={false}
           open={this.state.open}
           zDepth= {5}
+          width= {500}
           onRequestChange={(open) => this.setState({open})}>
-            <MenuItem onTouchTap={this.handleClose}>Menu Item</MenuItem>
-            <MenuItem onTouchTap={this.handleClose}>Menu Item 2</MenuItem>
-            <MenuItem onTouchTap={this.handleClose}>Menu Item 3</MenuItem>
-            <MenuItem onTouchTap={this.handleClose}>Menu Item 4</MenuItem>
-            <MenuItem onTouchTap={this.handleClose}>Menu Item 5</MenuItem>
-            <MenuItem onTouchTap={this.handleClose}>Menu Item 6</MenuItem>
-            <MenuItem onTouchTap={this.handleClose}>Menu Item 7</MenuItem>
-
+          <div style={style.menuItem}>PROFILE</div>
+          <div style={style.menuItem2}>MESSAGES</div>
+          <div style={style.menuItem3}>STUFF</div>
+       
         </Drawer>
       </div>
 			)

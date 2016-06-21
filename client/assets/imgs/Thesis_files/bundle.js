@@ -36637,48 +36637,27 @@
 	    maxHeight: '33.33%',
 	    height: '33.33%',
 	    width: '100%',
-	    fontSize: 50,
-	    color: 'white',
-	    textAlign: 'center',
 	    background: 'url("http://phandroid.s3.amazonaws.com/wp-content/uploads/2014/05/purple-nebula.jpg")',
-	    backgroundSize: 'cover',
-	    display: 'flex',
-	    justifyContent: 'center',
-	    alignContent: 'center',
-	    flexDirection: 'column'
 
+	    backgroundSize: 'cover'
 	  },
 	  menuItem2: {
 	    position: 'relative',
 	    maxHeight: '33.33%',
 	    height: '33.33%',
 	    width: '100%',
-
-	    color: 'white',
 	    background: 'url("https://wallpaperscraft.com/image/space_background_blue_dots_73340_3840x2400.jpg")',
-	    fontSize: 50,
-	    textAlign: 'center',
-	    backgroundSize: 'cover',
-	    display: 'flex',
-	    justifyContent: 'center',
-	    alignContent: 'center',
-	    flexDirection: 'column'
+
+	    backgroundSize: 'cover'
 	  },
 	  menuItem3: {
 	    position: 'relative',
 	    maxHeight: '33.33%',
 	    height: '33.33%',
 	    width: '100%',
-
-	    color: 'white',
 	    background: 'url("https://dncache-mauganscorp.netdna-ssl.com/thumbseg/1135/1135826-bigthumbnail.jpg")',
-	    fontSize: 50,
-	    textAlign: 'center',
-	    backgroundSize: 'cover',
-	    display: 'flex',
-	    justifyContent: 'center',
-	    alignContent: 'center',
-	    flexDirection: 'column'
+
+	    backgroundSize: 'cover'
 	  }
 	};
 	var menuItems = [{ route: '/widgets', text: 'Widgets' }, { route: 'survey', text: 'Survey' }, { route: 'about', text: 'About' }];
@@ -36729,25 +36708,21 @@
 	            docked: false,
 	            open: this.state.open,
 	            zDepth: 5,
-	            width: 500,
+	            width: 700,
 	            onRequestChange: function onRequestChange(open) {
 	              return _this2.setState({ open: open });
 	            } },
 	          _react2.default.createElement(
 	            'div',
 	            { style: style.menuItem },
-	            'PROFILE'
+	            _react2.default.createElement(
+	              'p',
+	              null,
+	              'SUP'
+	            )
 	          ),
-	          _react2.default.createElement(
-	            'div',
-	            { style: style.menuItem2 },
-	            'MESSAGES'
-	          ),
-	          _react2.default.createElement(
-	            'div',
-	            { style: style.menuItem3 },
-	            'STUFF'
-	          )
+	          _react2.default.createElement('div', { style: style.menuItem2 }),
+	          _react2.default.createElement('div', { style: style.menuItem3 })
 	        )
 	      );
 	    }
