@@ -11,10 +11,11 @@ import YouTube from 'react-youtube';
 import Popover from 'material-ui/Popover';
 import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem';
+import QuizEntry from './quiz.entry';
 
 import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
 
-import {Card, CardActions, CardHeader, CardText} from 'material-ui/Card';
+import {Card, CardActions, CardMedia, CardHeader, CardText} from 'material-ui/Card';
 
 import { connect } from 'react-redux';
 import * as actions from '../actions/reducerActions';
@@ -27,8 +28,6 @@ const styles = {
     maxWidth: '100%',
     display: 'block ',
     position: 'absolute',
-    zIndex: 9999,
-
     background: 'url(./assets/imgs/lol.jpg)',
     backgroundSize: 'cover'
     
@@ -74,7 +73,8 @@ const styles = {
     backgroundColor: "#7eabca"
   },
   dialogBackground: {
-    borderRadius: 500
+    borderRadius: 500,
+    overflow: "scroll"
   },
 	dialogHuge : {
 		position: 'fixed',
@@ -159,7 +159,7 @@ const styles = {
   },
   radioButton: {
     marginBottom: 16,
-  },
+  }
 }
 
 
@@ -176,9 +176,13 @@ class User extends Component {
 
   handleCloseModule = () => {
     this.props.closeModule()
+    this.props.cy.zoomingEnabled(true)
+    this.props.cy.panningEnabled(true)
   };
 
   handleOpenModule = () => {
+    this.props.cy.zoomingEnabled(false)
+    this.props.cy.panningEnabled(false)
     this.props.openModule()
   };
 
@@ -231,7 +235,6 @@ class User extends Component {
           modal={false}
           bodyStyle= {styles.dialogBody}
           contentStyle= {styles.dialog}
-          style={styles.dialogBackground}
           open={this.props.openUserView}
           width={800}
           onRequestClose={this.handleClose}>
@@ -249,7 +252,7 @@ class User extends Component {
           </div>
         </Dialog>
           <Drawer
-            docked={true}
+            docked={false}
             containerStyle={styles.containerStyle}
             overlayStyle={styles.containerStyle}
             onRequestChange={(open) => {(()=>{console.log("fuck")})()}}
@@ -304,15 +307,16 @@ class User extends Component {
               </div>
             </Tab>
             <Tab label="Quizzes">
-            <Card>
+            <Card  >
               <CardHeader
                 title="Closures"
                 subtitle="A quiz on closures"
                 actAsExpander={true}
                 showExpandableButton={true}
               />
-              <CardText expandable={true}>
-              </CardText>
+              <CardMedia  expandable={true}>
+              <QuizEntry />
+              </CardMedia>
               <CardActions expandable={true}>
                 <FlatButton label="Cancel" />
                 <FlatButton label="Submit" />
@@ -336,7 +340,9 @@ class User extends Component {
 
 function mapStateToProps(state){
   console.log("MAPPING STATE TO PROPS IN USERVIEW")
-  return ({openModuleView: state.selectNode.openModuleView, 
+  return ({
+          cy: state.selectNode.cy,
+          openModuleView: state.selectNode.openModuleView, 
           moduleDescription: state.selectNode.moduleDescription, 
           currentArticles: state.selectNode.currentArticles, 
           currentVideos: state.selectNode.currentVideos, 

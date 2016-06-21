@@ -106,8 +106,6 @@ class EditNode extends Component {
 
   onSubmit = () =>{
 
-    console.log("sup?")
-
 
     var addNodes = []
 
@@ -155,7 +153,11 @@ class EditNode extends Component {
           target: addNodes[i]
           }
         })
+      this.props.addConnection()
+
       }
+
+
       this.props.closeEdit()
   }
 
