@@ -10,7 +10,10 @@ import Dialog from 'material-ui/Dialog';
 import TextField from 'material-ui/TextField';
 import Divider from 'material-ui/Divider';
 import Paper from 'material-ui/Paper';
-import Loading from './loading'
+
+import * as actions from '../actions/reducerActions';
+
+import { connect } from 'react-redux';
 
 const opts = {
   height: 390,
@@ -57,7 +60,7 @@ const style = {
   }
 }
 
-export default class AddArticle extends Component {
+class AddArticle extends Component {
 
   constructor(props) {
     super(props)
@@ -65,23 +68,12 @@ export default class AddArticle extends Component {
       finished: false,
       stepIndex: 0,
       description : "",
-      openPrompt: false,
-      load: false,
       currentNode: null,
       articleURL: 'http://www.material-ui.com/#/components/dialog' ,
       currentArticle: 'http://www.material-ui.com/#/components/dialog',
-      forceUpdate : props.status.confirmChange 
     }
   }
 
-  componentWillReceiveProps = (value) =>{
-    if(value.status.addArticle){
-      this.setState({
-        openPrompt: value.status.addArticle,
-        currentNode: value.status.currentNode
-      })
-    }
-  }
 
   contentChange = (e,value) => {
     this.setState({
@@ -109,37 +101,25 @@ export default class AddArticle extends Component {
 
   handleNext = () => {
 
-    var anchor = this
     var index = this.state.stepIndex + 1
     
     this.setState({
       stepIndex: this.state.stepIndex + 1,
       finished: (this.state.stepIndex > 1),
-    });
+    })
     if(this.state.stepIndex === 1){
       this.setState({
-        openPrompt: false,
         stepIndex: 0,
-        load: true
-      },
-        ()=>{this.setState({
-          load: false
-        })}
-      )
-
-      this.state.currentNode._private.data.articles.push({
-        article: anchor.state.articleURL,
       })
-      this.state.forceUpdate()
 
+      this.props.currentNode._private.data.articles.push({
+        article: this.state.articleURL,
+      })
+
+      this.props.closeAddArticle()
     }
   };
 
-  handleLoad = () =>{
-    this.setState({
-      load: false
-    })
-  }
 
   handlePrev = () => {
     const {stepIndex} = this.state;
@@ -183,12 +163,13 @@ export default class AddArticle extends Component {
   }
 
   render() {
+    console.log("RENDERING ADDARTICLE")
     const {finished, stepIndex} = this.state;
     return (
       <div>
         <Dialog
             modal={false}
-            open={this.state.openPrompt}
+            open={this.props.addArticle}
             contentStyle={style.modalStyle}
             onRequestClose={this.handleClose}>
           <Stepper activeStep={stepIndex}>
@@ -234,3 +215,11 @@ export default class AddArticle extends Component {
     );
   }
 }
+
+function mapStateToProps(state){
+
+  console.log("MAPPING PROPS TO STATE IN ADDARTICLE")
+  return {currentNode: state.selectNode.currentNode, addArticle: state.adminEdit.addArticle}
+}
+
+export default connect(mapStateToProps, actions)(AddArticle)

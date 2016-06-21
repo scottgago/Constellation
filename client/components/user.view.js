@@ -8,21 +8,74 @@ import Drawer from 'material-ui/Drawer';
 import {Tabs, Tab} from 'material-ui/Tabs';
 import Divider from 'material-ui/Divider';
 import YouTube from 'react-youtube';
+import Popover from 'material-ui/Popover';
+import Menu from 'material-ui/Menu';
+import MenuItem from 'material-ui/MenuItem';
+import QuizEntry from './quiz.entry';
+
+import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
+
+import {Card, CardActions, CardMedia, CardHeader, CardText} from 'material-ui/Card';
+
+import { connect } from 'react-redux';
+import * as actions from '../actions/reducerActions';
 
 var MarkdownEditor = require('react-markdown-editor').MarkdownEditor;
 import TextField from 'material-ui/TextField';
 
 const styles = {
+  containerStyle : {
+    maxWidth: '100%',
+    display: 'block ',
+    position: 'absolute',
+    background: 'url(./assets/imgs/lol.jpg)',
+    backgroundSize: 'cover'
+    
+  },
+  backButton: {
+    position: 'fixed',
+    bottom: 0,
+    right: 0,
+    margin: 5
+  },
+  innerDiv : {
+    top: 0,
+    bottom: 0,
+    right: 0,
+    left:0, 
+    backgroundColor: 'black',
+    position: 'relative',
+    display: 'block',
+  },
   dialog: {
   	alignItems: 'center',
   	justifyContent: 'center',
-  	overflow: 'scroll',
+  	overflow: 'scroll', 
+    width: '80%',
+    maxWidth: 'none',
+  },
+
+  buttonDiv:{
+    minWidth: '100%',
+    marginBottom: 5
   },
 	dialogBody: {
-		minWidth: 600,
 		minHeight: 600,
-		overflow: 'scroll'
+		overflow: 'scroll',
+    background: 'url(./assets/imgs/new.png)',
+    backgroundSize: 'cover',
+    borderRadius: 3
 	},
+  tabsColor: {
+    backgroundColor: "#186dad"
+  },
+  tabsColor2: {
+    backgroundColor: "#7eabca"
+  },
+  dialogBackground: {
+    borderRadius: 500,
+    overflow: "scroll"
+  },
 	dialogHuge : {
 		position: 'fixed',
 		top: 0,
@@ -46,16 +99,21 @@ const styles = {
 	floatLeft: {
 		float: 'left',
     width: '49%',
-		maxWidth: "50%",
-		marginTop: 10
+		maxWidth: "49%",
+		marginTop: 10,
+    marginLeft: 10
 	},
 	floatRight: {
 		float: 'right',
-		maxWidth: "50%",
+		maxWidth: "49%",
     width: '49%',
     marginTop: 10,
-    height: 575,
-		overflow: 'scroll'
+    bottom: 0, 
+    height: '100%',
+		overflow: 'scroll',
+    display: 'block',
+    marginRight: 10,
+    padding: 10
 
 	},
   topTab : {
@@ -66,19 +124,18 @@ const styles = {
     margin: 3
   },
 	buttonDecline: {
-		width: '50%',
+		minWidth: '50%',
 		color: 'white',
+
 	},
 	buttonAccept: {
-		width: '50%',
+		minWidth: '50%',
 		color: 'white',
 	},
 	description: {
-		background: 'transparent'
+    padding: 10,
+    marginTop: 10
 	},
-  loginRow: {
-  flexDirection: 'row'
-  },
   headline: {
     fontSize: 24,
     paddingTop: 16,
@@ -88,77 +145,63 @@ const styles = {
   },
   textStyle: {
     marginLeft: 20
+  },
+  launchDiv : {
+    maxWidth: '60%',
+    margin: '0 auto',
+    textColor: "white"
+  }, 
+  descPadding: {
+    padding: 5
+  },
+  inkBarStyle: {
+    backgroundColor: "#c2ddf0"
+  },
+  radioButton: {
+    marginBottom: 16,
   }
 }
 
 
 
-export default class User extends Component {
+class User extends Component {
+
   constructor(props){
     super(props)
     this.state = {
-      cy : null,
-      currentNode: {},
-      openPrompt: false,
-      description: "",
-      open: false,
-      videoDesc: "",
-      currentVideos: [],
-      currentArticles: [],
+        open: false,
+        navigateNext: false
     }
   }
 
-  componentWillReceiveProps = (value) => {
-    if(value.props.currentNode && value.props.view){
-      if(value.props.currentNode._private.data.videos.length){
-      	this.setState({
-      		openPrompt: value.props.view,
-      		cy: value.props.cy,
-      		currentNode: value.props.currentNode,
-      		description: value.props.currentNode._private.data.description,
-      		currentVideos: value.props.currentNode._private.data.videos,
-          currentArticles: value.props.currentNode._private.data.articles
-      	})
-      }
-      if(!value.props.currentNode._private.data.videos.length){
-        this.setState({
-          openPrompt: value.props.view,
-          cy: value.props.cy,
-          currentNode: value.props.currentNode,
-          description: value.props.currentNode._private.data.description,
-          videoDesc: "",
-          currentVideos: []
-        })
-      }
-    }
+  handleCloseModule = () => {
+    this.props.closeModule()
+    this.props.cy.zoomingEnabled(true)
+    this.props.cy.panningEnabled(true)
+  };
+
+  handleOpenModule = () => {
+    this.props.cy.zoomingEnabled(false)
+    this.props.cy.panningEnabled(false)
+    this.props.openModule()
+  };
+
+  handleToggleNext = (event) => {
+    console.log(event.currentTarget)
+    this.setState({
+      anchorEl : event.currentTarget,
+      lol: true
+    })
   }
 
-  handleClose = () => {
-    this.setState({
-      openPrompt: false,
-      description: "",
-      currentNode: null
-  	});
+  handleClosePrompt = () => {
+    this.props.closeUserView()
   };
 
-  handleOpen = () => {
-    this.setState({
-    	openPrompt: false,
-    	open: true
-    });
-  };
-
-  handleRequestClosePrompt = () => {
-    this.setState({
-      cy : null,
-      currentNode: {},
-      openPrompt: false,
-      description: "",
-      open: false,
-      videoDesc: "",
-      currentVideos: []
-    });
-  };
+  handleOpenDrawer = (open, reason) =>{
+    console.log(open)
+    console.log("eh?")
+  }
 
   render(){
 
@@ -171,57 +214,72 @@ export default class User extends Component {
       <FlatButton
           label="Back to galactic view"
           primary={true}
-          onTouchTap={this.handleRequestClosePrompt}
+          onTouchTap={this.props.closeModule}
       />
     ];
 
-    const contentStyle = {
-    minWidth: 640,
-    height: '100%',
-    minHeight: 480,
-    alignItems: 'center',
-    justifyContent: 'center'
-  }
+      const contentStyle = {
+      minWidth: 640,
+      height: '100%',
+      minHeight: 480,
+      alignItems: 'center',
+      justifyContent: 'center'
+    }
+
+    console.log("RENDERING USERVIEW")
+
+
     return(
   		<div>
   		  <Dialog
           modal={false}
           bodyStyle= {styles.dialogBody}
           contentStyle= {styles.dialog}
-          open={this.state.openPrompt}
+          open={this.props.openUserView}
+          width={800}
           onRequestClose={this.handleClose}>
 
-          <div>
-            <Paper style={styles.dialog} zDepth={2}>
-              <RaisedButton onClick = {this.handleClose} backgroundColor ='#ff0000' style={styles.buttonDecline}>ABORT</RaisedButton>
-          	  <RaisedButton onClick = {this.handleOpen} backgroundColor ='#3ed715' style={styles.buttonAccept}>LAUNCH</RaisedButton> 
+
+          <div style={styles.launchDiv}>
+            <Paper style={styles.buttonDiv} zDepth = {5} >
+              <RaisedButton onClick = {this.handleClosePrompt} backgroundColor ='#ff0000' style={styles.buttonDecline}>ABORT</RaisedButton>
+              <RaisedButton onClick = {this.handleOpenModule} backgroundColor ='#3ed715' style={styles.buttonAccept}>LAUNCH</RaisedButton> 
             </Paper >
-            <MarkdownParser style={styles.description} markdown={this.state.description}/>
-          	<img style={styles.rocketImg} src = 'http://clipartix.com/wp-content/uploads/2016/05/Rocket-clip-art-free-clip-art-microsoft-clip-art-christmas-clip-2.png' />
+
+            <Paper style= {styles.descPadding} zDepth = {2}>
+              <MarkdownParser style={styles.description} markdown={this.props.moduleDescription}/>
+            </Paper>
           </div>
         </Dialog>
-        <Dialog
-          modal={true}
-          contentStyle={styles.dialogHuge}
-          open={this.state.open}
-          actions={cancel}
-          autoDetectWindowHeight = {false}>
-        	<Tabs>
+          <Drawer
+            docked={false}
+            containerStyle={styles.containerStyle}
+            overlayStyle={styles.containerStyle}
+            onRequestChange={(open) => {(()=>{console.log("fuck")})()}}
+            width={1680}
+            open={this.props.openModuleView}>
+
+            
+        	 <Tabs tabItemContainerStyle={styles.tabsColor} inkBarStyle={styles.inkBarStyle}>
+
             <Tab label="Content" >
-              <Tabs styles = {styles.dialogBody} tabItemContainerStyle={styles.topTab}>
-              {this.state.currentVideos.map(function(value){
+
+              <Tabs tabItemContainerStyle={styles.tabsColor2} inkBarStyle={styles.inkBarStyle}>
+              {this.props.currentVideos.map(function(value){
                 return (<Tab label={value.name}>
+                <div style={styles.contentDiv}>
                  <div style={styles.floatLeft}>
-                  <Paper zDepth={2}>
+                  <Paper zDepth = {4}>
                     <YouTube
                      videoId={value.video}
                      opts={opts} />
                     </Paper>
                   </div>
                   <div>
-                    <Paper style={styles.floatRight} zDepth={2}>
+                    <Paper style={styles.floatRight} zDepth = {4} >
                       <MarkdownParser style={styles.markdownMargins} markdown={value.markdown}/>
                     </Paper>
+                  </div>
                   </div>
                 </Tab>)
               })}
@@ -229,8 +287,8 @@ export default class User extends Component {
               </Tabs>
             </Tab>
             <Tab label="Documentation">
-              <Tabs tabItemContainerStyle={styles.topTab}>
-              {this.state.currentArticles.map((value)=>{
+              <Tabs tabItemContainerStyle={styles.tabsColor2} inkBarStyle={styles.inkBarStyle}>
+              {this.props.currentArticles.map((value)=>{
                 return ( <Tab label = {value.name}>
                   <div style={styles.dialogHugePlayer}>
                     <iframe style={styles.dialogHugePlayer} src={value.url} height={'50%'} width={'100%'}/>
@@ -244,13 +302,53 @@ export default class User extends Component {
               <div>
                 <h2 style={styles.headline}>Questions</h2>
                 <p>Please confirm your edit by typing 'confirm' in the textbox below </p>
-                <Paper zDepth={2}>
+                <Paper >
                 </Paper>
               </div>
             </Tab>
+            <Tab label="Quizzes">
+            <Card  >
+              <CardHeader
+                title="Closures"
+                subtitle="A quiz on closures"
+                actAsExpander={true}
+                showExpandableButton={true}
+              />
+              <CardMedia  expandable={true}>
+              <QuizEntry />
+              </CardMedia>
+              <CardActions expandable={true}>
+                <FlatButton label="Cancel" />
+                <FlatButton label="Submit" />
+              </CardActions>
+            </Card>
+            </Tab>
           </Tabs>
-        </Dialog>
+
+      <div style={styles.backButton} > 
+      <Paper zDepth = {4}>           
+        <FlatButton  onTouchTap={this.handleCloseModule} label="Back to Galactic View"/>
+      
+        <FlatButton  onTouchTap = {this.handleToggleNext} label="Next Nodes"/>
+      </Paper>
+      </div>
+      </Drawer>
       </div>
   	)
   }
 }
+
+function mapStateToProps(state){
+  console.log("MAPPING STATE TO PROPS IN USERVIEW")
+  return ({
+          cy: state.selectNode.cy,
+          openModuleView: state.selectNode.openModuleView, 
+          moduleDescription: state.selectNode.moduleDescription, 
+          currentArticles: state.selectNode.currentArticles, 
+          currentVideos: state.selectNode.currentVideos, 
+          previousNode: state.selectNode.previousNode, 
+          currentNode: state.selectNode.currentNode, 
+          openUserView: state.selectNode.openUserView })
+}
+
+export default connect(mapStateToProps, actions)(User)

@@ -1,6 +1,12 @@
 import {Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn} from 'material-ui/Table'
 import React, { Component } from 'react';
 
+import Paper from 'material-ui/Paper';
+
+import { connect } from 'react-redux';
+
+import * as actions from '../actions/reducerActions';
+
 const style = {
 	nodeList: {
     marginTop: 15,
@@ -12,84 +18,44 @@ const style = {
   }
 }
 
-
-export default class AddConnections extends Component {
+class AddConnections extends Component {
 
 	constructor(props){
 		super(props)
 
 		this.state = {
-			currentNode : props.currentNode,
-			cy: props.cy,
-			edit: props.edit,
-			create: props.create,
 			edit_currentEdges: [],
 			currentSelected: [],
 			availableConnections: [],
-			selectedEdges: props.selectedEdges,
-			connectionChanges : props.connectionChanges
+			selectedEdges: []
 		}
-	}
-
-	componentWillReceiveProps(nextProps) {
-
-		console.log("receiving props")
-
-		if(nextProps.connectionChanges){
-
-			return this.setState({
-	    	currentNode: nextProps.currentNode,
-				cy: nextProps.cy,
-				edit: nextProps.edit,
-				create: nextProps.create,
-				edit_currentEdges: [],
-				currentSelected: [],
-				selectedEdges: nextProps.selectedEdges,
-				connectionChanges : nextProps.connectionChanges
-	    })
-		}
-
-		this.setState({
-	    	currentNode: nextProps.currentNode,
-				cy: nextProps.cy,
-				edit: nextProps.edit,
-				create: nextProps.create,
-				edit_currentEdges: [],
-				currentSelected: [],
-				selectedEdges: nextProps.selectedEdges,
-		})
-
-
-
-
-	
 	}
 
 	selectorFunction = (value) => {
 
-		if(this.state.connectionChanges){
-			this.state.connectionChanges()
-		}
-
 		var newList = []
+
 		for(var i = 0; i < value.length; i++){
 			newList.push(this.state.availableConnections[value[i]])
 		}
-		this.state.selectedEdges(newList)
+
+		this.props.registerEdge({selectedEdges: newList})
 	}
 
 	render(){
 
+		console.log("RENDERING ADDCONNECTION")
+
 		const checkAdd_root = () => {
 
-			if(!this.state.edit){
+			if(this.props.create){
 
-				this.state.availableConnections = [this.state.currentNode._private.data.id]
+				this.state.availableConnections = [this.props.currentNode._private.data.id]
 
 				return (
 					<TableRow selected = {true} selectable={false}>
-						<TableRowColumn>{this.state.currentNode._private.data.id}</TableRowColumn>
-						<TableRowColumn>{this.state.currentNode._private.data.id}</TableRowColumn>
+						<TableRowColumn>{this.props.currentNode._private.data.id}</TableRowColumn>
+						<TableRowColumn>{this.props.currentNode._private.data.id}</TableRowColumn>
 						<TableRowColumn>Yes</TableRowColumn>
 					</TableRow>
 				)
@@ -99,14 +65,12 @@ export default class AddConnections extends Component {
 
 		const checkAdd_all = () => {
 
-
-			
-			if(!this.state.edit && this.state.cy){
+			if(this.props.create){
 				var allNodes = []
-				var newnodes = this.state.cy.nodes()
+				var newnodes = this.props.cy.nodes()
 	      
 	      for(var i = 0; i < newnodes.length; i++){
-	      	if(newnodes[i]._private.data.id !== this.state.currentNode._private.data.id){
+	      	if(newnodes[i]._private.data.id !== this.props.currentNode._private.data.id){
 	        	allNodes.push(newnodes[i]._private.data.id)
 	        	this.state.availableConnections.push(newnodes[i]._private.data.id)
 	      	}
@@ -125,19 +89,19 @@ export default class AddConnections extends Component {
 		}
 
 		const checkEdit_root = () => {
-			if(this.state.edit && this.state.cy){
+			if(this.props.edit){
 				
 				var currentEdges = []
 				this.state.availableConnections = []
 				this.state.edit_currentEdges = []
-					for(var i = 0; i < this.state.currentNode._private.edges.length; i++){
-						if(this.state.currentNode._private.edges[i]._private.data.source === this.state.currentNode._private.data.id){
-							currentEdges.push(this.state.currentNode._private.edges[i]._private.data.target)
-							this.state.availableConnections.push(this.state.currentNode._private.edges[i]._private.data.target)
+					for(var i = 0; i < this.props.currentNode._private.edges.length; i++){
+						if(this.props.currentNode._private.edges[i]._private.data.source === this.props.currentNode._private.data.id){
+							currentEdges.push(this.props.currentNode._private.edges[i]._private.data.target)
+							this.state.availableConnections.push(this.props.currentNode._private.edges[i]._private.data.target)
 							continue
 						}
-						currentEdges.push(this.state.currentNode._private.edges[i]._private.data.source)
-						this.state.availableConnections.push(this.state.currentNode._private.edges[i]._private.data.source)
+						currentEdges.push(this.props.currentNode._private.edges[i]._private.data.source)
+						this.state.availableConnections.push(this.props.currentNode._private.edges[i]._private.data.source)
 					}
 				
 
@@ -157,14 +121,11 @@ export default class AddConnections extends Component {
 
 		const checkEdit_all = () => {
 			
-			if(this.state.edit && this.state.cy){
+			if(this.props.edit){
 
 			var allNodes = []
-			var newNodes = this.state.cy.nodes();
+			var newNodes = this.props.cy.nodes();
 			var holderObject = {}
-
-			console.log(this.state.edit_currentEdges, "lol?")
-			
 
 			for(var i = 0; i < newNodes.length; i++){
 				allNodes.push(newNodes[i]._private.data.id)
@@ -176,7 +137,7 @@ export default class AddConnections extends Component {
 
 
 			return allNodes.map((value)=>{
-				if(!holderObject[value] && value !== this.state.currentNode._private.data.id){
+				if(!holderObject[value] && value !== this.props.currentNode._private.data.id){
 							this.state.availableConnections.push(value)
 					return (
 						<TableRow selected = {false} selectable={true}>
@@ -191,6 +152,7 @@ export default class AddConnections extends Component {
 		}
 
 		return (
+			
 			<div style={style.nodeList}>
 				<span>Node Connections</span>
 				<Table multiSelectable={true} onRowSelection={this.selectorFunction}>
@@ -213,3 +175,10 @@ export default class AddConnections extends Component {
 		)
 	}
 }
+
+function mapStateToProps(state){
+  console.log("MAPPING PROPS TO STATE IN ADDCONNECTIONS")
+  return { create: state.adminAdd.create, edit: state.adminEdit.edit, cy: state.selectNode.cy, currentNode : state.selectNode.currentNode }
+}
+
+export default connect(mapStateToProps,actions)(AddConnections)

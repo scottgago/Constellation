@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "babel-loader": "^6.2.4",
+    "body-parser": "^1.15.1",
     "cors": "^2.7.1",
     "cytoscape": "^2.7.2",
     "express": "^4.13.4",
@@ -28,6 +29,8 @@
     "react-video": "^1.5.3",
     "react-youtube": "^7.0.0",
     "redux": "^3.5.2",
+    "redux-form": "^5.2.5",
+    "redux-thunk": "^2.1.0",
     "webpack": "^1.13.1"
   },
   "devDependencies": {

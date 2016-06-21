@@ -12,6 +12,8 @@ import AdminAddVideo from './admin.addVideo';
 import AdminAddArticle from './admin.addArticle';
 import AddAdmin from './admin.addAdmins';
 import AddConnections from './admin.addConnections'
+import { connect } from 'react-redux';
+import * as actions from '../actions/reducerActions';
 
 var MarkdownEditor = require('react-markdown-editor').MarkdownEditor;
 
@@ -36,6 +38,22 @@ const style = {
     opacity: 1,
 
   },
+  actionsContainer : {
+    backgroundColor: "#d297d8"
+  },
+  editBackground: {
+
+    background: 'url(./assets/imgs/lol.jpg)',
+    backgroundSize: 'cover'
+  },
+  tabsColor: {
+    backgroundColor: "#6f2d6f"
+  },
+  editBackgroundBody: {
+
+    background: 'url(./assets/imgs/editbackground.png)',
+    backgroundSize: 'cover'
+  },
   submitButton: {
     width: '100%',
     height: 40
@@ -50,93 +68,27 @@ const style = {
   alignCenter : {
     alignItems: 'center',
     overflow: 'scroll'
+  },
+  actionButtons: {
+    color: '#6f2d6f'
   }
 }
 
-export default class editNode extends Component {
-  
-  constructor(props){
-    super(props)
-    this.state = {
-      edit: false,
-      cy: null,
-      markdownDescription: "",
-      currentVideos: [],
-      currentArticles: [],
-      currentNode: null,
-      addVideo: false,
-      addArticle: false,
-      selectedConnections: []
-    }
-  }
+class EditNode extends Component {
 
   onChangeSlider = (e, value) => {
-    this.state.currentNode.style({
+    this.props.currentNode.style({
       'width': 100 + value*500,
       'height': 100 + value*500,
     })
   }
 
-  forceRender = () =>{
-    this.setState({})
-  }
-
   handleAddVideo = () => {
-    this.setState({
-      addVideo : true
-    },
-    () => {
-      this.setState({
-        addVideo: false
-      })
-    })
+    this.props.openAddVideo()
   }
 
   handleAddArticle = () => {
-    this.setState({
-      addArticle : true
-    },
-    () => {
-      this.setState({
-        addArticle: false
-      })
-    })
-  }
-
-  componentWillReceiveProps = (props) =>{
-
-  
-
-    if(props.status.edit && props.status.passToEditNode){
-      this.setState({
-        cy: props.status.cy,
-        edit: true,
-        addVideo: false,
-        addArticle: false,
-        currentNode: props.status.passToEditNode['0'],
-        markdownDescription: props.status.passToEditNode['0']._private.data.description,
-        currentVideos: props.status.passToEditNode['0']._private.data.videos
-      })
-      return
-    }
-
-
-
-
-    if(props.status.edit){
-      
-      this.setState({
-        cy: props.status.cy,
-        edit: true,
-        addVideo: false,
-        addArticle: false,
-        currentNode: props.status.currentNode,
-        markdownDescription: props.status.currentNode._private.data.description,
-        currentVideos: props.status.currentNode._private.data.videos,
-        currentArticles: props.status.currentNode._private.data.articles,
-        connectionChanges: false
-      })
-    }
+    this.props.openAddArticle()
   }
 
   handleRequestClosePrompt = () => {
@@ -149,149 +101,115 @@ export default class editNode extends Component {
       currentNode: null,
       addVideo: false,
       addArticle: false,
-      selectedConnections: []
     });
   };
 
   onSubmit = () =>{
 
-    if(this.state.connectionChanges){
 
     var addNodes = []
 
-    for(var i = 0; i < this.state.selectedConnections.length; i++){
+    for(var i = 0; i < this.props.selectedEdges.length; i++){
       var flag = true
       
-      for(var j = 0; j < this.state.currentNode._private.edges.length; j++){
-        console.log(this.state.currentNode._private.edges[j]._private.data.source + ' = ' + this.state.selectedConnections[i])
-        console.log(this.state.currentNode._private.edges[j]._private.data.target + ' = ' + this.state.selectedConnections[i])
-        if(this.state.currentNode._private.edges[j]._private.data.source === this.state.selectedConnections[i] ||
-           this.state.currentNode._private.edges[j]._private.data.target === this.state.selectedConnections[i]){
+      for(var j = 0; j < this.props.currentNode._private.edges.length; j++){
+        if(this.props.currentNode._private.edges[j]._private.data.source === this.props.selectedEdges[i] ||
+           this.props.currentNode._private.edges[j]._private.data.target === this.props.selectedEdges[i]){
             flag = false
         }
       }
       if(flag){
-        console.log("pushing shit", this.state.selectedConnections[i])
-        addNodes.push(this.state.selectedConnections[i])
+        addNodes.push(this.props.selectedEdges[i])
       }
     }
 
     var cleanUp = []
 
-    for(var i = 0; i < this.state.currentNode._private.edges.length; i++){
-      console.log(i)
+    for(var i = 0; i < this.props.currentNode._private.edges.length; i++){
       var flag = false
-      for(var j = 0; j < this.state.selectedConnections.length; j++){
-        if(this.state.currentNode._private.edges[i]._private.data.source === this.state.selectedConnections[j] ||
-           this.state.currentNode._private.edges[i]._private.data.target === this.state.selectedConnections[j]){
+      for(var j = 0; j < this.props.selectedEdges.length; j++){
+        if(this.props.currentNode._private.edges[i]._private.data.source === this.props.selectedEdges[j] ||
+           this.props.currentNode._private.edges[i]._private.data.target === this.props.selectedEdges[j]){
             flag = true
         }
       }
       if(!flag){
-
-        
-        
-        cleanUp.push(this.state.currentNode._private.edges[i])
-        
-        
-
+        cleanUp.push(this.props.currentNode._private.edges[i])
       } 
     }
 
     for(var i = 0; i < cleanUp.length; i++){
-      this.state.cy.remove(cleanUp[i])
+      this.props.cy.remove(cleanUp[i])
     }
 
 
     for(var i = 0; i < addNodes.length; i++){
 
-      console.log(addNodes[i], "addnodes?")
-
-      this.state.cy.add({
+      this.props.cy.add({
         group: 'edges',
         data: {
-          id : this.state.currentNode._private.data.id + addNodes[i],
-          source: this.state.currentNode._private.data.id,
+          id : this.props.currentNode._private.data.id + addNodes[i],
+          source: this.props.currentNode._private.data.id,
           target: addNodes[i]
-        }
-      })
-    }
+          }
+        })
+      this.props.addConnection()
+
+      }
+
+
+      this.props.closeEdit()
   }
 
-
-
-    this.setState({
-      edit: false,
-      cy: null,
-      markdownDescription: "",
-      currentVideos: [],
-      currentArticles: [],
-      currentNode: null,
-      addVideo: false,
-      addArticle: false,
-      connectionChanges: false,
-      selectedConnections: []
-    });
-  
-}
-
-  connectionChanges = () => {
-    this.state.connectionChanges = true
-  }
-
-  selectedEdges = (value) => {
-    this.state.selectedConnections = value
-    console.log(value)
-  }
-
-  initTextBox = (currentNode) => {
-    
-    if(!currentNode){
-      return ""
-    }
-    return currentNode._private.data.id
-  }
-
-  initConnections = (currentNode) =>{
-    if(!currentNode){
-      return null
-    }
-    return currentNode
+  handleCancel = () => {
+    this.props.closeEdit()
   }
 
   render(){
+    console.log("RENDERING EDITNODE")
     const cancel = [
+      <FlatButton
+          label="Cancel"
+          onTouchTap={this.handleCancel}
+      />,
       <FlatButton
           label="Submit Changes"
           primary={true}
           onTouchTap={this.onSubmit}
+          style = {style.actionButtons}
+
       />
+
     ];
 
     return (
       <div>
         
         <Dialog
-          title="Edit Mode"
           modal={false}
           actions={cancel}
-          open={this.state.edit}
+          open={this.props.edit}
+          bodyStyle={style.editBackgroundBody}
+          actionsContainerStyle={style.actionsContainer}
+          style={style.editBackground}
           contentStyle ={style.dialogBody}>
-          <AdminAddVideo status={this.state} />
-          <AdminAddArticle status={this.state} />
+          <AdminAddVideo />
+          <AdminAddArticle />
           <div style = {style.dialogBody}>
-            <Tabs style={style.contentDiv}>
+            <Tabs style={style.contentDiv} tabItemContainerStyle={style.tabsColor}>
               <Tab label="Style">
+              <Paper zDepth={2}>
                 <div style = {style.alignCenter}>
                   <h2 style={style.headline}>Styling</h2>
                   <p>Node size</p>
                   <Slider name="slider0" defaultValue={0} style={style.sliderStyle} onChange={this.onChangeSlider} />
                 </div>
+              </Paper>
               </Tab>
               <Tab label="Content" >
                 <div>
                   <p>Videos</p>
-                  <Paper zDepth={2}> 
+                  <Paper zDepth={5}> 
                     <RaisedButton onTouchTap = {this.handleAddVideo} style={style.contentDiv}>Add a video</RaisedButton>
                     <Table>
                       <TableHeader>
@@ -304,7 +222,7 @@ export default class editNode extends Component {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {this.state.currentVideos.map(function(value, index){
+                        {this.props.currentVideos.map(function(value, index){
                           return (<TableRow>
                                     <TableRowColumn>{index + 1}</TableRowColumn>
                                     <TableRowColumn>Name</TableRowColumn>
@@ -316,8 +234,8 @@ export default class editNode extends Component {
                       </TableBody>
                     </Table>
                   </Paper>
-                  <p>Documentation</p>
                   <Paper zDepth={2}>
+                  <p>Documentation</p>
                     <RaisedButton onTouchTap = {this.handleAddArticle} style={style.contentDiv} >Add an article</RaisedButton>
                     <Table>
                       <TableHeader>
@@ -330,7 +248,7 @@ export default class editNode extends Component {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {this.state.currentArticles.map(function(value, index){
+                        {this.props.currentArticles.map(function(value, index){
                           return (<TableRow>
                                     <TableRowColumn>{index + 1}</TableRowColumn>
                                     <TableRowColumn>John Smith</TableRowColumn>
@@ -349,24 +267,21 @@ export default class editNode extends Component {
                   <p>Node name</p>
                   <Paper zDepth={2}>
                     <TextField disabled ={true} 
-                               defaultValue = {this.initTextBox(this.state.currentNode)} 
                                hintText="Nodename" 
                                style={style.textStyle} 
                                onChange = {this.handleChangeText} underlineShow={false} />
                     <Divider />
                   </Paper>
-                  <AddAdmin />
-                  <AddConnections currentNode={this.initConnections(this.state.currentNode)} 
-                                  edit = {this.state.edit}
-                                  cy = {this.state.cy}
-                                  selectedEdges = {this.selectedEdges}
-                                  selectedConnections = {this.state.selectedConnections}
-                                  connectionChanges = {this.connectionChanges} />
+                    <AddAdmin />
+                    <AddConnections />
+                  
+                  
+                
                 </div>
               </Tab>
               <Tab label="Markdown">
                 <div>
-                  <MarkdownEditor initialContent={this.state.markdownDescription} onContentChange ={this.contentChange} iconsSet="materialize-ui"/>
+                  <MarkdownEditor initialContent={this.props.markdownDescription} onContentChange ={this.contentChange} iconsSet="materialize-ui"/>
                   <RaisedButton style = {style.submitButton} > Submit markdown changes </RaisedButton>
                 </div>
               </Tab>
@@ -377,3 +292,10 @@ export default class editNode extends Component {
     )
   }
 }
+
+function mapStateToProps(state){
+  console.log("MAPPING STATE TO PROPS IN EDITNODE")
+  return { markdownDescription: state.adminEdit.markdownDescription, selectedEdges: state.adminAdd.selectedEdges, edit: state.adminEdit.edit, currentVideos: state.selectNode.currentVideos, currentArticles: state.selectNode.currentArticles, currentNode : state.selectNode.currentNode, cy: state.selectNode.cy }
+}
+
+export default connect(mapStateToProps, actions)(EditNode)

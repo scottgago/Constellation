@@ -1,4 +1,9 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+
+import * as actions from '../actions/reducerActions';
+
+
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import {Tabs, Tab} from 'material-ui/Tabs';
@@ -92,10 +97,10 @@ const style = {
   }
 }
 
-export default class AddNode extends Component {
+class AddNode extends Component {
 	constructor(props){
-    console.log(props)
 		super(props)
+
 		this.state = {
 			create: false,
 			cy: null,
@@ -110,19 +115,6 @@ export default class AddNode extends Component {
 			newNodeName : "",
 			markdownDescription: "",
 			starType: "./assets/imgs/star (1).png"
-		}
-	}
-
-	componentWillReceiveProps = (props) =>{
-
-   
-		if(props.status.create){
-			this.setState({
-				cy: props.status.cy,
-				create: true,
-				currentNode: props.status.currentNode,
-        selectedConnections: [props.status.currentNode._private.data.id]
-			})
 		}
 	}
 
@@ -141,17 +133,11 @@ export default class AddNode extends Component {
   }
 
 	handleRequestClosePrompt = () => {
-    this.setState({
-      currentNode : null,
-      newNodeName: "",
-      create: false,
-      markdownDescription: ""
-    });
+    this.props.closeCreate()
   };
 
 	handleChangeText = (e, value) => {
     this.state.newNodeName = value
-    
   }
 
   contentChange = (e,value) => {
@@ -159,7 +145,6 @@ export default class AddNode extends Component {
   }
 
   starChange = (e,value) => {
-  	console.log(value)
   	if(value === "star1"){
   		this.setState({
   			starType: './assets/imgs/star (1).png'
@@ -177,57 +162,17 @@ export default class AddNode extends Component {
   	}
   }
 
-  selectedEdges = (value) => {
-    this.state.selectedConnections = value
-  }
-
-  selectedNodes = (nodes) => {
-    this.state.selectedConnections = nodes
-  }
-
   onConfirm = (e, value) => {
 
-    console.log(this.state.selectedConnections)
-
-    if(this.state.newNodeName.length){
-    var anchor = this
-    
-      var newNodeName = this.state.newNodeName
-      var currentNode = this.state.currentNode._private.data.id
-
-      var newNode = this.state.cy.add([
-        {
-          group: 'nodes',
-          data: {
-            id : newNodeName,
-            admins: ['scott'],
-            description: anchor.state.markdownDescription,
-            videos: [],
-            articles: [],
-            styles: {
-              width: anchor.state.starWidth,
-              height: anchor.state.starHeight
-            }
-          },
-        }
-      ])['0'].style({
-      	'backgroundImage' : this.state.starType,
-        'width'           : this.state.starWidth,
-        'height'          : this.state.starHeight
-      }).addClass('gps_ring')
-
-      console.log(this.state.selectedConnections)
-
-      this.state.selectedConnections.forEach((edge) => {
-        this.state.cy.add({
-          group: 'edges',
-          data: {
-            id: edge+newNodeName,
-            source: newNodeName,
-            target: edge
-          }
-        })
-      })
+    this.props.createNode({cy: this.props.cy, 
+                           currentNode: this.props.currentNode, 
+                           id: this.state.newNodeName,
+                           description: this.state.markdownDescription,
+                           width: this.state.starWidth,
+                           height: this.state.starHeight,
+                           connections: this.props.selectedEdges,
+                           type: this.state.starType
+                         })
 
       /**
 
@@ -236,33 +181,23 @@ export default class AddNode extends Component {
 
       **/
 
-      this.state.cy.layout()
+      this.props.cy.layout()
       this.setState({
         create: false,
-        currentNode : null,
         newNodeName: "",
-        selectedConnections: [], 
         starWidth: 100,
         starHeight: 100,
         markdownDescription: "",
         starType: "./assets/imgs/star (1).png",
         edit: false,
-        passToEditNode: newNode
-			},
-		  () => {this.setState({
-				passToEditNode: null,
-				edit: false,
-				passToEditNode: null
-			})})
-      return
-    }
-    this.setState({
-      error : true
-    }, ()=>{this.state.error = false})
+			})
+
+      this.props.closeCreate()
     
   }
 
 	render(){
+    console.log("RENDERING ADDNODE")
 		const cancel = [
 		  <FlatButton
 		      label="Cancel"
@@ -283,7 +218,7 @@ export default class AddNode extends Component {
 	      modal={false}
 	      actions={cancel}
 				contentStyle ={style.dialogBody}
-	      open={this.state.create}>
+	      open={this.props.create}>
 	        <div style = {style.dialogBody}>
 		        <Tabs style={style.contentDiv}>
 		          <Tab label="Content" >
@@ -294,11 +229,7 @@ export default class AddNode extends Component {
 		                <Divider />
 		              </Paper>
                   <AddAdmin />
-                  <AddConnections 
-                    currentNode={this.state.currentNode} 
-                    create = {this.state.create}
-                    cy = {this.state.cy}
-                    selectedEdges = {this.selectedEdges}/>
+                  <AddConnections />
                 </div>
 		          </Tab>
 		          <Tab label="Description Markdown">
@@ -307,43 +238,52 @@ export default class AddNode extends Component {
 		            </div>
 		          </Tab>
 		          <Tab label="Styling">
-		                        <div style={style.marginTop}>
-    <RadioButtonGroup onChange={this.starChange} style = {style.floatLeft} name="shipSpeed" defaultSelected="star1">
-      <RadioButton
-        value="star1"
-        label="star1"
-        style={style.radioButtonTop}
-      />
-      <RadioButton
-        value="star2"
-        label="star2"
-        style={style.radioButton}
-      />
-      <RadioButton
-        value="star3"
-        label="star3"
-        style={style.radioButton}
-      />
-      <RadioButton
-        value="star4"
-        label="star4"
-        style={style.radioButton}
-      />
-    </RadioButtonGroup>
-  </div>
-  <div style={style.blackBox}> <img style={style.imageContent} src={this.state.starType}/>
-  <Slider name="slider0" defaultValue={0} style={style.sliderStyle} onChange={this.onChangeSlider} />
-  </div>
+		            <div style={style.marginTop}>
+
+                  <RadioButtonGroup onChange={this.starChange} style = {style.floatLeft} name="shipSpeed" defaultSelected="star1">
+
+                    <RadioButton
+                      value="star1"
+                      label="star1"
+                      style={style.radioButtonTop}
+                    />
+
+                    <RadioButton
+                      value="star2"
+                      label="star2"
+                      style={style.radioButton}
+                    />
+                    <RadioButton
+                      value="star3"
+                      label="star3"
+                      style={style.radioButton}
+                    />
+                    <RadioButton
+                      value="star4"
+                      label="star4"
+                      style={style.radioButton}
+                    />
+                  </RadioButtonGroup>
+                </div>
+                <div style={style.blackBox}> <img style={style.imageContent} src={this.state.starType}/>
+                  <Slider name="slider0" defaultValue={0} style={style.sliderStyle} onChange={this.onChangeSlider} />
+                </div>
 		          </Tab>
 		        </Tabs>
 	        </div>
           <Snackbar
           open={this.state.error}
           message={"Node name was blank or invalid. Please enter a new node name"}
-          autoHideDuration={4000}
-        />
-	    </Dialog>
+          autoHideDuration={4000} />
+	     </Dialog>
 	    </div>
 	    )
 	}
 }
+
+function mapStateToProps(state){
+  console.log("MAPPING STATE TO PROPS IN ADDNODE")
+  return { selectedEdges: state.adminAdd.selectedEdges, create: state.adminAdd.create, currentNode : state.selectNode.currentNode, cy: state.selectNode.cy }
+}
+
+export default connect(mapStateToProps, actions)(AddNode)

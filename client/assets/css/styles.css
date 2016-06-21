@@ -4,9 +4,14 @@
   top: 0;
   right: 0;
   bottom: 0;
-  background: url(../imgs/6927874-space-the-stars.jpg) no-repeat center center fixed; 
+  background: url("http://f.cl.ly/items/0m1s041Z2e0E1J2v2I3M/Galaxy_dark2.jpg") no-repeat center center fixed; 
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;
   background-size: cover;
+}
+
+
+html {
+    font-family: 'Roboto';
 }
