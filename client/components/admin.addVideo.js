@@ -175,6 +175,7 @@ class AddVideo extends Component {
       description : "",
       currentNode: null,
       videoURL: "",
+      name: "",
       currentVideo: "2g811Eo7K8U",
     };
   }
@@ -195,6 +196,12 @@ class AddVideo extends Component {
   handleTextChange = (e,value) =>{
     this.setState({
       videoURL: value
+    })
+  }
+
+  handleTextChangeName = (e,value) =>{
+    this.setState({
+      name: value
     })
   }
 
@@ -219,9 +226,11 @@ class AddVideo extends Component {
 
       this.props.currentNode._private.data.videos.push({
         video: anchor.state.videoURL,
-        markdown: anchor.state.description
+        markdown: anchor.state.description,
+        name: anchor.state.name
       })
 
+      this.props.addVideo(this.props.currentNode)
       this.props.closeAddVideo()
     }
   };
@@ -238,26 +247,21 @@ class AddVideo extends Component {
       case 0:
         return (
           <div style ={style.contentDiv}>
-                      <div style= {styles.floatLeftTopButton}>
-                      <TextField onChange = {this.handleTextChange} hintText="Confirm" style={style.textStyle} underlineShow={false} />
-                      <Divider />
-                      </div>
-                      <div style={styles.floatRightTopButton}>
-                      <RaisedButton
-                      style={styles.fill}
-                  label="Submit"
-                  primary={true}
-                  onTouchTap = {this.handleSubmit}
-                />
-                </div>
+                      <Paper zDepth={5}>
+                        <TextField onChange = {this.handleTextChangeName} hintText="Name" style={style.textStyle} underlineShow={false} />
+                        <Divider />
+                        <TextField onChange = {this.handleTextChange} hintText="URL" style={style.textStyle} underlineShow={false} />
+                        <Divider />
+                      </Paper>
                    
-          <Paper zDepth={2}>
-                    <YouTube
-                      videoId={this.state.currentVideo}
-                      opts={opts}
-                    />
-                    
-                </Paper>
+                      <Paper zDepth={2}>
+                      <YouTube
+                        videoId={this.state.currentVideo}
+                        opts={opts}
+                      />
+                      </Paper>
+
+
                 </div>)
       case 1:
         return <MarkdownEditor style = {style.contentDiv} initialContent={"this.state.description"} onContentChange ={this.contentChange} iconsSet="materialize-ui"/>
@@ -295,12 +299,12 @@ class AddVideo extends Component {
       justifyContent: 'center'
     }
     
-
+    console.log(this.props, "huh?")
     return (
       <div>
       <Dialog
           modal={false}
-          open={this.props.addVideo}
+          open={this.props.addVideoOpen}
           style={style.modalStyle}
           onRequestClose={this.handleClose}>
 
@@ -355,7 +359,9 @@ class AddVideo extends Component {
 
 function mapStateToProps(state){
   console.debug("MAPPING PROPS TO STATE IN ADDVIDEO")
-  return { addVideo: state.adminEdit.addVideo, currentNode : state.selectNode.currentNode }
+
+  console.log(state.adminEdit)
+  return { addVideoOpen: state.adminEdit.addVideo, currentNode : state.selectNode.currentNode }
 }
 
 export default connect(mapStateToProps,actions)(AddVideo)

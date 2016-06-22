@@ -269,11 +269,9 @@ class User extends Component {
                 return (<Tab label={value.name}>
                 <div style={styles.contentDiv}>
                  <div style={styles.floatLeft}>
-                  <Paper zDepth = {4}>
                     <YouTube
                      videoId={value.video}
                      opts={opts} />
-                    </Paper>
                   </div>
                   <div>
                     <Paper style={styles.floatRight} zDepth = {4} >

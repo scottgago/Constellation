@@ -225,9 +225,9 @@ class EditNode extends Component {
                         {this.props.currentVideos.map(function(value, index){
                           return (<TableRow>
                                     <TableRowColumn>{index + 1}</TableRowColumn>
-                                    <TableRowColumn>Name</TableRowColumn>
+                                    <TableRowColumn>{value.name}</TableRowColumn>
                                     <TableRowColumn>{value.video}</TableRowColumn>
-                                    <TableRowColumn>Employed</TableRowColumn>
+                                    <TableRowColumn>{value.description}</TableRowColumn>
                                     <TableRowColumn><RaisedButton>Edit</RaisedButton></TableRowColumn>
                                   </TableRow>)
                         })}

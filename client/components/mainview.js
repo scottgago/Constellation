@@ -86,9 +86,6 @@ class MainView extends Component {
 
     var evtTarget = event.cyTarget;
     var holder = bind.props.currentNode
-
-    console.log(evtTarget)
-    console.log(bind, "bind")
     
     if(evtTarget._private.ready || evtTarget._private.group === 'edges'){
       return

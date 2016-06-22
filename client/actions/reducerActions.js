@@ -5,7 +5,7 @@ import Firebase from 'firebase';
 const Posts = new Firebase('https://constellations-3ccaa.firebaseio.com');
 const nodesRef = Posts.child('elements')
 
-var newNode = Posts.push()
+// var newNode = nodesRef.push()
 
 // newNode.setWithPriority({
 // 			group: 'nodes',
@@ -25,14 +25,34 @@ var newNode = Posts.push()
 //         	}
 //       	}, "JavaScript")
 
+// console.log("creating?")
+
 export function submitEdit(currentNode){
 
-	var nodeRef = new Firebase(currentNode._private.data.firebaseID)
+	var nodeRef = new Firebase(currentNode._private.data.firebaseID + "/data/style")
 
-	console.log(nodeRef)
+	nodeRef.set({
+		height: currentNode._private.style.height.value,
+		width: currentNode._private.style.width.value,
+		starType: currentNode._private.style['background-image'].strValue
+	})
 	
 
 	return { type: ADMIN_SUBMIT_EDIT, payload: {}}
+}
+
+export function addVideo(currentNode){
+
+	console.log("in add video")
+
+	var nodeRef = new Firebase(currentNode._private.data.firebaseID + "/data")
+
+	nodeRef.update({
+		videos: currentNode._private.data.videos
+	})
+	
+
+	return { type: ADMIN_ADDVIDEO, payload: {}}
 }
 
 export function createNode({cy, currentNode, id, description, styles, admins, width, height, type, connections}) {
