@@ -282,7 +282,7 @@ class AddNode extends Component {
 }
 
 function mapStateToProps(state){
-  console.log("MAPPING STATE TO PROPS IN ADDNODE")
+  console.debug("MAPPING STATE TO PROPS IN ADDNODE")
   return { selectedEdges: state.adminAdd.selectedEdges, create: state.adminAdd.create, currentNode : state.selectNode.currentNode, cy: state.selectNode.cy }
 }
 

@@ -10,9 +10,9 @@ export default function(state, action) {
 		case ADMIN_ADDDESCRIPTION
 			return {...state, error: '', authenticated: true}
 		case ADMIN_ADDVIDEO:
-			return {...state, error: '', authenticated: true };
+			return state;
 		case ADMIN_ADDARTICLE:
-			return {...state, error: '', authenticated: true };
+			return state;
 
 		default:
 			return state;

@@ -143,19 +143,27 @@ class EditNode extends Component {
     }
 
 
+    
     for(var i = 0; i < addNodes.length; i++){
 
-      this.props.cy.add({
+      var newEdge = {
+        
         group: 'edges',
         data: {
           id : this.props.currentNode._private.data.id + addNodes[i],
           source: this.props.currentNode._private.data.id,
           target: addNodes[i]
           }
-        })
-      this.props.addConnection()
+        }
+
+      this.props.cy.add(newEdge)
+      this.props.editEdges({selectedEdge: newEdge})
 
       }
+
+
+
+
 
 
       this.props.closeEdit()
@@ -225,9 +233,9 @@ class EditNode extends Component {
                         {this.props.currentVideos.map(function(value, index){
                           return (<TableRow>
                                     <TableRowColumn>{index + 1}</TableRowColumn>
-                                    <TableRowColumn>Name</TableRowColumn>
+                                    <TableRowColumn>{value.name}</TableRowColumn>
                                     <TableRowColumn>{value.video}</TableRowColumn>
-                                    <TableRowColumn>Employed</TableRowColumn>
+                                    <TableRowColumn>{value.description}</TableRowColumn>
                                     <TableRowColumn><RaisedButton>Edit</RaisedButton></TableRowColumn>
                                   </TableRow>)
                         })}
@@ -294,7 +302,7 @@ class EditNode extends Component {
 }
 
 function mapStateToProps(state){
-  console.log("MAPPING STATE TO PROPS IN EDITNODE")
+  console.debug("MAPPING STATE TO PROPS IN EDITNODE")
   return { markdownDescription: state.adminEdit.markdownDescription, selectedEdges: state.adminAdd.selectedEdges, edit: state.adminEdit.edit, currentVideos: state.selectNode.currentVideos, currentArticles: state.selectNode.currentArticles, currentNode : state.selectNode.currentNode, cy: state.selectNode.cy }
 }
 

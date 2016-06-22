@@ -16,7 +16,6 @@ const INITIAL_STATE = {
 } 
 
 export default function(state = INITIAL_STATE, action) {
-	console.log("in reducer", action.payload)
 	switch(action.type){
 		case TOGGLE_ADMIN:
 		  return {...state, adminMode: action.payload.adminMode}
@@ -25,7 +24,7 @@ export default function(state = INITIAL_STATE, action) {
 		case REGISTER_CY:
 			return {...state, cy: action.payload.cy}
 		case SELECT_NODE: 
-			return {...state, moduleDescription: action.payload.moduleDescription, currentArticles: [], currentVideos: action.payload.currentVideos, currentNode : action.payload.currentNode, openUserView: action.payload.openUserView, previousNode : action.payload.previousNode}
+			return {...state, moduleDescription: action.payload.moduleDescription, currentArticles: action.payload.currentArticles, currentVideos: action.payload.currentVideos, currentNode : action.payload.currentNode, openUserView: action.payload.openUserView, previousNode : action.payload.previousNode}
 		case CLOSE_USER_VIEW:
 			return {...state, openUserView : action.payload.openUserView }
 		case ADMIN_OPEN_VIEW:
