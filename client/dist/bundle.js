@@ -46218,7 +46218,11 @@
 
 	function submitEdit(currentNode) {
 
-		return { type: _actionList.ADMIN_SUBMIT_EDIT, payload: { edgesChanged: true, selectedEdges: selectedEdges } };
+		var nodeRef = new _firebase2.default(currentNode._private.data.firebaseID);
+
+		console.log(nodeRef);
+
+		return { type: _actionList.ADMIN_SUBMIT_EDIT, payload: {} };
 	}
 
 	function createNode(_ref) {
@@ -46306,6 +46310,7 @@
 							group: snapshot.val().elements[key].group,
 							data: {
 								id: snapshot.val().elements[key].data.id,
+								firebaseID: snapshot.val().elements[key].data.firebaseID,
 								description: snapshot.val().elements[key].data.description,
 								style: snapshot.val().elements[key].data.style
 							}
@@ -46338,6 +46343,7 @@
 						newObj.data.quizzes = snapshot.val().elements[key].data.quizzes;
 					}
 					arr.push(newObj);
+					console.log(arr);
 				}
 
 				callback(arr);
@@ -46442,6 +46448,7 @@
 	var ADMIN_OPEN_EDIT = exports.ADMIN_OPEN_EDIT = "ADMIN_OPEN_EDIT";
 	var ADMIN_CLOSE_EDIT = exports.ADMIN_CLOSE_EDIT = "ADMIN_CLOSE_EDIT";
 	var TOGGLE_ADMIN = exports.TOGGLE_ADMIN = "TOGGLE_ADMIN";
+	var ADMIN_SUBMIT_EDIT = exports.ADMIN_SUBMIT_EDIT = "ADMIN_SUBMIT_EDIT";
 
 	var ADMIN_OPEN_ADDVIDEO = exports.ADMIN_OPEN_ADDVIDEO = "ADMIN_OPEN_ADDVIDEO";
 	var ADMIN_CLOSE_ADDVIDEO = exports.ADMIN_CLOSE_ADDVIDEO = "ADMIN_CLOSE_ADDVIDEO";
@@ -55175,7 +55182,7 @@
 	        _this.props.addConnection();
 	      }
 
-	      _this.props.submitEdit(currentNode);
+	      _this.props.submitEdit(_this.props.currentNode);
 	      _this.props.closeEdit();
 	    }, _this.handleCancel = function () {
 	      _this.props.closeEdit();
@@ -82094,6 +82101,8 @@
 		switch (action.type) {
 			case _actionList.ADMIN_OPEN_EDIT:
 				return _extends({}, state, { edit: true });
+			case _actionList.ADMIN_SUBMIT_EDIT:
+				return _extends({}, state);
 			case _actionList.ADMIN_CLOSE_EDIT:
 				return _extends({}, state, { edit: false });
 			case _actionList.ADMIN_OPEN_ADDVIDEO:

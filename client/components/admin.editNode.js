@@ -157,7 +157,7 @@ class EditNode extends Component {
 
       }
 
-      this.props.submitEdit(currentNode)
+      this.props.submitEdit(this.props.currentNode)
       this.props.closeEdit()
   }
 

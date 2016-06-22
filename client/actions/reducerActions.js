@@ -27,7 +27,12 @@ var newNode = Posts.push()
 
 export function submitEdit(currentNode){
 
-	return { type: ADMIN_SUBMIT_EDIT, payload: { edgesChanged: true, selectedEdges: selectedEdges}}
+	var nodeRef = new Firebase(currentNode._private.data.firebaseID)
+
+	console.log(nodeRef)
+	
+
+	return { type: ADMIN_SUBMIT_EDIT, payload: {}}
 }
 
 export function createNode({cy, currentNode, id, description, styles, admins, width, height, type, connections}) {
@@ -106,6 +111,7 @@ export function fetchNodes(callback) {
 				group: snapshot.val().elements[key].group,
 	        	data: { 
 		          	id: snapshot.val().elements[key].data.id,
+		          	firebaseID: snapshot.val().elements[key].data.firebaseID,
 		          	description: snapshot.val().elements[key].data.description,
 		          	style: snapshot.val().elements[key].data.style
 	        	}
@@ -138,6 +144,7 @@ export function fetchNodes(callback) {
       		newObj.data.quizzes = snapshot.val().elements[key].data.quizzes
       	}
       	arr.push(newObj)
+      	console.log(arr)
       }
 
       callback(arr)
