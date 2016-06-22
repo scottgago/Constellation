@@ -29,21 +29,28 @@ const styles = {
     display: 'block ',
     position: 'absolute',
     background: 'url(./assets/imgs/lol.jpg)',
+
+    transitionDuration: '1.5s',
     backgroundSize: 'cover'
   },
   launchContainerStyle : {
     maxWidth: '100%',
     display: 'block ',
     position: 'absolute',
-    background: 'url(http://wallpaper.zone/img/210731.jpg)',
-    backgroundSize: 'cover'
+    background: 'url(./assets/imgs/metalBackground.jpg)',
+    transitionDuration: '1.5s',
+    backgroundSize: 'cover',
+
   },
   launchContainerStylePanel : {
     maxWidth: '100%',
     display: 'block ',
     position: 'absolute',
     background: 'url(http://wallpaper.zone/img/210731.jpg)',
-    backgroundSize: 'cover'
+    backgroundSize: 'cover',
+    transitionDelay: '1.5s',
+    transitionDuration: '1s'
+
   },
   backButton: {
     position: 'fixed',
@@ -146,7 +153,7 @@ const styles = {
 	},
 	description: {
     padding: 10,
-    marginTop: 10
+    marginTop: 10,
 	},
   headline: {
     fontSize: 24,
@@ -164,7 +171,14 @@ const styles = {
     textColor: "white"
   }, 
   descPadding: {
-    padding: 5
+    height: 600,
+    width: 600,
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    bottom: 0,
+    right: 0,
+    margin: "auto"
   },
   inkBarStyle: {
     backgroundColor: "#c2ddf0"
@@ -174,6 +188,10 @@ const styles = {
   },
   topIframeMargin: {
     marginTop: 10
+  },
+  overlayOpacity: {
+    opacity: 1,
+    display: "none"
   }
 }
 
@@ -243,35 +261,43 @@ class User extends Component {
 
     console.log("RENDERING USERVIEW")
 
-    console.log(this.props)
-
 
     return(
   		<div>
       <Drawer
             docked={false}
             containerStyle={styles.launchContainerStyle}
-            overlayStyle={styles.launchContainerStyle}
             onRequestChange={(open) => {(()=>{console.log("fuck")})()}}
             width={1680}
             open={this.props.openUserView}>
+              
+
               <Drawer
               docked={false}
 
               zDepth={5}
-              containerStyle={styles.launchContainerStyle}
+              containerStyle={styles.launchContainerStylePanel}
+              overlayStyle={styles.overlayOpacity}
               onRequestChange={(open) => {(()=>{console.log("fuck")})()}}
               width={300}
               open={this.props.openUserView}>
+
+              <RaisedButton onClick = {this.handleClosePrompt} backgroundColor ='#ff0000' style={styles.buttonDecline}>ABORT</RaisedButton>
               </Drawer>
+
+              <Paper style= {styles.descPadding} zDepth = {5}>
+                <MarkdownParser style={styles.description} markdown={this.props.moduleDescription}/>
+              </Paper>
               <Drawer
               docked={false}
               zDepth={5}
-              containerStyle={styles.launchContainerStyle}
+              containerStyle={styles.launchContainerStylePanel}
+              overlayStyle={styles.overlayOpacity}
               openSecondary={true}
               onRequestChange={(open) => {(()=>{console.log("fuck")})()}}
               width={300}
               open={this.props.openUserView}>
+              <RaisedButton onClick = {this.handleOpenModule} backgroundColor ='#3ed715' style={styles.buttonAccept}>LAUNCH</RaisedButton> 
               </Drawer>
       </Drawer>
 
@@ -304,8 +330,9 @@ class User extends Component {
           <Drawer
             docked={false}
             containerStyle={styles.containerStyle}
-            overlayStyle={styles.containerStyle}
             onRequestChange={(open) => {(()=>{console.log("fuck")})()}}
+            
+              openSecondary={true}
             width={1680}
             open={this.props.openModuleView}>
 
