@@ -135,7 +135,7 @@ class Menu extends Component {
 }
 
 function mapStateToProps(state){
-  console.log("MAPPING STATE TO PROPS IN MENU")
+  console.debug("MAPPING STATE TO PROPS IN MENU")
   return { }
 }
 

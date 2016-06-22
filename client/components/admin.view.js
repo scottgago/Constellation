@@ -120,7 +120,7 @@ export default class Admin extends Component {
 }
 
 function mapStateToProps(state){
-  console.log("MAPPING STATE TO PROPS IN ADMINVIEW")
+  console.debug("MAPPING STATE TO PROPS IN ADMINVIEW")
   return { openAdminView: state.selectNode.openAdminView, create: state.adminAdd.create, currentNode : state.selectNode.currentNode, cy: state.selectNode.cy }
 }
 

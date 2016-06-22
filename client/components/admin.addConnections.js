@@ -177,7 +177,7 @@ class AddConnections extends Component {
 }
 
 function mapStateToProps(state){
-  console.log("MAPPING PROPS TO STATE IN ADDCONNECTIONS")
+  console.debug("MAPPING PROPS TO STATE IN ADDCONNECTIONS")
   return { create: state.adminAdd.create, edit: state.adminEdit.edit, cy: state.selectNode.cy, currentNode : state.selectNode.currentNode }
 }
 

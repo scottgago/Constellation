@@ -1,9 +1,34 @@
-import { TOGGLE_ADMIN, FETCH_NODES, ADMIN_CREATE_EDGES, ADMIN_OPEN_ADDARTICLE, ADMIN_CLOSE_ADDARTICLE, ADMIN_OPEN_ADDVIDEO, ADMIN_CLOSE_ADDVIDEO, ADMIN_CREATENODE, ADMIN_OPEN_VIEW, ADMIN_CLOSE_VIEW, ADMIN_OPENCREATE, ADMIN_CREATEDCOMPLETE, ADMIN_DELETENODE, ADMIN_ADDCONNECTIONS, USER_OPEN_MODULE, USER_CLOSE_MODULE,
+import { ADMIN_SUBMIT_EDIT, TOGGLE_ADMIN, FETCH_NODES, ADMIN_CREATE_EDGES, ADMIN_OPEN_ADDARTICLE, ADMIN_CLOSE_ADDARTICLE, ADMIN_OPEN_ADDVIDEO, ADMIN_CLOSE_ADDVIDEO, ADMIN_CREATENODE, ADMIN_OPEN_VIEW, ADMIN_CLOSE_VIEW, ADMIN_OPENCREATE, ADMIN_CREATEDCOMPLETE, ADMIN_DELETENODE, ADMIN_ADDCONNECTIONS, USER_OPEN_MODULE, USER_CLOSE_MODULE,
 		 ADMIN_ADDVIDEO, ADMIN_OPEN_EDIT, ADMIN_CLOSE_EDIT, ADMIN_ADDARTICLE, ADMIN_ADDDESCRIPTION, SELECT_NODE, REGISTER_CY, CLOSE_USER_VIEW } from './actionList'
 import Firebase from 'firebase';
 
-const Posts = new Firebase('https://node-test-1-2087b.firebaseio.com/nodesTest2');
-var nodesRef = Posts.child('elements')
+const Posts = new Firebase('https://constellations-3ccaa.firebaseio.com');
+const nodesRef = Posts.child('elements')
+
+var newNode = Posts.push()
+
+// newNode.setWithPriority({
+// 			group: 'nodes',
+//         	data: { 
+//         		firebaseID: newNode.toString(),
+// 	          	id: "JavaScript",
+// 	          	videos: '[]',
+// 	          	articles: '[]',
+// 	          	description: "",
+// 	          	questions: '[]',
+// 	          	quizzes: '[]',
+// 	          	style: {
+// 	          		width: 100,
+// 	          		height: 100,
+// 	          		starType: "./assets/imgs/star (1).png"
+// 	          	}
+//         	}
+//       	}, "JavaScript")
+
+export function submitEdit(currentNode){
+
+	return { type: ADMIN_SUBMIT_EDIT, payload: { edgesChanged: true, selectedEdges: selectedEdges}}
+}
 
 export function createNode({cy, currentNode, id, description, styles, admins, width, height, type, connections}) {
 
@@ -19,18 +44,18 @@ export function createNode({cy, currentNode, id, description, styles, admins, wi
         	data: { 
         		firebaseID: newNode.toString(),
 	          	id: nodeName,
-	          	videos: ["lol"],
+	          	videos: '[]',
 	          	articles: '[]',
 	          	description: "",
 	          	questions: '[]',
-	          	quizzes: '[]'
+	          	quizzes: '[]',
+	          	style: {
+	          		width: 100,
+	          		height: 100,
+	          		starType: "./assets/imgs/star (1).png"
+	          	}
         	}
       	}, nodeName)
-
-
-      	Posts.startAt(nodeName).endAt(nodeName).on("value", function(snapshot){
-      		console.log(snapshot)
-      	})
 
 
       	for(var i = 0; i < {connections}.connections.length; i++){
@@ -81,7 +106,8 @@ export function fetchNodes(callback) {
 				group: snapshot.val().elements[key].group,
 	        	data: { 
 		          	id: snapshot.val().elements[key].data.id,
-		          	description: snapshot.val().elements[key].data.description
+		          	description: snapshot.val().elements[key].data.description,
+		          	style: snapshot.val().elements[key].data.style
 	        	}
 	      	}
 	    } else {
@@ -111,8 +137,6 @@ export function fetchNodes(callback) {
       	} else {
       		newObj.data.quizzes = snapshot.val().elements[key].data.quizzes
       	}
-
-
       	arr.push(newObj)
       }
 

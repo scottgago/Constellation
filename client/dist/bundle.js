@@ -36790,7 +36790,7 @@
 	}(_react.Component);
 
 	function mapStateToProps(state) {
-	  console.log("MAPPING STATE TO PROPS IN MENU");
+	  console.debug("MAPPING STATE TO PROPS IN MENU");
 	  return {};
 	}
 
@@ -46163,6 +46163,7 @@
 	Object.defineProperty(exports, "__esModule", {
 		value: true
 	});
+	exports.submitEdit = submitEdit;
 	exports.createNode = createNode;
 	exports.toggleAdmin = toggleAdmin;
 	exports.fetchNodes = fetchNodes;
@@ -46192,8 +46193,33 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	var Posts = new _firebase2.default('https://node-test-1-2087b.firebaseio.com/nodesTest2');
+	var Posts = new _firebase2.default('https://constellations-3ccaa.firebaseio.com');
 	var nodesRef = Posts.child('elements');
+
+	var newNode = Posts.push();
+
+	// newNode.setWithPriority({
+	// 			group: 'nodes',
+	//         	data: {
+	//         		firebaseID: newNode.toString(),
+	// 	          	id: "JavaScript",
+	// 	          	videos: '[]',
+	// 	          	articles: '[]',
+	// 	          	description: "",
+	// 	          	questions: '[]',
+	// 	          	quizzes: '[]',
+	// 	          	style: {
+	// 	          		width: 100,
+	// 	          		height: 100,
+	// 	          		starType: "./assets/imgs/star (1).png"
+	// 	          	}
+	//         	}
+	//       	}, "JavaScript")
+
+	function submitEdit(currentNode) {
+
+		return { type: _actionList.ADMIN_SUBMIT_EDIT, payload: { edgesChanged: true, selectedEdges: selectedEdges } };
+	}
 
 	function createNode(_ref) {
 		var cy = _ref.cy;
@@ -46219,17 +46245,18 @@
 			data: {
 				firebaseID: newNode.toString(),
 				id: nodeName,
-				videos: ["lol"],
+				videos: '[]',
 				articles: '[]',
 				description: "",
 				questions: '[]',
-				quizzes: '[]'
+				quizzes: '[]',
+				style: {
+					width: 100,
+					height: 100,
+					starType: "./assets/imgs/star (1).png"
+				}
 			}
 		}, nodeName);
-
-		Posts.startAt(nodeName).endAt(nodeName).on("value", function (snapshot) {
-			console.log(snapshot);
-		});
 
 		for (var i = 0; i < { connections: connections }.connections.length; i++) {
 			nodesRef.push({
@@ -46279,7 +46306,8 @@
 							group: snapshot.val().elements[key].group,
 							data: {
 								id: snapshot.val().elements[key].data.id,
-								description: snapshot.val().elements[key].data.description
+								description: snapshot.val().elements[key].data.description,
+								style: snapshot.val().elements[key].data.style
 							}
 						};
 					} else {
@@ -46309,7 +46337,6 @@
 					} else {
 						newObj.data.quizzes = snapshot.val().elements[key].data.quizzes;
 					}
-
 					arr.push(newObj);
 				}
 
@@ -47676,6 +47703,17 @@
 	          });
 	        });
 
+	        var nodes = cy.nodes();
+
+	        for (var i = 0; i < nodes.length; i++) {
+	          nodes[i].style({
+	            'width': nodes[i]._private.data.style.width,
+	            'height': nodes[i]._private.data.style.height,
+	            'background-fit': 'contain',
+	            'background-image': nodes[i]._private.data.style.starType
+	          });
+	        }
+
 	        _this2.props.registerCY({ cy: cy });
 	      };
 
@@ -47698,7 +47736,7 @@
 	}(_react.Component);
 
 	function mapStateToProps(state) {
-	  console.log("MAPPING STATE TO PROPS IN MAINVIEW");
+	  console.debug("MAPPING STATE TO PROPS IN MAINVIEW");
 	  return { adminMode: state.selectNode.adminMode, nodes: state.selectNode.nodes, currentNode: state.selectNode.currentNode, previousNode: state.selectNode.previousNode, cy: state.selectNode.cy };
 	}
 
@@ -48195,7 +48233,7 @@
 
 
 	function mapStateToProps(state) {
-	  console.log("MAPPING STATE TO PROPS IN ADMINVIEW");
+	  console.debug("MAPPING STATE TO PROPS IN ADMINVIEW");
 	  return { openAdminView: state.selectNode.openAdminView, create: state.adminAdd.create, currentNode: state.selectNode.currentNode, cy: state.selectNode.cy };
 	}
 
@@ -54264,7 +54302,7 @@
 	}(_react.Component);
 
 	function mapStateToProps(state) {
-	  console.log("MAPPING STATE TO PROPS IN ADDNODE");
+	  console.debug("MAPPING STATE TO PROPS IN ADDNODE");
 	  return { selectedEdges: state.adminAdd.selectedEdges, create: state.adminAdd.create, currentNode: state.selectNode.currentNode, cy: state.selectNode.cy };
 	}
 
@@ -55137,6 +55175,7 @@
 	        _this.props.addConnection();
 	      }
 
+	      _this.props.submitEdit(currentNode);
 	      _this.props.closeEdit();
 	    }, _this.handleCancel = function () {
 	      _this.props.closeEdit();
@@ -55439,7 +55478,7 @@
 	}(_react.Component);
 
 	function mapStateToProps(state) {
-	  console.log("MAPPING STATE TO PROPS IN EDITNODE");
+	  console.debug("MAPPING STATE TO PROPS IN EDITNODE");
 	  return { markdownDescription: state.adminEdit.markdownDescription, selectedEdges: state.adminAdd.selectedEdges, edit: state.adminEdit.edit, currentVideos: state.selectNode.currentVideos, currentArticles: state.selectNode.currentArticles, currentNode: state.selectNode.currentNode, cy: state.selectNode.cy };
 	}
 
@@ -58143,7 +58182,7 @@
 	}(_react.Component);
 
 	function mapStateToProps(state) {
-	  console.log("MAPPING PROPS TO STATE IN ADDVIDEO");
+	  console.debug("MAPPING PROPS TO STATE IN ADDVIDEO");
 	  return { addVideo: state.adminEdit.addVideo, currentNode: state.selectNode.currentNode };
 	}
 
@@ -75605,7 +75644,7 @@
 
 	function mapStateToProps(state) {
 
-	  console.log("MAPPING PROPS TO STATE IN ADDARTICLE");
+	  console.debug("MAPPING PROPS TO STATE IN ADDARTICLE");
 	  return { currentNode: state.selectNode.currentNode, addArticle: state.adminEdit.addArticle };
 	}
 
@@ -76069,7 +76108,7 @@
 	}(_react.Component);
 
 	function mapStateToProps(state) {
-		console.log("MAPPING PROPS TO STATE IN ADDCONNECTIONS");
+		console.debug("MAPPING PROPS TO STATE IN ADDCONNECTIONS");
 		return { create: state.adminAdd.create, edit: state.adminEdit.edit, cy: state.selectNode.cy, currentNode: state.selectNode.currentNode };
 	}
 
@@ -76549,7 +76588,7 @@
 	}(_react.Component);
 
 	function mapStateToProps(state) {
-	  console.log("MAPPING STATE TO PROPS IN USERVIEW");
+	  console.debug("MAPPING STATE TO PROPS IN USERVIEW");
 	  return {
 	    cy: state.selectNode.cy,
 	    openModuleView: state.selectNode.openModuleView,
@@ -81998,7 +82037,6 @@
 		var state = arguments.length <= 0 || arguments[0] === undefined ? INITIAL_STATE : arguments[0];
 		var action = arguments[1];
 
-		console.log("in reducer", action.payload);
 		switch (action.type) {
 			case _actionList.TOGGLE_ADMIN:
 				return _extends({}, state, { adminMode: action.payload.adminMode });

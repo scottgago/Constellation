@@ -16,7 +16,6 @@ const INITIAL_STATE = {
 } 
 
 export default function(state = INITIAL_STATE, action) {
-	console.log("in reducer", action.payload)
 	switch(action.type){
 		case TOGGLE_ADMIN:
 		  return {...state, adminMode: action.payload.adminMode}

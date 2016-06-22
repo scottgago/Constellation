@@ -354,7 +354,7 @@ class AddVideo extends Component {
 }
 
 function mapStateToProps(state){
-  console.log("MAPPING PROPS TO STATE IN ADDVIDEO")
+  console.debug("MAPPING PROPS TO STATE IN ADDVIDEO")
   return { addVideo: state.adminEdit.addVideo, currentNode : state.selectNode.currentNode }
 }
 

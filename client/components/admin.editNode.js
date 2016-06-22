@@ -157,7 +157,7 @@ class EditNode extends Component {
 
       }
 
-
+      this.props.submitEdit(currentNode)
       this.props.closeEdit()
   }
 
@@ -294,7 +294,7 @@ class EditNode extends Component {
 }
 
 function mapStateToProps(state){
-  console.log("MAPPING STATE TO PROPS IN EDITNODE")
+  console.debug("MAPPING STATE TO PROPS IN EDITNODE")
   return { markdownDescription: state.adminEdit.markdownDescription, selectedEdges: state.adminAdd.selectedEdges, edit: state.adminEdit.edit, currentVideos: state.selectNode.currentVideos, currentArticles: state.selectNode.currentArticles, currentNode : state.selectNode.currentNode, cy: state.selectNode.cy }
 }
 

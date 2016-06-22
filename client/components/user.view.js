@@ -339,7 +339,7 @@ class User extends Component {
 }
 
 function mapStateToProps(state){
-  console.log("MAPPING STATE TO PROPS IN USERVIEW")
+  console.debug("MAPPING STATE TO PROPS IN USERVIEW")
   return ({
           cy: state.selectNode.cy,
           openModuleView: state.selectNode.openModuleView, 

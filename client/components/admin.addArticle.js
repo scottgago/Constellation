@@ -218,7 +218,7 @@ class AddArticle extends Component {
 
 function mapStateToProps(state){
 
-  console.log("MAPPING PROPS TO STATE IN ADDARTICLE")
+  console.debug("MAPPING PROPS TO STATE IN ADDARTICLE")
   return {currentNode: state.selectNode.currentNode, addArticle: state.adminEdit.addArticle}
 }
 

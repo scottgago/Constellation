@@ -157,10 +157,21 @@ class MainView extends Component {
     )
     });
 
+    var nodes = cy.nodes()
+
+    for(var i = 0; i < nodes.length; i++){
+      nodes[i].style({
+        'width' : nodes[i]._private.data.style.width,
+        'height' : nodes[i]._private.data.style.height,
+        'background-fit' : 'contain',
+        'background-image' : nodes[i]._private.data.style.starType, 
+      })
+    }
+
     this.props.registerCY({cy : cy})
     }
-    
-  	this.props.fetchNodes(initCy)
+  	
+    this.props.fetchNodes(initCy)
     
 
   }
@@ -176,7 +187,7 @@ class MainView extends Component {
 }
 
 function mapStateToProps(state){
-  console.log("MAPPING STATE TO PROPS IN MAINVIEW")
+  console.debug("MAPPING STATE TO PROPS IN MAINVIEW")
   return {adminMode: state.selectNode.adminMode, nodes: state.selectNode.nodes, currentNode: state.selectNode.currentNode, previousNode: state.selectNode.previousNode, cy: state.selectNode.cy}
 }
 
