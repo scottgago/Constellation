@@ -46164,6 +46164,7 @@
 		value: true
 	});
 	exports.submitEdit = submitEdit;
+	exports.editEdges = editEdges;
 	exports.addVideo = addVideo;
 	exports.addArticle = addArticle;
 	exports.createNode = createNode;
@@ -46233,9 +46234,21 @@
 		return { type: _actionList.ADMIN_SUBMIT_EDIT, payload: {} };
 	}
 
-	function addVideo(currentNode) {
+	function editEdges(_ref) {
+		var selectedEdge = _ref.selectedEdge;
 
-		console.log("in add video");
+
+		var newEdge = nodesRef.push();
+
+		var newEdgeObj = { selectedEdge: selectedEdge };
+
+		newEdgeObj.selectedEdge.data.firebaseID = newEdge.toString(), console.log(newEdgeObj.selectedEdge);
+
+		newEdge.setWithPriority(newEdgeObj.selectedEdge, newEdgeObj.selectedEdge.data.id);
+		return { type: _actionList.ADMIN_EDIT_EDGES, payload: { edgesChanges: false } };
+	}
+
+	function addVideo(currentNode) {
 
 		var nodeRef = new _firebase2.default(currentNode._private.data.firebaseID + "/data");
 
@@ -46248,8 +46261,6 @@
 
 	function addArticle(currentNode) {
 
-		console.log("in add article");
-
 		var nodeRef = new _firebase2.default(currentNode._private.data.firebaseID + "/data");
 
 		nodeRef.update({
@@ -46259,20 +46270,23 @@
 		return { type: _actionList.ADMIN_ADDARTICLE, payload: {} };
 	}
 
-	function createNode(_ref) {
-		var cy = _ref.cy;
-		var currentNode = _ref.currentNode;
-		var id = _ref.id;
-		var description = _ref.description;
-		var styles = _ref.styles;
-		var admins = _ref.admins;
-		var width = _ref.width;
-		var height = _ref.height;
-		var type = _ref.type;
-		var connections = _ref.connections;
+	function createNode(_ref2) {
+		var cy = _ref2.cy;
+		var currentNode = _ref2.currentNode;
+		var id = _ref2.id;
+		var description = _ref2.description;
+		var styles = _ref2.styles;
+		var admins = _ref2.admins;
+		var width = _ref2.width;
+		var height = _ref2.height;
+		var type = _ref2.type;
+		var connections = _ref2.connections;
 
 
 		var nodeName = { id: id }.id;
+		var height = { height: height }.height;
+		var width = { width: width }.width;
+		var starType = { type: type }.type;
 
 		var newNode = nodesRef.push();
 
@@ -46289,9 +46303,9 @@
 				questions: '[]',
 				quizzes: '[]',
 				style: {
-					width: 100,
-					height: 100,
-					starType: "./assets/imgs/star (1).png"
+					width: width,
+					height: height,
+					starType: starType
 				}
 			}
 		}, nodeName);
@@ -46323,8 +46337,8 @@
 		};
 	}
 
-	function toggleAdmin(_ref2) {
-		var adminMode = _ref2.adminMode;
+	function toggleAdmin(_ref3) {
+		var adminMode = _ref3.adminMode;
 
 		return { type: _actionList.TOGGLE_ADMIN, payload: { adminMode: adminMode } };
 	}
@@ -46393,8 +46407,8 @@
 		nodesRef.push(connection);
 	}
 
-	function registerEdge(_ref3) {
-		var selectedEdges = _ref3.selectedEdges;
+	function registerEdge(_ref4) {
+		var selectedEdges = _ref4.selectedEdges;
 
 		return { type: _actionList.ADMIN_CREATE_EDGES, payload: { edgesChanged: true, selectedEdges: selectedEdges } };
 	}
@@ -46435,20 +46449,19 @@
 		return { type: _actionList.ADMIN_CREATEDCOMPLETE, payload: { create: false } };
 	}
 
-	function selectNode(_ref4) {
-		var moduleDescription = _ref4.moduleDescription;
-		var currentNode = _ref4.currentNode;
-		var previousNode = _ref4.previousNode;
-		var openUserView = _ref4.openUserView;
-		var currentArticles = _ref4.currentArticles;
-		var currentVideos = _ref4.currentVideos;
+	function selectNode(_ref5) {
+		var moduleDescription = _ref5.moduleDescription;
+		var currentNode = _ref5.currentNode;
+		var previousNode = _ref5.previousNode;
+		var openUserView = _ref5.openUserView;
+		var currentArticles = _ref5.currentArticles;
+		var currentVideos = _ref5.currentVideos;
 
-		console.log({ currentArticles: currentArticles }, "LOLOLOL");
 		return { type: _actionList.SELECT_NODE, payload: { moduleDescription: moduleDescription, currentArticles: currentArticles, currentVideos: currentVideos, currentNode: currentNode, previousNode: previousNode, openUserView: openUserView } };
 	}
 
-	function registerCY(_ref5) {
-		var cy = _ref5.cy;
+	function registerCY(_ref6) {
+		var cy = _ref6.cy;
 
 		return { type: _actionList.REGISTER_CY, payload: { cy: cy } };
 	}
@@ -46484,6 +46497,7 @@
 	var ADMIN_CLOSE_EDIT = exports.ADMIN_CLOSE_EDIT = "ADMIN_CLOSE_EDIT";
 	var TOGGLE_ADMIN = exports.TOGGLE_ADMIN = "TOGGLE_ADMIN";
 	var ADMIN_SUBMIT_EDIT = exports.ADMIN_SUBMIT_EDIT = "ADMIN_SUBMIT_EDIT";
+	var ADMIN_EDIT_EDGES = exports.ADMIN_EDIT_EDGES = "ADMIN_EDITCONNECTION";
 
 	var ADMIN_OPEN_ADDVIDEO = exports.ADMIN_OPEN_ADDVIDEO = "ADMIN_OPEN_ADDVIDEO";
 	var ADMIN_CLOSE_ADDVIDEO = exports.ADMIN_CLOSE_ADDVIDEO = "ADMIN_CLOSE_ADDVIDEO";
@@ -47638,6 +47652,47 @@
 	    value: function componentDidMount() {
 	      var _this2 = this;
 
+	      var defaultOptions = {
+	        // Called on `layoutready`
+
+	        name: "cose-bilkent",
+	        ready: function ready() {},
+	        // Called on `layoutstop`
+	        stop: function stop() {},
+	        // Whether to fit the network view after when done
+	        fit: true,
+	        // Padding on fit
+	        padding: 10,
+	        // Whether to enable incremental mode
+	        randomize: true,
+	        // Node repulsion (non overlapping) multiplier
+	        nodeRepulsion: 4500,
+	        // Ideal edge (non nested) length
+	        idealEdgeLength: 50,
+	        // Divisor to compute edge forces
+	        edgeElasticity: 0.45,
+	        // Nesting factor (multiplier) to compute ideal edge length for nested edges
+	        nestingFactor: 0.1,
+	        // Gravity force (constant)
+	        gravity: 0.25,
+	        // Maximum number of iterations to perform
+	        numIter: 2500,
+	        // For enabling tiling
+	        tile: true,
+	        // Type of layout animation. The option set is {'during', 'end', false}
+	        animate: 'end',
+	        // Represents the amount of the vertical space to put between the zero degree members during the tiling operation(can also be a function)
+	        tilingPaddingVertical: 10,
+	        // Represents the amount of the horizontal space to put between the zero degree members during the tiling operation(can also be a function)
+	        tilingPaddingHorizontal: 10,
+	        // Gravity range (constant) for compounds
+	        gravityRangeCompound: 1.5,
+	        // Gravity force (constant) for compounds
+	        gravityCompound: 1.0,
+	        // Gravity range (constant)
+	        gravityRange: 3.8
+	      };
+
 	      var bind = this;
 
 	      var initCy = function initCy(value) {
@@ -47653,7 +47708,7 @@
 	              'background-opacity': 0,
 	              'label': 'data(id)',
 	              'text-valign': 'top',
-	              'font-size': 40,
+	              'font-size': 15,
 	              'color': 'white',
 	              'z-index': '-100',
 	              'width': 100,
@@ -47676,6 +47731,7 @@
 	          }],
 	          layout: {
 	            name: 'cose-bilkent'
+
 	          }
 	        }).on('tap', function (event) {
 
@@ -47728,7 +47784,8 @@
 	            if (bind.props.previousNode._private) {
 	              bind.props.previousNode._private.edges.forEach(function (value) {
 	                bind.props.previousNode.style({
-	                  'font-size': 40
+	                  'font-size': 30,
+	                  'color': "#66ff00"
 	                });
 	                if (value._private.data.source !== bind.props.currentNode._private.data.id && value._private.data.target !== bind.props.currentNode._private.data.id) value.style({
 	                  'line-color': '#ccc',
@@ -47748,11 +47805,10 @@
 	          nodes[i].style({
 	            'width': nodes[i]._private.data.style.width,
 	            'height': nodes[i]._private.data.style.height,
-	            'background-fit': 'contain',
 	            'background-image': nodes[i]._private.data.style.starType
 	          });
 	        }
-
+	        cy.layout(defaultOptions);
 	        _this2.props.registerCY({ cy: cy });
 	      };
 
@@ -55203,18 +55259,20 @@
 
 	      for (var i = 0; i < addNodes.length; i++) {
 
-	        _this.props.cy.add({
+	        var newEdge = {
+
 	          group: 'edges',
 	          data: {
 	            id: _this.props.currentNode._private.data.id + addNodes[i],
 	            source: _this.props.currentNode._private.data.id,
 	            target: addNodes[i]
 	          }
-	        });
-	        _this.props.addConnection();
+	        };
+
+	        _this.props.cy.add(newEdge);
+	        _this.props.editEdges({ selectedEdge: newEdge });
 	      }
 
-	      _this.props.submitEdit(_this.props.currentNode);
 	      _this.props.closeEdit();
 	    }, _this.handleCancel = function () {
 	      _this.props.closeEdit();
@@ -65162,7 +65220,7 @@
 	    maxWidth: "49%",
 	    width: '49%',
 	    marginTop: 10,
-	    height: '100%',
+	    maxHeight: 620,
 	    overflow: 'scroll',
 	    display: 'block',
 	    marginRight: 10,
@@ -82140,6 +82198,8 @@
 		switch (action.type) {
 			case _actionList.ADMIN_OPEN_EDIT:
 				return _extends({}, state, { edit: true });
+			case _actionList.ADMIN_EDIT_EDGES:
+				return state;
 			case _actionList.ADMIN_SUBMIT_EDIT:
 				return _extends({}, state);
 			case _actionList.ADMIN_CLOSE_EDIT:

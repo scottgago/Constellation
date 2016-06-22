@@ -108,7 +108,7 @@ const styles = {
 		maxWidth: "49%",
     width: '49%',
     marginTop: 10,
-    height: '100%',
+    maxHeight: 620,
 		overflow: 'scroll',
     display: 'block',
     marginRight: 10,

@@ -1,4 +1,4 @@
-import { ADMIN_SUBMIT_EDIT, TOGGLE_ADMIN, FETCH_NODES, ADMIN_CREATE_EDGES, ADMIN_OPEN_ADDARTICLE, ADMIN_CLOSE_ADDARTICLE, ADMIN_OPEN_ADDVIDEO, ADMIN_CLOSE_ADDVIDEO, ADMIN_CREATENODE, ADMIN_OPEN_VIEW, ADMIN_CLOSE_VIEW, ADMIN_OPENCREATE, ADMIN_CREATEDCOMPLETE, ADMIN_DELETENODE, ADMIN_ADDCONNECTIONS, USER_OPEN_MODULE, USER_CLOSE_MODULE,
+import { ADMIN_EDIT_EDGES, ADMIN_SUBMIT_EDIT, TOGGLE_ADMIN, FETCH_NODES, ADMIN_CREATE_EDGES, ADMIN_OPEN_ADDARTICLE, ADMIN_CLOSE_ADDARTICLE, ADMIN_OPEN_ADDVIDEO, ADMIN_CLOSE_ADDVIDEO, ADMIN_CREATENODE, ADMIN_OPEN_VIEW, ADMIN_CLOSE_VIEW, ADMIN_OPENCREATE, ADMIN_CREATEDCOMPLETE, ADMIN_DELETENODE, ADMIN_ADDCONNECTIONS, USER_OPEN_MODULE, USER_CLOSE_MODULE,
 		 ADMIN_ADDVIDEO, ADMIN_OPEN_EDIT, ADMIN_CLOSE_EDIT, ADMIN_ADDARTICLE, ADMIN_ADDDESCRIPTION, SELECT_NODE, REGISTER_CY, CLOSE_USER_VIEW } from './actionList'
 import Firebase from 'firebase';
 
@@ -41,9 +41,22 @@ export function submitEdit(currentNode){
 	return { type: ADMIN_SUBMIT_EDIT, payload: {}}
 }
 
+export function editEdges({selectedEdge}){
+
+	var newEdge = nodesRef.push()
+
+	var newEdgeObj = {selectedEdge}
+
+	newEdgeObj.selectedEdge.data.firebaseID = newEdge.toString(),
+
+	console.log(newEdgeObj.selectedEdge)
+
+	newEdge.setWithPriority(newEdgeObj.selectedEdge, newEdgeObj.selectedEdge.data.id)
+	return { type: ADMIN_EDIT_EDGES, payload: { edgesChanges: false} }
+}
+
 export function addVideo(currentNode){
 
-	console.log("in add video")
 
 	var nodeRef = new Firebase(currentNode._private.data.firebaseID + "/data")
 
@@ -56,8 +69,6 @@ export function addVideo(currentNode){
 }
 
 export function addArticle(currentNode){
-
-	console.log("in add article")
 
 	var nodeRef = new Firebase(currentNode._private.data.firebaseID + "/data")
 
@@ -73,6 +84,9 @@ export function createNode({cy, currentNode, id, description, styles, admins, wi
 
 
 		var nodeName = {id: id}.id
+		var height = {height: height}.height
+		var width = {width: width}.width
+		var starType = {type: type}.type
 
 		var newNode = nodesRef.push()
 
@@ -89,9 +103,9 @@ export function createNode({cy, currentNode, id, description, styles, admins, wi
 	          	questions: '[]',
 	          	quizzes: '[]',
 	          	style: {
-	          		width: 100,
-	          		height: 100,
-	          		starType: "./assets/imgs/star (1).png"
+	          		width: width,
+	          		height: height,
+	          		starType: starType
 	          	}
         	}
       	}, nodeName)
@@ -235,7 +249,6 @@ export function closeCreate(){
 }
 
 export function selectNode({moduleDescription, currentNode, previousNode, openUserView, currentArticles, currentVideos}){
-	console.log({currentArticles}, "LOLOLOL")
 	return { type: SELECT_NODE, payload :  {moduleDescription: moduleDescription, currentArticles: currentArticles, currentVideos: currentVideos, currentNode: currentNode, previousNode: previousNode, openUserView : openUserView} }
 }
 

@@ -143,21 +143,29 @@ class EditNode extends Component {
     }
 
 
+    
     for(var i = 0; i < addNodes.length; i++){
 
-      this.props.cy.add({
+      var newEdge = {
+        
         group: 'edges',
         data: {
           id : this.props.currentNode._private.data.id + addNodes[i],
           source: this.props.currentNode._private.data.id,
           target: addNodes[i]
           }
-        })
-      this.props.addConnection()
+        }
+
+      this.props.cy.add(newEdge)
+      this.props.editEdges({selectedEdge: newEdge})
 
       }
 
-      this.props.submitEdit(this.props.currentNode)
+
+
+
+
+
       this.props.closeEdit()
   }
 

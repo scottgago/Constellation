@@ -41,6 +41,49 @@ class MainView extends Component {
 
   componentDidMount() {
 
+    var defaultOptions = {
+  // Called on `layoutready`
+
+  name : "cose-bilkent",
+  ready: function () {
+  },
+  // Called on `layoutstop`
+  stop: function () {
+  },
+  // Whether to fit the network view after when done
+  fit: true,
+  // Padding on fit
+  padding: 10,
+  // Whether to enable incremental mode
+  randomize: true,
+  // Node repulsion (non overlapping) multiplier
+  nodeRepulsion: 4500,
+  // Ideal edge (non nested) length
+  idealEdgeLength: 50,
+  // Divisor to compute edge forces
+  edgeElasticity: 0.45,
+  // Nesting factor (multiplier) to compute ideal edge length for nested edges
+  nestingFactor: 0.1,
+  // Gravity force (constant)
+  gravity: 0.25,
+  // Maximum number of iterations to perform
+  numIter: 2500,
+  // For enabling tiling
+  tile: true,
+  // Type of layout animation. The option set is {'during', 'end', false}
+  animate: 'end',
+  // Represents the amount of the vertical space to put between the zero degree members during the tiling operation(can also be a function)
+  tilingPaddingVertical: 10,
+  // Represents the amount of the horizontal space to put between the zero degree members during the tiling operation(can also be a function)
+  tilingPaddingHorizontal: 10,
+  // Gravity range (constant) for compounds
+  gravityRangeCompound: 1.5,
+  // Gravity force (constant) for compounds
+  gravityCompound: 1.0,
+  // Gravity range (constant)
+  gravityRange: 3.8
+};
+
   	var bind = this
 
     var initCy = (value) => {
@@ -56,7 +99,7 @@ class MainView extends Component {
           'background-opacity': 0,
           'label': 'data(id)',
           'text-valign': 'top',
-          'font-size': 40,
+          'font-size': 15,
           'color': 'white',
           'z-index': '-100',
           'width' : 100,
@@ -80,6 +123,7 @@ class MainView extends Component {
       }],
     layout: {
       name: 'cose-bilkent'
+      
     },
   }).on('tap', function(event){
 
@@ -138,7 +182,8 @@ class MainView extends Component {
       if(bind.props.previousNode._private){
       bind.props.previousNode._private.edges.forEach((value)=>{
         bind.props.previousNode.style({
-          'font-size' : 40
+          'font-size' : 30,
+          'color': "#66ff00"
         })
         if( (value._private.data.source !== bind.props.currentNode._private.data.id) && (value._private.data.target !== bind.props.currentNode._private.data.id ))
         value.style({
@@ -160,11 +205,10 @@ class MainView extends Component {
       nodes[i].style({
         'width' : nodes[i]._private.data.style.width,
         'height' : nodes[i]._private.data.style.height,
-        'background-fit' : 'contain',
         'background-image' : nodes[i]._private.data.style.starType, 
       })
     }
-
+    cy.layout(defaultOptions)
     this.props.registerCY({cy : cy})
     }
   	
