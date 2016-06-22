@@ -55,6 +55,20 @@ export function addVideo(currentNode){
 	return { type: ADMIN_ADDVIDEO, payload: {}}
 }
 
+export function addArticle(currentNode){
+
+	console.log("in add article")
+
+	var nodeRef = new Firebase(currentNode._private.data.firebaseID + "/data")
+
+	nodeRef.update({
+		articles: currentNode._private.data.articles
+	})
+	
+
+	return { type: ADMIN_ADDARTICLE, payload: {}}
+}
+
 export function createNode({cy, currentNode, id, description, styles, admins, width, height, type, connections}) {
 
 
@@ -221,6 +235,7 @@ export function closeCreate(){
 }
 
 export function selectNode({moduleDescription, currentNode, previousNode, openUserView, currentArticles, currentVideos}){
+	console.log({currentArticles}, "LOLOLOL")
 	return { type: SELECT_NODE, payload :  {moduleDescription: moduleDescription, currentArticles: currentArticles, currentVideos: currentVideos, currentNode: currentNode, previousNode: previousNode, openUserView : openUserView} }
 }
 

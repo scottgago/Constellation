@@ -46165,6 +46165,7 @@
 	});
 	exports.submitEdit = submitEdit;
 	exports.addVideo = addVideo;
+	exports.addArticle = addArticle;
 	exports.createNode = createNode;
 	exports.toggleAdmin = toggleAdmin;
 	exports.fetchNodes = fetchNodes;
@@ -46243,6 +46244,19 @@
 		});
 
 		return { type: _actionList.ADMIN_ADDVIDEO, payload: {} };
+	}
+
+	function addArticle(currentNode) {
+
+		console.log("in add article");
+
+		var nodeRef = new _firebase2.default(currentNode._private.data.firebaseID + "/data");
+
+		nodeRef.update({
+			articles: currentNode._private.data.articles
+		});
+
+		return { type: _actionList.ADMIN_ADDARTICLE, payload: {} };
 	}
 
 	function createNode(_ref) {
@@ -46429,6 +46443,7 @@
 		var currentArticles = _ref4.currentArticles;
 		var currentVideos = _ref4.currentVideos;
 
+		console.log({ currentArticles: currentArticles }, "LOLOLOL");
 		return { type: _actionList.SELECT_NODE, payload: { moduleDescription: moduleDescription, currentArticles: currentArticles, currentVideos: currentVideos, currentNode: currentNode, previousNode: previousNode, openUserView: openUserView } };
 	}
 
@@ -58359,9 +58374,10 @@
 	        });
 
 	        _this.props.currentNode._private.data.articles.push({
-	          article: _this.state.articleURL
+	          article: _this.state.articleURL,
+	          name: _this.state.name
 	        });
-
+	        _this.props.addArticle(_this.props.currentNode);
 	        _this.props.closeAddArticle();
 	      }
 	    };
@@ -58380,7 +58396,8 @@
 	      description: "",
 	      currentNode: null,
 	      articleURL: 'http://www.material-ui.com/#/components/dialog',
-	      currentArticle: 'http://www.material-ui.com/#/components/dialog'
+	      currentArticle: 'http://www.material-ui.com/#/components/dialog',
+	      name: "lol"
 	    };
 	    return _this;
 	  }
@@ -58452,7 +58469,7 @@
 	          _Dialog2.default,
 	          {
 	            modal: false,
-	            open: this.props.addArticle,
+	            open: this.props.addArticleOpen,
 	            contentStyle: style.modalStyle,
 	            onRequestClose: this.handleClose },
 	          _react2.default.createElement(
@@ -58525,7 +58542,7 @@
 	function mapStateToProps(state) {
 
 	  console.debug("MAPPING PROPS TO STATE IN ADDARTICLE");
-	  return { currentNode: state.selectNode.currentNode, addArticle: state.adminEdit.addArticle };
+	  return { currentNode: state.selectNode.currentNode, addArticleOpen: state.adminEdit.addArticle };
 	}
 
 	exports.default = (0, _reactRedux.connect)(mapStateToProps, actions)(AddArticle);
@@ -65145,7 +65162,6 @@
 	    maxWidth: "49%",
 	    width: '49%',
 	    marginTop: 10,
-	    bottom: 0,
 	    height: '100%',
 	    overflow: 'scroll',
 	    display: 'block',
@@ -65196,6 +65212,9 @@
 	  },
 	  radioButton: {
 	    marginBottom: 16
+	  },
+	  topIframeMargin: {
+	    marginTop: 10
 	  }
 	};
 
@@ -65267,6 +65286,8 @@
 	      };
 
 	      console.log("RENDERING USERVIEW");
+
+	      console.log(this.props);
 
 	      return _react2.default.createElement(
 	        'div',
@@ -65361,13 +65382,14 @@
 	                _Tabs.Tabs,
 	                { tabItemContainerStyle: styles.tabsColor2, inkBarStyle: styles.inkBarStyle },
 	                this.props.currentArticles.map(function (value) {
+	                  console.log(value.article);
 	                  return _react2.default.createElement(
 	                    _Tabs.Tab,
 	                    { label: value.name },
 	                    _react2.default.createElement(
 	                      'div',
-	                      { style: styles.dialogHugePlayer },
-	                      _react2.default.createElement('iframe', { style: styles.dialogHugePlayer, src: value.url, height: '50%', width: '100%' })
+	                      { style: styles.topIframeMargin },
+	                      _react2.default.createElement('iframe', { style: styles.dialogHugePlayer, src: value.article, height: '50%', width: '100%' })
 	                    )
 	                  );
 	                })
@@ -82069,7 +82091,7 @@
 			case _actionList.REGISTER_CY:
 				return _extends({}, state, { cy: action.payload.cy });
 			case _actionList.SELECT_NODE:
-				return _extends({}, state, { moduleDescription: action.payload.moduleDescription, currentArticles: [], currentVideos: action.payload.currentVideos, currentNode: action.payload.currentNode, openUserView: action.payload.openUserView, previousNode: action.payload.previousNode });
+				return _extends({}, state, { moduleDescription: action.payload.moduleDescription, currentArticles: action.payload.currentArticles, currentVideos: action.payload.currentVideos, currentNode: action.payload.currentNode, openUserView: action.payload.openUserView, previousNode: action.payload.previousNode });
 			case _actionList.CLOSE_USER_VIEW:
 				return _extends({}, state, { openUserView: action.payload.openUserView });
 			case _actionList.ADMIN_OPEN_VIEW:

@@ -71,6 +71,7 @@ class AddArticle extends Component {
       currentNode: null,
       articleURL: 'http://www.material-ui.com/#/components/dialog' ,
       currentArticle: 'http://www.material-ui.com/#/components/dialog',
+      name: "lol"
     }
   }
 
@@ -114,8 +115,9 @@ class AddArticle extends Component {
 
       this.props.currentNode._private.data.articles.push({
         article: this.state.articleURL,
+        name: this.state.name
       })
-
+      this.props.addArticle(this.props.currentNode)
       this.props.closeAddArticle()
     }
   };
@@ -169,7 +171,7 @@ class AddArticle extends Component {
       <div>
         <Dialog
             modal={false}
-            open={this.props.addArticle}
+            open={this.props.addArticleOpen}
             contentStyle={style.modalStyle}
             onRequestClose={this.handleClose}>
           <Stepper activeStep={stepIndex}>
@@ -219,7 +221,7 @@ class AddArticle extends Component {
 function mapStateToProps(state){
 
   console.debug("MAPPING PROPS TO STATE IN ADDARTICLE")
-  return {currentNode: state.selectNode.currentNode, addArticle: state.adminEdit.addArticle}
+  return {currentNode: state.selectNode.currentNode, addArticleOpen: state.adminEdit.addArticle}
 }
 
 export default connect(mapStateToProps, actions)(AddArticle)

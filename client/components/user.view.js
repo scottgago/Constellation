@@ -108,7 +108,6 @@ const styles = {
 		maxWidth: "49%",
     width: '49%',
     marginTop: 10,
-    bottom: 0, 
     height: '100%',
 		overflow: 'scroll',
     display: 'block',
@@ -159,6 +158,9 @@ const styles = {
   },
   radioButton: {
     marginBottom: 16,
+  },
+  topIframeMargin: {
+    marginTop: 10
   }
 }
 
@@ -228,6 +230,8 @@ class User extends Component {
 
     console.log("RENDERING USERVIEW")
 
+    console.log(this.props)
+
 
     return(
   		<div>
@@ -287,9 +291,10 @@ class User extends Component {
             <Tab label="Documentation">
               <Tabs tabItemContainerStyle={styles.tabsColor2} inkBarStyle={styles.inkBarStyle}>
               {this.props.currentArticles.map((value)=>{
+                console.log(value.article)
                 return ( <Tab label = {value.name}>
-                  <div style={styles.dialogHugePlayer}>
-                    <iframe style={styles.dialogHugePlayer} src={value.url} height={'50%'} width={'100%'}/>
+                  <div style={styles.topIframeMargin}>
+                    <iframe style={styles.dialogHugePlayer} src={value.article} height={'50%'} width={'100%'}/>
                   </div>
                   </Tab>)
 
