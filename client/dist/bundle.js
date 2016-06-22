@@ -65142,7 +65142,20 @@
 	    position: 'absolute',
 	    background: 'url(./assets/imgs/lol.jpg)',
 	    backgroundSize: 'cover'
-
+	  },
+	  launchContainerStyle: {
+	    maxWidth: '100%',
+	    display: 'block ',
+	    position: 'absolute',
+	    background: 'url(http://wallpaper.zone/img/210731.jpg)',
+	    backgroundSize: 'cover'
+	  },
+	  launchContainerStylePanel: {
+	    maxWidth: '100%',
+	    display: 'block ',
+	    position: 'absolute',
+	    background: 'url(http://wallpaper.zone/img/210731.jpg)',
+	    backgroundSize: 'cover'
 	  },
 	  backButton: {
 	    position: 'fixed',
@@ -65351,37 +65364,42 @@
 	        'div',
 	        null,
 	        _react2.default.createElement(
-	          _Dialog2.default,
+	          _Drawer2.default,
 	          {
-	            modal: false,
-	            bodyStyle: styles.dialogBody,
-	            contentStyle: styles.dialog,
-	            open: this.props.openUserView,
-	            width: 800,
-	            onRequestClose: this.handleClose },
-	          _react2.default.createElement(
-	            'div',
-	            { style: styles.launchDiv },
-	            _react2.default.createElement(
-	              _Paper2.default,
-	              { style: styles.buttonDiv, zDepth: 5 },
-	              _react2.default.createElement(
-	                _RaisedButton2.default,
-	                { onClick: this.handleClosePrompt, backgroundColor: '#ff0000', style: styles.buttonDecline },
-	                'ABORT'
-	              ),
-	              _react2.default.createElement(
-	                _RaisedButton2.default,
-	                { onClick: this.handleOpenModule, backgroundColor: '#3ed715', style: styles.buttonAccept },
-	                'LAUNCH'
-	              )
-	            ),
-	            _react2.default.createElement(
-	              _Paper2.default,
-	              { style: styles.descPadding, zDepth: 2 },
-	              _react2.default.createElement(_markdown2.default, { style: styles.description, markdown: this.props.moduleDescription })
-	            )
-	          )
+	            docked: false,
+	            containerStyle: styles.launchContainerStyle,
+	            overlayStyle: styles.launchContainerStyle,
+	            onRequestChange: function onRequestChange(open) {
+	              (function () {
+	                console.log("fuck");
+	              })();
+	            },
+	            width: 1680,
+	            open: this.props.openUserView },
+	          _react2.default.createElement(_Drawer2.default, {
+	            docked: false,
+
+	            zDepth: 5,
+	            containerStyle: styles.launchContainerStyle,
+	            onRequestChange: function onRequestChange(open) {
+	              (function () {
+	                console.log("fuck");
+	              })();
+	            },
+	            width: 300,
+	            open: this.props.openUserView }),
+	          _react2.default.createElement(_Drawer2.default, {
+	            docked: false,
+	            zDepth: 5,
+	            containerStyle: styles.launchContainerStyle,
+	            openSecondary: true,
+	            onRequestChange: function onRequestChange(open) {
+	              (function () {
+	                console.log("fuck");
+	              })();
+	            },
+	            width: 300,
+	            open: this.props.openUserView })
 	        ),
 	        _react2.default.createElement(
 	          _Drawer2.default,

@@ -30,7 +30,20 @@ const styles = {
     position: 'absolute',
     background: 'url(./assets/imgs/lol.jpg)',
     backgroundSize: 'cover'
-    
+  },
+  launchContainerStyle : {
+    maxWidth: '100%',
+    display: 'block ',
+    position: 'absolute',
+    background: 'url(http://wallpaper.zone/img/210731.jpg)',
+    backgroundSize: 'cover'
+  },
+  launchContainerStylePanel : {
+    maxWidth: '100%',
+    display: 'block ',
+    position: 'absolute',
+    background: 'url(http://wallpaper.zone/img/210731.jpg)',
+    backgroundSize: 'cover'
   },
   backButton: {
     position: 'fixed',
@@ -235,26 +248,59 @@ class User extends Component {
 
     return(
   		<div>
-  		  <Dialog
-          modal={false}
-          bodyStyle= {styles.dialogBody}
-          contentStyle= {styles.dialog}
-          open={this.props.openUserView}
-          width={800}
-          onRequestClose={this.handleClose}>
+      <Drawer
+            docked={false}
+            containerStyle={styles.launchContainerStyle}
+            overlayStyle={styles.launchContainerStyle}
+            onRequestChange={(open) => {(()=>{console.log("fuck")})()}}
+            width={1680}
+            open={this.props.openUserView}>
+              <Drawer
+              docked={false}
+
+              zDepth={5}
+              containerStyle={styles.launchContainerStyle}
+              onRequestChange={(open) => {(()=>{console.log("fuck")})()}}
+              width={300}
+              open={this.props.openUserView}>
+              </Drawer>
+              <Drawer
+              docked={false}
+              zDepth={5}
+              containerStyle={styles.launchContainerStyle}
+              openSecondary={true}
+              onRequestChange={(open) => {(()=>{console.log("fuck")})()}}
+              width={300}
+              open={this.props.openUserView}>
+              </Drawer>
+      </Drawer>
 
 
-          <div style={styles.launchDiv}>
-            <Paper style={styles.buttonDiv} zDepth = {5} >
-              <RaisedButton onClick = {this.handleClosePrompt} backgroundColor ='#ff0000' style={styles.buttonDecline}>ABORT</RaisedButton>
-              <RaisedButton onClick = {this.handleOpenModule} backgroundColor ='#3ed715' style={styles.buttonAccept}>LAUNCH</RaisedButton> 
-            </Paper >
 
-            <Paper style= {styles.descPadding} zDepth = {2}>
-              <MarkdownParser style={styles.description} markdown={this.props.moduleDescription}/>
-            </Paper>
-          </div>
-        </Dialog>
+
+
+      {
+  		  // <Dialog
+      //     modal={false}
+      //     bodyStyle= {styles.dialogBody}
+      //     contentStyle= {styles.dialog}
+      //     open={this.props.openUserView}
+      //     width={800}
+      //     onRequestClose={this.handleClose}>
+
+
+      //     <div style={styles.launchDiv}>
+      //       <Paper style={styles.buttonDiv} zDepth = {5} >
+      //         <RaisedButton onClick = {this.handleClosePrompt} backgroundColor ='#ff0000' style={styles.buttonDecline}>ABORT</RaisedButton>
+      //         <RaisedButton onClick = {this.handleOpenModule} backgroundColor ='#3ed715' style={styles.buttonAccept}>LAUNCH</RaisedButton> 
+      //       </Paper >
+
+      //       <Paper style= {styles.descPadding} zDepth = {2}>
+      //         <MarkdownParser style={styles.description} markdown={this.props.moduleDescription}/>
+      //       </Paper>
+      //     </div>
+      //   </Dialog>
+    }
           <Drawer
             docked={false}
             containerStyle={styles.containerStyle}
