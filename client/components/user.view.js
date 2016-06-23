@@ -38,7 +38,8 @@ const newStyles = {
       left:0, 
       backgroundSize: 'cover',
       zIndex: 100000,
-      pointerEvents: 'auto'
+      pointerEvents: 'auto',
+      submitQuestion: false
     }
   }
 
@@ -351,35 +352,13 @@ class User extends Component {
       />
     ];
 
-     const actions = [
-      <FlatButton
-        label="Cancel"
-        primary={true}
-        onTouchTap={this.handleClose}
-      />,
-      <FlatButton
-        label="Submit"
-        primary={true}
-        disabled={true}
-        onTouchTap={this.handleClose}
-      />,
-    ];
-
-      const contentStyle = {
+    const contentStyle = {
       minWidth: 640,
       height: '100%',
       minHeight: 480,
       alignItems: 'center',
       justifyContent: 'center'
     }
-
-    
-
-    
-
-
-
-
 
     console.log("RENDERING USERVIEW")
 
@@ -578,38 +557,6 @@ class User extends Component {
             </Tab>
             <Tab label="Questions">
               <div>
-               <Dialog
-                modal={false}
-                bodyStyle= {styles.dialogBody}
-                contentStyle= {styles.dialog}
-                open={false}
-                width={800}
-                actions={actions}
-                onRequestClose={this.handleClose}> 
-
-                  <Paper 
-                    zDepth={4} 
-                    style={styles.subject}>
-                    <TextField 
-                      hintText="Subject"
-                      style = {styles.textStyle}
-                      />
-                  </Paper>
-                  <Paper zDepth={2} />
-                  <Paper
-                    zDepth={2}
-                    style={styles.question}
-                  >
-                  <TextField 
-                      hintText="Question"
-                      multiLine={true}
-                      style = {styles.textStyle}
-
-                      />
-                  </Paper>
-
-              </Dialog>
-
               {this.props.currentQuestions.map((value)=>{
                 
                 return <QuestionEntry question={value }/>

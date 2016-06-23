@@ -46173,6 +46173,9 @@
 	Object.defineProperty(exports, "__esModule", {
 		value: true
 	});
+	exports.openQuestion = openQuestion;
+	exports.submitQuestion = submitQuestion;
+	exports.closeQuestion = closeQuestion;
 	exports.submitEdit = submitEdit;
 	exports.editEdges = editEdges;
 	exports.addVideo = addVideo;
@@ -46230,6 +46233,16 @@
 	//       	}, "JavaScript")
 
 	// console.log("creating?")
+
+	function openQuestion() {
+		return { type: _actionList.USER_OPEN_SUBMITQUESTION, payload: { questionPrompt: true } };
+	}
+
+	function submitQuestion(currentNode) {}
+
+	function closeQuestion() {
+		return { type: _actionList.USER_CLOSE_SUBMITQUESTION, payload: { questionPrompt: false } };
+	}
 
 	function submitEdit(currentNode) {
 
@@ -46531,6 +46544,10 @@
 	var USER_CLOSE_MODULE = exports.USER_CLOSE_MODULE = "USER_CLOSE_MODULE";
 	var ADMIN_OPEN_VIEW = exports.ADMIN_OPEN_VIEW = "ADMIN_OPEN_VIEW";
 	var ADMIN_CLOSE_VIEW = exports.ADMIN_CLOSE_VIEW = "ADMIN_CLOSE_VIEW";
+
+	var USER_SUBMITQUESTION = exports.USER_SUBMITQUESTION = "USER_SUBMITQUESTION";
+	var USER_OPEN_SUBMITQUESTION = exports.USER_OPEN_SUBMITQUESTION = "USER_OPEN_SUBMITQUESTION";
+	var USER_CLOSE_SUBMITQUESTION = exports.USER_CLOSE_SUBMITQUESTION = "USER_CLOSE_SUBMITQUESTION";
 
 /***/ },
 /* 425 */
@@ -64865,7 +64882,8 @@
 	    left: 0,
 	    backgroundSize: 'cover',
 	    zIndex: 100000,
-	    pointerEvents: 'auto'
+	    pointerEvents: 'auto',
+	    submitQuestion: false
 	  }
 	};
 
@@ -65181,17 +65199,6 @@
 	        onTouchTap: this.props.closeModule
 	      })];
 
-	      var actions = [_react2.default.createElement(_FlatButton2.default, {
-	        label: 'Cancel',
-	        primary: true,
-	        onTouchTap: this.handleClose
-	      }), _react2.default.createElement(_FlatButton2.default, {
-	        label: 'Submit',
-	        primary: true,
-	        disabled: true,
-	        onTouchTap: this.handleClose
-	      })];
-
 	      var contentStyle = {
 	        minWidth: 640,
 	        height: '100%',
@@ -65441,41 +65448,6 @@
 	              _react2.default.createElement(
 	                'div',
 	                null,
-	                _react2.default.createElement(
-	                  _Dialog2.default,
-	                  {
-	                    modal: false,
-	                    bodyStyle: styles.dialogBody,
-	                    contentStyle: styles.dialog,
-	                    open: false,
-	                    width: 800,
-	                    actions: actions,
-	                    onRequestClose: this.handleClose },
-	                  _react2.default.createElement(
-	                    _Paper2.default,
-	                    {
-	                      zDepth: 4,
-	                      style: styles.subject },
-	                    _react2.default.createElement(_TextField2.default, {
-	                      hintText: 'Subject',
-	                      style: styles.textStyle
-	                    })
-	                  ),
-	                  _react2.default.createElement(_Paper2.default, { zDepth: 2 }),
-	                  _react2.default.createElement(
-	                    _Paper2.default,
-	                    {
-	                      zDepth: 2,
-	                      style: styles.question
-	                    },
-	                    _react2.default.createElement(_TextField2.default, {
-	                      hintText: 'Question',
-	                      multiLine: true,
-	                      style: styles.textStyle
-
-	                    })
-	                  )
-	                ),
 	                this.props.currentQuestions.map(function (value) {
 
 	                  return _react2.default.createElement(_question2.default, { question: value });
@@ -78933,13 +78905,18 @@
 
 	var _admin4 = _interopRequireDefault(_admin3);
 
+	var _userActions = __webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"./user.actions.reducer\""); e.code = 'MODULE_NOT_FOUND'; throw e; }()));
+
+	var _userActions2 = _interopRequireDefault(_userActions);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	var RootReducer = (0, _redux.combineReducers)({
 		form: _reduxForm.reducer,
 		adminAdd: _admin2.default,
 		selectNode: _selectNode2.default,
-		adminEdit: _admin4.default
+		adminEdit: _admin4.default,
+		userActions: _userActions2.default
 	});
 
 	exports.default = RootReducer;
