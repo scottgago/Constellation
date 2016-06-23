@@ -12,6 +12,7 @@ import Popover from 'material-ui/Popover';
 import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem';
 import QuizEntry from './quiz.entry';
+import QuestionEntry from './question.entry'
 
 import Avatar from 'material-ui/Avatar';
 
@@ -309,7 +310,6 @@ class User extends Component {
   };
 
   handleToggleNext = (event) => {
-    console.log(event.currentTarget)
     this.setState({
       anchorEl : event.currentTarget,
       lol: true
@@ -609,38 +609,12 @@ class User extends Component {
                   </Paper>
 
               </Dialog>
-              <Card>
-              <CardHeader
-                title="Closures"
-                subtitle="A quiz on closures"
-                actAsExpander={true}
-                showExpandableButton={true}
-              />
-              <CardText  expandable={true}>
-                Hey, I have this questions can anyone answer it?
-                <br></br>
-                <br></br>
 
-                <Avatar
-                  size={30}
-                  style={styles.avatar}
-                />    
-                <span>LOL U SUCK But did you try this one thing?</span>
-                <br></br>
-                <br></br>
-
-                <Avatar
-                  size={30}
-                  style={styles.avatar}
-                />    
-                <span>LOL U SUCK But did you try this one thing?</span>
-
-              </CardText>
-              <CardActions expandable={true}>
-                <FlatButton label="Cancel" />
-                <FlatButton label="Submit" />
-              </CardActions>
-            </Card>
+              {this.props.currentQuestions.map((value)=>{
+                
+                return <QuestionEntry question={value }/>
+                
+              })}
               </div>
             </Tab>
             <Tab label="Quizzes">
@@ -652,6 +626,7 @@ class User extends Component {
                 showExpandableButton={true}
               />
               <CardMedia  expandable={true}>
+
               <QuizEntry />
               </CardMedia>
               <CardActions expandable={true}>
@@ -683,6 +658,18 @@ function mapStateToProps(state){
           moduleDescription: state.selectNode.moduleDescription, 
           currentArticles: state.selectNode.currentArticles, 
           currentVideos: state.selectNode.currentVideos, 
+          currentQuestions: [{
+            subject: "Closures",
+            question: "How does a closure keep private variables hidden?",
+            answers: ["Because they do, lol", "no"]
+          },
+          {
+            subject: "Closures",
+            question: "How hidden do variables I keep, lol?",
+            answers: ["Because they don't, loleleleel", "no"]
+          }
+
+          ],
           previousNode: state.selectNode.previousNode, 
           currentNode: state.selectNode.currentNode, 
           openUserView: state.selectNode.openUserView })

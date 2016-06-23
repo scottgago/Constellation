@@ -248,8 +248,8 @@ export function closeCreate(){
 	return { type: ADMIN_CREATEDCOMPLETE , payload : { create: false }}
 }
 
-export function selectNode({moduleDescription, currentNode, previousNode, openUserView, currentArticles, currentVideos}){
-	return { type: SELECT_NODE, payload :  {moduleDescription: moduleDescription, currentArticles: currentArticles, currentVideos: currentVideos, currentNode: currentNode, previousNode: previousNode, openUserView : openUserView} }
+export function selectNode({moduleDescription, currentQuestions, currentNode, previousNode, openUserView, currentArticles, currentVideos}){
+	return { type: SELECT_NODE, payload :  {currentQuestions: currentQuestions, moduleDescription: moduleDescription, currentArticles: currentArticles, currentVideos: currentVideos, currentNode: currentNode, previousNode: previousNode, openUserView : openUserView} }
 }
 
 export function registerCY({cy}){

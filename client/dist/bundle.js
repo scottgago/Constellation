@@ -46461,13 +46461,14 @@
 
 	function selectNode(_ref5) {
 		var moduleDescription = _ref5.moduleDescription;
+		var currentQuestions = _ref5.currentQuestions;
 		var currentNode = _ref5.currentNode;
 		var previousNode = _ref5.previousNode;
 		var openUserView = _ref5.openUserView;
 		var currentArticles = _ref5.currentArticles;
 		var currentVideos = _ref5.currentVideos;
 
-		return { type: _actionList.SELECT_NODE, payload: { moduleDescription: moduleDescription, currentArticles: currentArticles, currentVideos: currentVideos, currentNode: currentNode, previousNode: previousNode, openUserView: openUserView } };
+		return { type: _actionList.SELECT_NODE, payload: { currentQuestions: currentQuestions, moduleDescription: moduleDescription, currentArticles: currentArticles, currentVideos: currentVideos, currentNode: currentNode, previousNode: previousNode, openUserView: openUserView } };
 	}
 
 	function registerCY(_ref6) {
@@ -47778,7 +47779,7 @@
 	            });
 	          });
 
-	          bind.props.selectNode({ moduleDescription: evtTarget._private.data.description, currentArticles: evtTarget._private.data.articles, currentVideos: evtTarget._private.data.videos, currentNode: evtTarget, previousNode: holder, openUserView: true });
+	          bind.props.selectNode({ currentQuestions: evtTarget._private.data.questions, moduleDescription: evtTarget._private.data.description, currentArticles: evtTarget._private.data.articles, currentVideos: evtTarget._private.data.videos, currentNode: evtTarget, previousNode: holder, openUserView: true });
 
 	          if (bind.props.adminMode) {
 	            bind.props.openAdmin();
@@ -47828,12 +47829,7 @@
 	    key: 'render',
 	    value: function render() {
 	      console.log("RENDERING MAINVIEW");
-	      return _react2.default.createElement(
-	        'div',
-	        { id: 'cy' },
-	        _react2.default.createElement(_admin2.default, null),
-	        _react2.default.createElement(_user2.default, null)
-	      );
+	      return _react2.default.createElement('div', { id: 'cy' });
 	    }
 	  }]);
 
@@ -47846,302 +47842,6 @@
 	}
 
 	exports.default = (0, _reactRedux.connect)(mapStateToProps, actions)(MainView);
-
-	// [
-	//       {
-	//         group: 'edges',
-	//         data: {
-	//           id: "JavaScriptJavaScript2",
-	//           source : "JavaScript",
-	//           target: "JavaScript2"
-	//         }
-	//       },
-	//        {
-	//         group: 'edges',
-	//         data: {
-	//           id: "JavaScript5JavaScript6",
-	//           source : "JavaScript5",
-	//           target: "JavaScript6"
-	//         }
-	//       },
-	//        {
-	//         group: 'edges',
-	//         data: {
-	//           id: "JavaScript6JavaScript7",
-	//           source : "JavaScript6",
-	//           target: "JavaScript7"
-	//         }
-	//       },
-	//        {
-	//         group: 'edges',
-	//         data: {
-	//           id: "JavaScript7JavaScript8",
-	//           source : "JavaScript7",
-	//           target: "JavaScript8"
-	//         }
-	//       },
-	//         {
-	//         group: 'edges',
-	//         data: {
-	//           id: "JavaScript7JavaScript9",
-	//           source : "JavaScript7",
-	//           target: "JavaScript9"
-	//         }
-	//       },
-	//         {
-	//         group: 'edges',
-	//         data: {
-	//           id: "JavaScript7JavaScript10",
-	//           source : "JavaScript7",
-	//           target: "JavaScript10"
-	//         }
-	//       },
-	//        {
-	//         group: 'edges',
-	//         data: {
-	//           id: "JavaScriptJavaScript2",
-	//           source : "JavaScript",
-	//           target: "JavaScript2"
-	//         }
-	//       },
-	//       {
-	//         group: 'edges',
-	//         data: {
-	//           id: "JavaScriptJavaScript3",
-	//           source : "JavaScript",
-	//           target: "JavaScript3"
-	//         }
-	//       },
-	//       {
-	//         group: 'edges',
-	//         data: {
-	//           id: "JavaScriptJavaScript4",
-	//           source : "JavaScript",
-	//           target: "JavaScript4"
-	//         }
-	//       },
-	//       {
-	//         group: 'edges',
-	//         data: {
-	//           id: "JavaScriptJavaScript5",
-	//           source : "JavaScript",
-	//           target: "JavaScript5"
-	//         }
-	//       },
-	//       { // node a
-	//         group: 'nodes',
-	//         data: {
-	//           id: 'JavaScript10',
-	//           videos: [{
-	//             name: "Introduction into Javascript",
-	//             key: "jkTzHEtHd54",
-	//             video: "jkTzHEtHd54",
-	//             markdown: "# Non neu sive \n## Venite longos ambiguum tollere reliquit quia Phocaica\nLorem markdownum cacumina es corpus belloque forma haberet videri, pendere saepe, talem nomine invictus quiete *quae*: mors. Metuit quod, non de suo tui consolante orbem, qui per indulgere linquit fera; umbra. Enim sentit laqueosque hastam Bacchei. Ante census observata ipsum, e quamvis quod invitus firmas; sunt, ille venerem si: Iuppiter visa trahendo. \n Nimbos populo dicitur. Haustis tuas, sum resilire illa certa! **Quod Quodsi** labefecit venefica tecta hoc [me pendebat](http://seenly.com/) natura quae! Quoniam fetus movit sororum aliorum indueret et virtute laetis primo Phoebe, deorum haud, ire, esse. \n ## Sit saxa vates indoctum \n et auro ecce Discedens illa, [sanguine supersint](http://example.com/) confusaque duae, innixa? Huic habenti huic. Non leves umeris *sola dea oppositas* corpora restant Quae tangi exstabant in caeso cingens pervenit! Non parvo loquenti; ecce sic \n ## Venite longos ambiguum tollere reliquit quia \nPhocaica Lorem markdownum cacumina es corpus belloque forma haberet videri, pendere popularis fera videri. Discedentem stratum remitti iuvenes sociati secutae"
-	//           },
-	//           {
-	//             name: "10 Things",
-	//             video: "6MaOPdQPvow",
-	//             key: "E6MaOPdQPvow",
-	//             markdown:""
-	//           }],
-	//           articles: [{
-	//             name: "Material UI",
-	//             url : "http://www.material-ui.com/#/components/dialog",
-
-	//           }],
-	//           description: "JavaScript® (often shortened to JS) is a lightweight, interpreted, object-oriented language with first-class functions, and is best known as the scripting language for Web pages, but it's used in many non-browser environments as well. It is a prototype-based, multi-paradigm scripting language that is dynamic, and supports object-oriented, imperative, and functional programming styles. JavaScript runs on the client side of the web, which can be used to design / program how the web pages behave on the occurrence of an event. JavaScript is an easy to learn and also powerful scripting language, widely used for controlling web page behaviour. Contrary to popular misconception, JavaScript is not 'Interpreted Java'. In a nutshell, JavaScript is a dynamic scripting language supporting prototype based object construction. The basic syntax is intentionally similar to both Java and C++ to reduce the number of new concepts required to learn the language. Language constructs, such as if statements, for and while loops, and switch and try ... catch blocks function the same as in these languages (or nearly so.) JavaScript can function as both a procedural and an object oriented language. Objects are created programmatically in JavaScript, by attaching methods and properties to otherwise empty objects at run time, as opposed to the syntactic class definitions common in compiled languages like C++ and Java. Once an object has been constructed it can be used as a blueprint (or prototype) for creating similar objects. JavaScript's dynamic capabilities include runtime object construction, variable parameter lists, function variables, dynamic script creation (via eval), object introspection (via for ... in), and source code recovery (JavaScript programs can decompile function bodies back into their source text). For a more in depth discussion of JavaScript programming follow the JavaScript resources links below."
-	//         }
-	//       },
-	//       { // node a
-	//         group: 'nodes',
-	//         data: {
-	//           id: 'JavaScript9',
-	//           videos: [{
-	//             name: "Introduction into Javascript",
-	//             key: "jkTzHEtHd54",
-	//             video: "jkTzHEtHd54",
-	//             markdown: "# Non neu sive \n## Venite longos ambiguum tollere reliquit quia Phocaica\nLorem markdownum cacumina es corpus belloque forma haberet videri, pendere saepe, talem nomine invictus quiete *quae*: mors. Metuit quod, non de suo tui consolante orbem, qui per indulgere linquit fera; umbra. Enim sentit laqueosque hastam Bacchei. Ante census observata ipsum, e quamvis quod invitus firmas; sunt, ille venerem si: Iuppiter visa trahendo. \n Nimbos populo dicitur. Haustis tuas, sum resilire illa certa! **Quod Quodsi** labefecit venefica tecta hoc [me pendebat](http://seenly.com/) natura quae! Quoniam fetus movit sororum aliorum indueret et virtute laetis primo Phoebe, deorum haud, ire, esse. \n ## Sit saxa vates indoctum \n et auro ecce Discedens illa, [sanguine supersint](http://example.com/) confusaque duae, innixa? Huic habenti huic. Non leves umeris *sola dea oppositas* corpora restant Quae tangi exstabant in caeso cingens pervenit! Non parvo loquenti; ecce sic \n ## Venite longos ambiguum tollere reliquit quia \nPhocaica Lorem markdownum cacumina es corpus belloque forma haberet videri, pendere popularis fera videri. Discedentem stratum remitti iuvenes sociati secutae"
-	//           },
-	//           {
-	//             name: "10 Things",
-	//             video: "6MaOPdQPvow",
-	//             key: "E6MaOPdQPvow",
-	//             markdown:""
-	//           }],
-	//           articles: [],
-	//           description: "JavaScript® (often shortened to JS) is a lightweight, interpreted, object-oriented language with first-class functions, and is best known as the scripting language for Web pages, but it's used in many non-browser environments as well. It is a prototype-based, multi-paradigm scripting language that is dynamic, and supports object-oriented, imperative, and functional programming styles. JavaScript runs on the client side of the web, which can be used to design / program how the web pages behave on the occurrence of an event. JavaScript is an easy to learn and also powerful scripting language, widely used for controlling web page behaviour. Contrary to popular misconception, JavaScript is not 'Interpreted Java'. In a nutshell, JavaScript is a dynamic scripting language supporting prototype based object construction. The basic syntax is intentionally similar to both Java and C++ to reduce the number of new concepts required to learn the language. Language constructs, such as if statements, for and while loops, and switch and try ... catch blocks function the same as in these languages (or nearly so.) JavaScript can function as both a procedural and an object oriented language. Objects are created programmatically in JavaScript, by attaching methods and properties to otherwise empty objects at run time, as opposed to the syntactic class definitions common in compiled languages like C++ and Java. Once an object has been constructed it can be used as a blueprint (or prototype) for creating similar objects. JavaScript's dynamic capabilities include runtime object construction, variable parameter lists, function variables, dynamic script creation (via eval), object introspection (via for ... in), and source code recovery (JavaScript programs can decompile function bodies back into their source text). For a more in depth discussion of JavaScript programming follow the JavaScript resources links below."
-	//         }
-	//       },
-	//       { // node a
-	//         group: 'nodes',
-	//         data: {
-	//           id: 'JavaScript8',
-	//           videos: [{
-	//             name: "Introduction into Javascript",
-	//             key: "jkTzHEtHd54",
-	//             video: "jkTzHEtHd54",
-	//             markdown: "# Non neu sive \n## Venite longos ambiguum tollere reliquit quia Phocaica\nLorem markdownum cacumina es corpus belloque forma haberet videri, pendere saepe, talem nomine invictus quiete *quae*: mors. Metuit quod, non de suo tui consolante orbem, qui per indulgere linquit fera; umbra. Enim sentit laqueosque hastam Bacchei. Ante census observata ipsum, e quamvis quod invitus firmas; sunt, ille venerem si: Iuppiter visa trahendo. \n Nimbos populo dicitur. Haustis tuas, sum resilire illa certa! **Quod Quodsi** labefecit venefica tecta hoc [me pendebat](http://seenly.com/) natura quae! Quoniam fetus movit sororum aliorum indueret et virtute laetis primo Phoebe, deorum haud, ire, esse. \n ## Sit saxa vates indoctum \n et auro ecce Discedens illa, [sanguine supersint](http://example.com/) confusaque duae, innixa? Huic habenti huic. Non leves umeris *sola dea oppositas* corpora restant Quae tangi exstabant in caeso cingens pervenit! Non parvo loquenti; ecce sic \n ## Venite longos ambiguum tollere reliquit quia \nPhocaica Lorem markdownum cacumina es corpus belloque forma haberet videri, pendere popularis fera videri. Discedentem stratum remitti iuvenes sociati secutae"
-	//           },
-	//           {
-	//             name: "10 Things",
-	//             video: "6MaOPdQPvow",
-	//             key: "E6MaOPdQPvow",
-	//             markdown:""
-	//           }],
-	//           articles: [],
-	//           description: "JavaScript® (often shortened to JS) is a lightweight, interpreted, object-oriented language with first-class functions, and is best known as the scripting language for Web pages, but it's used in many non-browser environments as well. It is a prototype-based, multi-paradigm scripting language that is dynamic, and supports object-oriented, imperative, and functional programming styles. JavaScript runs on the client side of the web, which can be used to design / program how the web pages behave on the occurrence of an event. JavaScript is an easy to learn and also powerful scripting language, widely used for controlling web page behaviour. Contrary to popular misconception, JavaScript is not 'Interpreted Java'. In a nutshell, JavaScript is a dynamic scripting language supporting prototype based object construction. The basic syntax is intentionally similar to both Java and C++ to reduce the number of new concepts required to learn the language. Language constructs, such as if statements, for and while loops, and switch and try ... catch blocks function the same as in these languages (or nearly so.) JavaScript can function as both a procedural and an object oriented language. Objects are created programmatically in JavaScript, by attaching methods and properties to otherwise empty objects at run time, as opposed to the syntactic class definitions common in compiled languages like C++ and Java. Once an object has been constructed it can be used as a blueprint (or prototype) for creating similar objects. JavaScript's dynamic capabilities include runtime object construction, variable parameter lists, function variables, dynamic script creation (via eval), object introspection (via for ... in), and source code recovery (JavaScript programs can decompile function bodies back into their source text). For a more in depth discussion of JavaScript programming follow the JavaScript resources links below."
-	//         }
-	//       },
-	//       { // node a
-	//         group: 'nodes',
-	//         data: {
-	//           id: 'JavaScript7',
-	//           videos: [{
-	//             name: "Introduction into Javascript",
-	//             key: "jkTzHEtHd54",
-	//             video: "jkTzHEtHd54",
-	//             markdown: "# Non neu sive \n## Venite longos ambiguum tollere reliquit quia Phocaica\nLorem markdownum cacumina es corpus belloque forma haberet videri, pendere saepe, talem nomine invictus quiete *quae*: mors. Metuit quod, non de suo tui consolante orbem, qui per indulgere linquit fera; umbra. Enim sentit laqueosque hastam Bacchei. Ante census observata ipsum, e quamvis quod invitus firmas; sunt, ille venerem si: Iuppiter visa trahendo. \n Nimbos populo dicitur. Haustis tuas, sum resilire illa certa! **Quod Quodsi** labefecit venefica tecta hoc [me pendebat](http://seenly.com/) natura quae! Quoniam fetus movit sororum aliorum indueret et virtute laetis primo Phoebe, deorum haud, ire, esse. \n ## Sit saxa vates indoctum \n et auro ecce Discedens illa, [sanguine supersint](http://example.com/) confusaque duae, innixa? Huic habenti huic. Non leves umeris *sola dea oppositas* corpora restant Quae tangi exstabant in caeso cingens pervenit! Non parvo loquenti; ecce sic \n ## Venite longos ambiguum tollere reliquit quia \nPhocaica Lorem markdownum cacumina es corpus belloque forma haberet videri, pendere popularis fera videri. Discedentem stratum remitti iuvenes sociati secutae"
-	//           },
-	//           {
-	//             name: "10 Things",
-	//             video: "6MaOPdQPvow",
-	//             key: "E6MaOPdQPvow",
-	//             markdown:""
-	//           }],
-	//           articles: [],
-	//           description: "JavaScript® (often shortened to JS) is a lightweight, interpreted, object-oriented language with first-class functions, and is best known as the scripting language for Web pages, but it's used in many non-browser environments as well. It is a prototype-based, multi-paradigm scripting language that is dynamic, and supports object-oriented, imperative, and functional programming styles. JavaScript runs on the client side of the web, which can be used to design / program how the web pages behave on the occurrence of an event. JavaScript is an easy to learn and also powerful scripting language, widely used for controlling web page behaviour. Contrary to popular misconception, JavaScript is not 'Interpreted Java'. In a nutshell, JavaScript is a dynamic scripting language supporting prototype based object construction. The basic syntax is intentionally similar to both Java and C++ to reduce the number of new concepts required to learn the language. Language constructs, such as if statements, for and while loops, and switch and try ... catch blocks function the same as in these languages (or nearly so.) JavaScript can function as both a procedural and an object oriented language. Objects are created programmatically in JavaScript, by attaching methods and properties to otherwise empty objects at run time, as opposed to the syntactic class definitions common in compiled languages like C++ and Java. Once an object has been constructed it can be used as a blueprint (or prototype) for creating similar objects. JavaScript's dynamic capabilities include runtime object construction, variable parameter lists, function variables, dynamic script creation (via eval), object introspection (via for ... in), and source code recovery (JavaScript programs can decompile function bodies back into their source text). For a more in depth discussion of JavaScript programming follow the JavaScript resources links below."
-	//         }
-	//       },
-	//       { // node a
-	//         group: 'nodes',
-	//         data: {
-	//           id: 'JavaScript6',
-	//           videos: [{
-	//             name: "Introduction into Javascript",
-	//             key: "jkTzHEtHd54",
-	//             video: "jkTzHEtHd54",
-	//             markdown: "# Non neu sive \n## Venite longos ambiguum tollere reliquit quia Phocaica\nLorem markdownum cacumina es corpus belloque forma haberet videri, pendere saepe, talem nomine invictus quiete *quae*: mors. Metuit quod, non de suo tui consolante orbem, qui per indulgere linquit fera; umbra. Enim sentit laqueosque hastam Bacchei. Ante census observata ipsum, e quamvis quod invitus firmas; sunt, ille venerem si: Iuppiter visa trahendo. \n Nimbos populo dicitur. Haustis tuas, sum resilire illa certa! **Quod Quodsi** labefecit venefica tecta hoc [me pendebat](http://seenly.com/) natura quae! Quoniam fetus movit sororum aliorum indueret et virtute laetis primo Phoebe, deorum haud, ire, esse. \n ## Sit saxa vates indoctum \n et auro ecce Discedens illa, [sanguine supersint](http://example.com/) confusaque duae, innixa? Huic habenti huic. Non leves umeris *sola dea oppositas* corpora restant Quae tangi exstabant in caeso cingens pervenit! Non parvo loquenti; ecce sic \n ## Venite longos ambiguum tollere reliquit quia \nPhocaica Lorem markdownum cacumina es corpus belloque forma haberet videri, pendere popularis fera videri. Discedentem stratum remitti iuvenes sociati secutae"
-	//           },
-	//           {
-	//             name: "10 Things",
-	//             video: "6MaOPdQPvow",
-	//             key: "E6MaOPdQPvow",
-	//             markdown:""
-	//           }],
-	//           articles: [],
-	//           description: "JavaScript® (often shortened to JS) is a lightweight, interpreted, object-oriented language with first-class functions, and is best known as the scripting language for Web pages, but it's used in many non-browser environments as well. It is a prototype-based, multi-paradigm scripting language that is dynamic, and supports object-oriented, imperative, and functional programming styles. JavaScript runs on the client side of the web, which can be used to design / program how the web pages behave on the occurrence of an event. JavaScript is an easy to learn and also powerful scripting language, widely used for controlling web page behaviour. Contrary to popular misconception, JavaScript is not 'Interpreted Java'. In a nutshell, JavaScript is a dynamic scripting language supporting prototype based object construction. The basic syntax is intentionally similar to both Java and C++ to reduce the number of new concepts required to learn the language. Language constructs, such as if statements, for and while loops, and switch and try ... catch blocks function the same as in these languages (or nearly so.) JavaScript can function as both a procedural and an object oriented language. Objects are created programmatically in JavaScript, by attaching methods and properties to otherwise empty objects at run time, as opposed to the syntactic class definitions common in compiled languages like C++ and Java. Once an object has been constructed it can be used as a blueprint (or prototype) for creating similar objects. JavaScript's dynamic capabilities include runtime object construction, variable parameter lists, function variables, dynamic script creation (via eval), object introspection (via for ... in), and source code recovery (JavaScript programs can decompile function bodies back into their source text). For a more in depth discussion of JavaScript programming follow the JavaScript resources links below."
-	//         }
-	//       },   // list of graph elements to start with
-	//       { // node a
-	//         group: 'nodes',
-	//         data: {
-	//           id: 'JavaScript',
-	//           quizzes: [{
-	//             quizName: "",
-	//             questions: [
-	//             {
-	//               question: "What is a closure?",
-	//               options: ["A thing", "Athing2", "Athing3", "Athing4", "Athing5"],
-	//               answer: "Athing2"
-	//             }
-	//             ]
-	//           }],
-	//           videos: [{
-	//             name: "Introduction into Javascript",
-	//             key: "jkTzHEtHd54",
-	//             video: "jkTzHEtHd54",
-	//             markdown: "# Non neu sive \n## Venite longos ambiguum tollere reliquit quia Phocaica\nLorem markdownum cacumina es corpus belloque forma haberet videri, pendere saepe, talem nomine invictus quiete *quae*: mors. Metuit quod, non de suo tui consolante orbem, qui per indulgere linquit fera; umbra. Enim sentit laqueosque hastam Bacchei. Ante census observata ipsum, e quamvis quod invitus firmas; sunt, ille venerem si: Iuppiter visa trahendo. \n Nimbos populo dicitur. Haustis tuas, sum resilire illa certa! **Quod Quodsi** labefecit venefica tecta hoc [me pendebat](http://seenly.com/) natura quae! Quoniam fetus movit sororum aliorum indueret et virtute laetis primo Phoebe, deorum haud, ire, esse. \n ## Sit saxa vates indoctum \n et auro ecce Discedens illa, [sanguine supersint](http://example.com/) confusaque duae, innixa? Huic habenti huic. Non leves umeris *sola dea oppositas* corpora restant Quae tangi exstabant in caeso cingens pervenit! Non parvo loquenti; ecce sic \n ## Venite longos ambiguum tollere reliquit quia \nPhocaica Lorem markdownum cacumina es corpus belloque forma haberet videri, pendere popularis fera videri. Discedentem stratum remitti iuvenes sociati secutae"
-	//           },
-	//           {
-	//             name: "10 Things",
-	//             video: "6MaOPdQPvow",
-	//             key: "E6MaOPdQPvow",
-	//             markdown:""
-	//           }],
-	//           articles: [],
-	//           description: "JavaScript® (often shortened to JS) is a lightweight, interpreted, object-oriented language with first-class functions, and is best known as the scripting language for Web pages, but it's used in many non-browser environments as well. It is a prototype-based, multi-paradigm scripting language that is dynamic, and supports object-oriented, imperative, and functional programming styles. JavaScript runs on the client side of the web, which can be used to design / program how the web pages behave on the occurrence of an event. JavaScript is an easy to learn and also powerful scripting language, widely used for controlling web page behaviour. Contrary to popular misconception, JavaScript is not 'Interpreted Java'. In a nutshell, JavaScript is a dynamic scripting language supporting prototype based object construction. The basic syntax is intentionally similar to both Java and C++ to reduce the number of new concepts required to learn the language. Language constructs, such as if statements, for and while loops, and switch and try ... catch blocks function the same as in these languages (or nearly so.) JavaScript can function as both a procedural and an object oriented language. Objects are created programmatically in JavaScript, by attaching methods and properties to otherwise empty objects at run time, as opposed to the syntactic class definitions common in compiled languages like C++ and Java. Once an object has been constructed it can be used as a blueprint (or prototype) for creating similar objects. JavaScript's dynamic capabilities include runtime object construction, variable parameter lists, function variables, dynamic script creation (via eval), object introspection (via for ... in), and source code recovery (JavaScript programs can decompile function bodies back into their source text). For a more in depth discussion of JavaScript programming follow the JavaScript resources links below."
-	//         }
-	//       },
-	//       { // node a
-	//         group: 'nodes',
-	//         data: {
-	//           id: 'JavaScript2',
-	//           videos: [{
-	//             name: "Introduction into Javascript",
-	//             key: "jkTzHEtHd54",
-	//             video: "jkTzHEtHd54",
-	//             markdown: "# Non neu sive \n## Venite longos ambiguum tollere reliquit quia Phocaica\nLorem markdownum cacumina es corpus belloque forma haberet videri, pendere saepe, talem nomine invictus quiete *quae*: mors. Metuit quod, non de suo tui consolante orbem, qui per indulgere linquit fera; umbra. Enim sentit laqueosque hastam Bacchei. Ante census observata ipsum, e quamvis quod invitus firmas; sunt, ille venerem si: Iuppiter visa trahendo. \n Nimbos populo dicitur. Haustis tuas, sum resilire illa certa! **Quod Quodsi** labefecit venefica tecta hoc [me pendebat](http://seenly.com/) natura quae! Quoniam fetus movit sororum aliorum indueret et virtute laetis primo Phoebe, deorum haud, ire, esse. \n ## Sit saxa vates indoctum \n et auro ecce Discedens illa, [sanguine supersint](http://example.com/) confusaque duae, innixa? Huic habenti huic. Non leves umeris *sola dea oppositas* corpora restant Quae tangi exstabant in caeso cingens pervenit! Non parvo loquenti; ecce sic \n ## Venite longos ambiguum tollere reliquit quia \nPhocaica Lorem markdownum cacumina es corpus belloque forma haberet videri, pendere popularis fera videri. Discedentem stratum remitti iuvenes sociati secutae"
-	//           },
-	//           {
-	//             name: "10 Things",
-	//             video: "6MaOPdQPvow",
-	//             key: "E6MaOPdQPvow",
-	//             markdown:""
-	//           }],
-	//           articles: [],
-	//           description: "JavaScript® (often shortened to JS) is a lightweight, interpreted, object-oriented language with first-class functions, and is best known as the scripting language for Web pages, but it's used in many non-browser environments as well. It is a prototype-based, multi-paradigm scripting language that is dynamic, and supports object-oriented, imperative, and functional programming styles. JavaScript runs on the client side of the web, which can be used to design / program how the web pages behave on the occurrence of an event. JavaScript is an easy to learn and also powerful scripting language, widely used for controlling web page behaviour. Contrary to popular misconception, JavaScript is not 'Interpreted Java'. In a nutshell, JavaScript is a dynamic scripting language supporting prototype based object construction. The basic syntax is intentionally similar to both Java and C++ to reduce the number of new concepts required to learn the language. Language constructs, such as if statements, for and while loops, and switch and try ... catch blocks function the same as in these languages (or nearly so.) JavaScript can function as both a procedural and an object oriented language. Objects are created programmatically in JavaScript, by attaching methods and properties to otherwise empty objects at run time, as opposed to the syntactic class definitions common in compiled languages like C++ and Java. Once an object has been constructed it can be used as a blueprint (or prototype) for creating similar objects. JavaScript's dynamic capabilities include runtime object construction, variable parameter lists, function variables, dynamic script creation (via eval), object introspection (via for ... in), and source code recovery (JavaScript programs can decompile function bodies back into their source text). For a more in depth discussion of JavaScript programming follow the JavaScript resources links below."
-	//         }
-	//       },
-	//       { // node a
-	//         group: 'nodes',
-	//         data: {
-	//           id: 'JavaScript3',
-	//           videos: [{
-	//             name: "Introduction into Javascript",
-	//             key: "jkTzHEtHd54",
-	//             video: "jkTzHEtHd54",
-	//             markdown: "# Non neu sive \n## Venite longos ambiguum tollere reliquit quia Phocaica\nLorem markdownum cacumina es corpus belloque forma haberet videri, pendere saepe, talem nomine invictus quiete *quae*: mors. Metuit quod, non de suo tui consolante orbem, qui per indulgere linquit fera; umbra. Enim sentit laqueosque hastam Bacchei. Ante census observata ipsum, e quamvis quod invitus firmas; sunt, ille venerem si: Iuppiter visa trahendo. \n Nimbos populo dicitur. Haustis tuas, sum resilire illa certa! **Quod Quodsi** labefecit venefica tecta hoc [me pendebat](http://seenly.com/) natura quae! Quoniam fetus movit sororum aliorum indueret et virtute laetis primo Phoebe, deorum haud, ire, esse. \n ## Sit saxa vates indoctum \n et auro ecce Discedens illa, [sanguine supersint](http://example.com/) confusaque duae, innixa? Huic habenti huic. Non leves umeris *sola dea oppositas* corpora restant Quae tangi exstabant in caeso cingens pervenit! Non parvo loquenti; ecce sic \n ## Venite longos ambiguum tollere reliquit quia \nPhocaica Lorem markdownum cacumina es corpus belloque forma haberet videri, pendere popularis fera videri. Discedentem stratum remitti iuvenes sociati secutae"
-	//           },
-	//           {
-	//             name: "10 Things",
-	//             video: "6MaOPdQPvow",
-	//             key: "E6MaOPdQPvow",
-	//             markdown:""
-	//           }],
-	//           articles: [],
-	//           description: "JavaScript® (often shortened to JS) is a lightweight, interpreted, object-oriented language with first-class functions, and is best known as the scripting language for Web pages, but it's used in many non-browser environments as well. It is a prototype-based, multi-paradigm scripting language that is dynamic, and supports object-oriented, imperative, and functional programming styles. JavaScript runs on the client side of the web, which can be used to design / program how the web pages behave on the occurrence of an event. JavaScript is an easy to learn and also powerful scripting language, widely used for controlling web page behaviour. Contrary to popular misconception, JavaScript is not 'Interpreted Java'. In a nutshell, JavaScript is a dynamic scripting language supporting prototype based object construction. The basic syntax is intentionally similar to both Java and C++ to reduce the number of new concepts required to learn the language. Language constructs, such as if statements, for and while loops, and switch and try ... catch blocks function the same as in these languages (or nearly so.) JavaScript can function as both a procedural and an object oriented language. Objects are created programmatically in JavaScript, by attaching methods and properties to otherwise empty objects at run time, as opposed to the syntactic class definitions common in compiled languages like C++ and Java. Once an object has been constructed it can be used as a blueprint (or prototype) for creating similar objects. JavaScript's dynamic capabilities include runtime object construction, variable parameter lists, function variables, dynamic script creation (via eval), object introspection (via for ... in), and source code recovery (JavaScript programs can decompile function bodies back into their source text). For a more in depth discussion of JavaScript programming follow the JavaScript resources links below."
-	//         }
-	//       },
-	//       { // node a
-	//         group: 'nodes',
-	//         data: {
-	//           id: 'JavaScript4',
-	//           videos: [{
-	//             name: "Introduction into Javascript",
-	//             key: "jkTzHEtHd54",
-	//             video: "jkTzHEtHd54",
-	//             markdown: "# Non neu sive \n## Venite longos ambiguum tollere reliquit quia Phocaica\nLorem markdownum cacumina es corpus belloque forma haberet videri, pendere saepe, talem nomine invictus quiete *quae*: mors. Metuit quod, non de suo tui consolante orbem, qui per indulgere linquit fera; umbra. Enim sentit laqueosque hastam Bacchei. Ante census observata ipsum, e quamvis quod invitus firmas; sunt, ille venerem si: Iuppiter visa trahendo. \n Nimbos populo dicitur. Haustis tuas, sum resilire illa certa! **Quod Quodsi** labefecit venefica tecta hoc [me pendebat](http://seenly.com/) natura quae! Quoniam fetus movit sororum aliorum indueret et virtute laetis primo Phoebe, deorum haud, ire, esse. \n ## Sit saxa vates indoctum \n et auro ecce Discedens illa, [sanguine supersint](http://example.com/) confusaque duae, innixa? Huic habenti huic. Non leves umeris *sola dea oppositas* corpora restant Quae tangi exstabant in caeso cingens pervenit! Non parvo loquenti; ecce sic \n ## Venite longos ambiguum tollere reliquit quia \nPhocaica Lorem markdownum cacumina es corpus belloque forma haberet videri, pendere popularis fera videri. Discedentem stratum remitti iuvenes sociati secutae"
-	//           },
-	//           {
-	//             name: "10 Things",
-	//             video: "6MaOPdQPvow",
-	//             key: "E6MaOPdQPvow",
-	//             markdown:""
-	//           }],
-	//           articles: [],
-	//           description: "JavaScript® (often shortened to JS) is a lightweight, interpreted, object-oriented language with first-class functions, and is best known as the scripting language for Web pages, but it's used in many non-browser environments as well. It is a prototype-based, multi-paradigm scripting language that is dynamic, and supports object-oriented, imperative, and functional programming styles. JavaScript runs on the client side of the web, which can be used to design / program how the web pages behave on the occurrence of an event. JavaScript is an easy to learn and also powerful scripting language, widely used for controlling web page behaviour. Contrary to popular misconception, JavaScript is not 'Interpreted Java'. In a nutshell, JavaScript is a dynamic scripting language supporting prototype based object construction. The basic syntax is intentionally similar to both Java and C++ to reduce the number of new concepts required to learn the language. Language constructs, such as if statements, for and while loops, and switch and try ... catch blocks function the same as in these languages (or nearly so.) JavaScript can function as both a procedural and an object oriented language. Objects are created programmatically in JavaScript, by attaching methods and properties to otherwise empty objects at run time, as opposed to the syntactic class definitions common in compiled languages like C++ and Java. Once an object has been constructed it can be used as a blueprint (or prototype) for creating similar objects. JavaScript's dynamic capabilities include runtime object construction, variable parameter lists, function variables, dynamic script creation (via eval), object introspection (via for ... in), and source code recovery (JavaScript programs can decompile function bodies back into their source text). For a more in depth discussion of JavaScript programming follow the JavaScript resources links below."
-	//         }
-	//       },
-	//       { // node a
-	//         group: 'nodes',
-	//         data: {
-	//           id: 'JavaScript5',
-	//           videos: [{
-	//             name: "Introduction into Javascript",
-	//             key: "jkTzHEtHd54",
-	//             video: "jkTzHEtHd54",
-	//             markdown: "# Non neu sive \n## Venite longos ambiguum tollere reliquit quia Phocaica\nLorem markdownum cacumina es corpus belloque forma haberet videri, pendere saepe, talem nomine invictus quiete *quae*: mors. Metuit quod, non de suo tui consolante orbem, qui per indulgere linquit fera; umbra. Enim sentit laqueosque hastam Bacchei. Ante census observata ipsum, e quamvis quod invitus firmas; sunt, ille venerem si: Iuppiter visa trahendo. \n Nimbos populo dicitur. Haustis tuas, sum resilire illa certa! **Quod Quodsi** labefecit venefica tecta hoc [me pendebat](http://seenly.com/) natura quae! Quoniam fetus movit sororum aliorum indueret et virtute laetis primo Phoebe, deorum haud, ire, esse. \n ## Sit saxa vates indoctum \n et auro ecce Discedens illa, [sanguine supersint](http://example.com/) confusaque duae, innixa? Huic habenti huic. Non leves umeris *sola dea oppositas* corpora restant Quae tangi exstabant in caeso cingens pervenit! Non parvo loquenti; ecce sic \n ## Venite longos ambiguum tollere reliquit quia \nPhocaica Lorem markdownum cacumina es corpus belloque forma haberet videri, pendere popularis fera videri. Discedentem stratum remitti iuvenes sociati secutae"
-	//           },
-	//           {
-	//             name: "10 Things",
-	//             video: "6MaOPdQPvow",
-	//             key: "E6MaOPdQPvow",
-	//             markdown:""
-	//           }],
-	//           articles: [],
-	//           description: "JavaScript® (often shortened to JS) is a lightweight, interpreted, object-oriented language with first-class functions, and is best known as the scripting language for Web pages, but it's used in many non-browser environments as well. It is a prototype-based, multi-paradigm scripting language that is dynamic, and supports object-oriented, imperative, and functional programming styles. JavaScript runs on the client side of the web, which can be used to design / program how the web pages behave on the occurrence of an event. JavaScript is an easy to learn and also powerful scripting language, widely used for controlling web page behaviour. Contrary to popular misconception, JavaScript is not 'Interpreted Java'. In a nutshell, JavaScript is a dynamic scripting language supporting prototype based object construction. The basic syntax is intentionally similar to both Java and C++ to reduce the number of new concepts required to learn the language. Language constructs, such as if statements, for and while loops, and switch and try ... catch blocks function the same as in these languages (or nearly so.) JavaScript can function as both a procedural and an object oriented language. Objects are created programmatically in JavaScript, by attaching methods and properties to otherwise empty objects at run time, as opposed to the syntactic class definitions common in compiled languages like C++ and Java. Once an object has been constructed it can be used as a blueprint (or prototype) for creating similar objects. JavaScript's dynamic capabilities include runtime object construction, variable parameter lists, function variables, dynamic script creation (via eval), object introspection (via for ... in), and source code recovery (JavaScript programs can decompile function bodies back into their source text). For a more in depth discussion of JavaScript programming follow the JavaScript resources links below."
-	//         }
-	//       }]
 
 /***/ },
 /* 430 */
@@ -65118,6 +64818,10 @@
 
 	var _quiz2 = _interopRequireDefault(_quiz);
 
+	var _question = __webpack_require__(700);
+
+	var _question2 = _interopRequireDefault(_question);
+
 	var _Avatar = __webpack_require__(642);
 
 	var _Avatar2 = _interopRequireDefault(_Avatar);
@@ -65428,7 +65132,6 @@
 	    };
 
 	    _this.handleToggleNext = function (event) {
-	      console.log(event.currentTarget);
 	      _this.setState({
 	        anchorEl: event.currentTarget,
 	        lol: true
@@ -65773,49 +65476,10 @@
 	                    })
 	                  )
 	                ),
-	                _react2.default.createElement(
-	                  _Card.Card,
-	                  null,
-	                  _react2.default.createElement(_Card.CardHeader, {
-	                    title: 'Closures',
-	                    subtitle: 'A quiz on closures',
-	                    actAsExpander: true,
-	                    showExpandableButton: true
-	                  }),
-	                  _react2.default.createElement(
-	                    _Card.CardText,
-	                    { expandable: true },
-	                    'Hey, I have this questions can anyone answer it?',
-	                    _react2.default.createElement('br', null),
-	                    _react2.default.createElement('br', null),
-	                    _react2.default.createElement(_Avatar2.default, {
-	                      size: 30,
-	                      style: styles.avatar
-	                    }),
-	                    _react2.default.createElement(
-	                      'span',
-	                      null,
-	                      'LOL U SUCK But did you try this one thing?'
-	                    ),
-	                    _react2.default.createElement('br', null),
-	                    _react2.default.createElement('br', null),
-	                    _react2.default.createElement(_Avatar2.default, {
-	                      size: 30,
-	                      style: styles.avatar
-	                    }),
-	                    _react2.default.createElement(
-	                      'span',
-	                      null,
-	                      'LOL U SUCK But did you try this one thing?'
-	                    )
-	                  ),
-	                  _react2.default.createElement(
-	                    _Card.CardActions,
-	                    { expandable: true },
-	                    _react2.default.createElement(_FlatButton2.default, { label: 'Cancel' }),
-	                    _react2.default.createElement(_FlatButton2.default, { label: 'Submit' })
-	                  )
-	                )
+	                this.props.currentQuestions.map(function (value) {
+
+	                  return _react2.default.createElement(_question2.default, { question: value });
+	                })
 	              )
 	            ),
 	            _react2.default.createElement(
@@ -65870,6 +65534,15 @@
 	    moduleDescription: state.selectNode.moduleDescription,
 	    currentArticles: state.selectNode.currentArticles,
 	    currentVideos: state.selectNode.currentVideos,
+	    currentQuestions: [{
+	      subject: "Closures",
+	      question: "How does a closure keep private variables hidden?",
+	      answers: ["Because they do, lol", "no"]
+	    }, {
+	      subject: "Closures",
+	      question: "How hidden do variables I keep, lol?",
+	      answers: ["Because they don't, loleleleel", "no"]
+	    }],
 	    previousNode: state.selectNode.previousNode,
 	    currentNode: state.selectNode.currentNode,
 	    openUserView: state.selectNode.openUserView };
@@ -77331,93 +77004,6 @@
 	            label: 'Custom icon',
 	            style: styles.radioButton
 	          })
-	        ),
-	        _react2.default.createElement(
-	          _RadioButton.RadioButtonGroup,
-	          { name: 'shipSpeed', defaultSelected: 'not_light' },
-	          _react2.default.createElement(_RadioButton.RadioButton, {
-	            value: 'light',
-	            label: 'Simple',
-	            style: styles.radioButton
-	          }),
-	          _react2.default.createElement(_RadioButton.RadioButton, {
-	            value: 'ludicrous',
-	            label: 'Custom icon',
-	            style: styles.radioButton
-	          }),
-	          _react2.default.createElement(_RadioButton.RadioButton, {
-	            value: 'ludicrous',
-	            label: 'Custom icon',
-	            style: styles.radioButton
-	          }),
-	          _react2.default.createElement(_RadioButton.RadioButton, {
-	            value: 'not_light',
-	            label: 'Selected by default',
-	            style: styles.radioButton
-	          }),
-	          _react2.default.createElement(_RadioButton.RadioButton, {
-	            value: 'ludicrous',
-	            label: 'Custom icon',
-	            style: styles.radioButton
-	          })
-	        ),
-	        _react2.default.createElement(
-	          _RadioButton.RadioButtonGroup,
-	          { name: 'shipSpeed', defaultSelected: 'not_light' },
-	          _react2.default.createElement(_RadioButton.RadioButton, {
-	            value: 'light',
-	            label: 'Simple',
-	            style: styles.radioButton
-	          }),
-	          _react2.default.createElement(_RadioButton.RadioButton, {
-	            value: 'ludicrous',
-	            label: 'Custom icon',
-	            style: styles.radioButton
-	          }),
-	          _react2.default.createElement(_RadioButton.RadioButton, {
-	            value: 'ludicrous',
-	            label: 'Custom icon',
-	            style: styles.radioButton
-	          }),
-	          _react2.default.createElement(_RadioButton.RadioButton, {
-	            value: 'not_light',
-	            label: 'Selected by default',
-	            style: styles.radioButton
-	          }),
-	          _react2.default.createElement(_RadioButton.RadioButton, {
-	            value: 'ludicrous',
-	            label: 'Custom icon',
-	            style: styles.radioButton
-	          })
-	        ),
-	        _react2.default.createElement(
-	          _RadioButton.RadioButtonGroup,
-	          { name: 'shipSpeed', defaultSelected: 'not_light' },
-	          _react2.default.createElement(_RadioButton.RadioButton, {
-	            value: 'light',
-	            label: 'Simple',
-	            style: styles.radioButton
-	          }),
-	          _react2.default.createElement(_RadioButton.RadioButton, {
-	            value: 'ludicrous',
-	            label: 'Custom icon',
-	            style: styles.radioButton
-	          }),
-	          _react2.default.createElement(_RadioButton.RadioButton, {
-	            value: 'ludicrous',
-	            label: 'Custom icon',
-	            style: styles.radioButton
-	          }),
-	          _react2.default.createElement(_RadioButton.RadioButton, {
-	            value: 'not_light',
-	            label: 'Selected by default',
-	            style: styles.radioButton
-	          }),
-	          _react2.default.createElement(_RadioButton.RadioButton, {
-	            value: 'ludicrous',
-	            label: 'Custom icon',
-	            style: styles.radioButton
-	          })
 	        )
 	      );
 	    }
@@ -82495,7 +82081,7 @@
 			case _actionList.REGISTER_CY:
 				return _extends({}, state, { cy: action.payload.cy });
 			case _actionList.SELECT_NODE:
-				return _extends({}, state, { moduleDescription: action.payload.moduleDescription, currentArticles: action.payload.currentArticles, currentVideos: action.payload.currentVideos, currentNode: action.payload.currentNode, openUserView: action.payload.openUserView, previousNode: action.payload.previousNode });
+				return _extends({}, state, { currentQuestions: action.payload.currentQuestions, moduleDescription: action.payload.moduleDescription, currentArticles: action.payload.currentArticles, currentVideos: action.payload.currentVideos, currentNode: action.payload.currentNode, openUserView: action.payload.openUserView, previousNode: action.payload.previousNode });
 			case _actionList.CLOSE_USER_VIEW:
 				return _extends({}, state, { openUserView: action.payload.openUserView });
 			case _actionList.ADMIN_OPEN_VIEW:
@@ -82516,6 +82102,7 @@
 		previousNode: {},
 		cy: {},
 		nodes: {},
+		currentQuestions: [],
 		currentArticles: [],
 		currentVideos: [],
 		moduleDescription: '',
@@ -82579,6 +82166,108 @@
 		addArticle: false
 
 	};
+
+/***/ },
+/* 700 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _Card = __webpack_require__(636);
+
+	var _Avatar = __webpack_require__(642);
+
+	var _Avatar2 = _interopRequireDefault(_Avatar);
+
+	var _FlatButton = __webpack_require__(420);
+
+	var _FlatButton2 = _interopRequireDefault(_FlatButton);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var styles = {
+	  avatar: {
+	    marginRight: 30
+	  }
+	};
+
+	var QuestionEntry = function (_Component) {
+	  _inherits(QuestionEntry, _Component);
+
+	  function QuestionEntry(props) {
+	    _classCallCheck(this, QuestionEntry);
+
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(QuestionEntry).call(this, props));
+
+	    _this.state = {
+	      question: props.question
+	    };
+	    return _this;
+	  }
+
+	  _createClass(QuestionEntry, [{
+	    key: 'render',
+	    value: function render() {
+	      return _react2.default.createElement(
+	        _Card.Card,
+	        null,
+	        _react2.default.createElement(_Card.CardHeader, {
+	          title: 'Closures',
+	          subtitle: this.state.question.question,
+	          actAsExpander: true,
+	          showExpandableButton: true
+	        }),
+	        _react2.default.createElement(
+	          _Card.CardText,
+	          { expandable: true },
+	          this.state.question.answers.map(function (value) {
+	            return _react2.default.createElement(
+	              'div',
+	              null,
+	              _react2.default.createElement(_Avatar2.default, {
+	                size: 30,
+	                style: styles.avatar
+	              }),
+	              _react2.default.createElement(
+	                'span',
+	                null,
+	                value
+	              ),
+	              _react2.default.createElement('br', null),
+	              _react2.default.createElement('br', null)
+	            );
+	          })
+	        ),
+	        _react2.default.createElement(
+	          _Card.CardActions,
+	          { expandable: true },
+	          _react2.default.createElement(_FlatButton2.default, { label: 'Cancel' }),
+	          _react2.default.createElement(_FlatButton2.default, { label: 'Submit' })
+	        )
+	      );
+	    }
+	  }]);
+
+	  return QuestionEntry;
+	}(_react.Component);
+
+	exports.default = QuestionEntry;
 
 /***/ }
 /******/ ]);

@@ -6,6 +6,7 @@ const INITIAL_STATE = {
 	previousNode: {},
 	cy: {},
 	nodes: {},
+	currentQuestions: [],
 	currentArticles: [],
 	currentVideos: [],
 	moduleDescription: '',
@@ -24,7 +25,7 @@ export default function(state = INITIAL_STATE, action) {
 		case REGISTER_CY:
 			return {...state, cy: action.payload.cy}
 		case SELECT_NODE: 
-			return {...state, moduleDescription: action.payload.moduleDescription, currentArticles: action.payload.currentArticles, currentVideos: action.payload.currentVideos, currentNode : action.payload.currentNode, openUserView: action.payload.openUserView, previousNode : action.payload.previousNode}
+			return {...state, currentQuestions: action.payload.currentQuestions, moduleDescription: action.payload.moduleDescription, currentArticles: action.payload.currentArticles, currentVideos: action.payload.currentVideos, currentNode : action.payload.currentNode, openUserView: action.payload.openUserView, previousNode : action.payload.previousNode}
 		case CLOSE_USER_VIEW:
 			return {...state, openUserView : action.payload.openUserView }
 		case ADMIN_OPEN_VIEW:

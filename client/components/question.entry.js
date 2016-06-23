@@ -1,12 +1,17 @@
 import React, { Component } from 'react';
+import {Card, CardActions, CardMedia, CardHeader, CardText} from 'material-ui/Card';
+import Avatar from 'material-ui/Avatar';
 
-styles : {
+import FlatButton from 'material-ui/FlatButton'
+
+const styles = {
 	avatar: {
     marginRight: 30
   }
 }
 
-export default class Question extends Component {
+
+export default class QuestionEntry extends Component {
 	constructor(props){
 		super(props)
 		this.state = {
@@ -15,32 +20,35 @@ export default class Question extends Component {
 	}
 
 	render () {
+		return (
 		<Card>
       <CardHeader
         title="Closures"
-        subtitle="A quiz on closures"
+        subtitle= {this.state.question.question}
         actAsExpander={true}
         showExpandableButton={true}
       />
       <CardText  expandable={true}>
-        {this.state.question.question}
-        <br></br>
-        <br></br>
-
-        <Avatar
-          size={30}
-          style={styles.avatar}
-        />    
-        <span>LOL U SUCK But did you try this one thing?</span>
-        <br></br>
-        <br></br>
-
+      	{this.state.question.answers.map((value)=>{
+      		return (
+      			<div>
+      				<Avatar
+          			size={30}
+          			style={styles.avatar}
+        			/>    
+        			<span>{value}</span>
+        			<br></br>
+        			<br></br>
+        		</div>
+      		)
+      	})}
       </CardText>
       <CardActions expandable={true}>
         <FlatButton label="Cancel" />
         <FlatButton label="Submit" />
       </CardActions>
     </Card>
+    )
 	}
 
 
