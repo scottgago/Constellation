@@ -65726,7 +65726,7 @@
 	                    modal: false,
 	                    bodyStyle: styles.dialogBody,
 	                    contentStyle: styles.dialog,
-	                    open: true,
+	                    open: false,
 	                    width: 800,
 	                    actions: actions,
 	                    onRequestClose: this.handleClose },

@@ -566,11 +566,11 @@ class User extends Component {
                 modal={false}
                 bodyStyle= {styles.dialogBody}
                 contentStyle= {styles.dialog}
-                open={true}
+                open={false}
                 width={800}
                 actions={actions}
                 onRequestClose={this.handleClose}> 
-                  
+
                   <Paper zDepth={1} style={styles.subject}>
                     <TextField />
                   </Paper>
