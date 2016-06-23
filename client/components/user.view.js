@@ -130,7 +130,7 @@ const styles = {
 	dialogBody: {
 		minHeight: 600,
 		overflow: 'scroll',
-    background: 'url(./assets/imgs/new.png)',
+    background: 'url(./assets/imgs/metalBackground.jpg)',
     backgroundSize: 'cover',
     borderRadius: 3
 	},
@@ -218,7 +218,10 @@ const styles = {
     opacity: 1,
   },
   textStyle: {
-    marginLeft: 20
+    marginLeft: 20,
+    marginRight: 20,
+    maxWidth: '95%',
+    width: '95%'
   },
   launchDiv : {
     maxWidth: '60%',
@@ -253,6 +256,11 @@ const styles = {
     maxHeight: '33.33%',
     height: '33.33%',
     width: '100%',
+  },
+  question: {
+    marginTop: 25,
+    width: '100%',
+    height: 300
   }
 }
 
@@ -566,15 +574,29 @@ class User extends Component {
                 modal={false}
                 bodyStyle= {styles.dialogBody}
                 contentStyle= {styles.dialog}
-                open={false}
+                open={true}
                 width={800}
                 actions={actions}
                 onRequestClose={this.handleClose}> 
 
-                  <Paper zDepth={1} style={styles.subject}>
-                    <TextField />
+                  <Paper 
+                    zDepth={4} 
+                    style={styles.subject}>
+                    <TextField 
+                      hintText="Subject"
+                      style = {styles.textStyle}
+                      />
                   </Paper>
                   <Paper zDepth={2} />
+                  <Paper
+                    zDepth={2}
+                    style={styles.question}
+                  >
+                  <TextField 
+                      hintText="Subject"
+                      style = {styles.textStyle}
+                      />
+                  </Paper>
 
               </Dialog>
               <Card>

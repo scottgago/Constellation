@@ -65252,7 +65252,7 @@
 	  dialogBody: {
 	    minHeight: 600,
 	    overflow: 'scroll',
-	    background: 'url(./assets/imgs/new.png)',
+	    background: 'url(./assets/imgs/metalBackground.jpg)',
 	    backgroundSize: 'cover',
 	    borderRadius: 3
 	  },
@@ -65340,7 +65340,10 @@
 	    opacity: 1
 	  },
 	  textStyle: {
-	    marginLeft: 20
+	    marginLeft: 20,
+	    marginRight: 20,
+	    maxWidth: '95%',
+	    width: '95%'
 	  },
 	  launchDiv: {
 	    maxWidth: '60%',
@@ -65375,6 +65378,11 @@
 	    maxHeight: '33.33%',
 	    height: '33.33%',
 	    width: '100%'
+	  },
+	  question: {
+	    marginTop: 25,
+	    width: '100%',
+	    height: 300
 	  }
 	};
 
@@ -65726,16 +65734,32 @@
 	                    modal: false,
 	                    bodyStyle: styles.dialogBody,
 	                    contentStyle: styles.dialog,
-	                    open: false,
+	                    open: true,
 	                    width: 800,
 	                    actions: actions,
 	                    onRequestClose: this.handleClose },
 	                  _react2.default.createElement(
 	                    _Paper2.default,
-	                    { zDepth: 1, style: styles.subject },
-	                    _react2.default.createElement(_TextField2.default, null)
+	                    {
+	                      zDepth: 4,
+	                      style: styles.subject },
+	                    _react2.default.createElement(_TextField2.default, {
+	                      hintText: 'Subject',
+	                      style: styles.textStyle
+	                    })
 	                  ),
-	                  _react2.default.createElement(_Paper2.default, { zDepth: 2 })
+	                  _react2.default.createElement(_Paper2.default, { zDepth: 2 }),
+	                  _react2.default.createElement(
+	                    _Paper2.default,
+	                    {
+	                      zDepth: 2,
+	                      style: styles.question
+	                    },
+	                    _react2.default.createElement(_TextField2.default, {
+	                      hintText: 'Subject',
+	                      style: styles.textStyle
+	                    })
+	                  )
 	                ),
 	                _react2.default.createElement(
 	                  _Card.Card,
