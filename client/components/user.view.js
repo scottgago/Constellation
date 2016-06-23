@@ -13,6 +13,8 @@ import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem';
 import QuizEntry from './quiz.entry';
 
+import Avatar from 'material-ui/Avatar';
+
 import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
 
 import {Card, CardActions, CardMedia, CardHeader, CardText} from 'material-ui/Card';
@@ -260,7 +262,11 @@ const styles = {
   question: {
     marginTop: 25,
     width: '100%',
-    height: 300
+    height: 300, 
+    overflow: 'scroll'
+  },
+  avatar: {
+    marginRight: 30
   }
 }
 
@@ -278,13 +284,15 @@ class User extends Component {
   }
 
   handleCloseModule = () => {
+
+    document.getElementById("cy").style.display = 'block'
     this.props.cy.zoomingEnabled(true)
     this.props.cy.panningEnabled(true)
     this.props.closeModule()
   };
 
   handleOpenModule = () => {
-    document.getElementById("cy")
+    document.getElementById("cy").style.display = 'none'
     this.props.cy.zoomingEnabled(false)
     this.props.cy.panningEnabled(false)
     setTimeout(()=>{
@@ -574,7 +582,7 @@ class User extends Component {
                 modal={false}
                 bodyStyle= {styles.dialogBody}
                 contentStyle= {styles.dialog}
-                open={true}
+                open={false}
                 width={800}
                 actions={actions}
                 onRequestClose={this.handleClose}> 
@@ -593,8 +601,10 @@ class User extends Component {
                     style={styles.question}
                   >
                   <TextField 
-                      hintText="Subject"
+                      hintText="Question"
+                      multiLine={true}
                       style = {styles.textStyle}
+
                       />
                   </Paper>
 
@@ -606,9 +616,26 @@ class User extends Component {
                 actAsExpander={true}
                 showExpandableButton={true}
               />
-              <CardMedia  expandable={true}>
-              
-              </CardMedia>
+              <CardText  expandable={true}>
+                Hey, I have this questions can anyone answer it?
+                <br></br>
+                <br></br>
+
+                <Avatar
+                  size={30}
+                  style={styles.avatar}
+                />    
+                <span>LOL U SUCK But did you try this one thing?</span>
+                <br></br>
+                <br></br>
+
+                <Avatar
+                  size={30}
+                  style={styles.avatar}
+                />    
+                <span>LOL U SUCK But did you try this one thing?</span>
+
+              </CardText>
               <CardActions expandable={true}>
                 <FlatButton label="Cancel" />
                 <FlatButton label="Submit" />

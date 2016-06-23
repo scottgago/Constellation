@@ -65118,6 +65118,10 @@
 
 	var _quiz2 = _interopRequireDefault(_quiz);
 
+	var _Avatar = __webpack_require__(642);
+
+	var _Avatar2 = _interopRequireDefault(_Avatar);
+
 	var _RadioButton = __webpack_require__(457);
 
 	var _Card = __webpack_require__(636);
@@ -65382,7 +65386,11 @@
 	  question: {
 	    marginTop: 25,
 	    width: '100%',
-	    height: 300
+	    height: 300,
+	    overflow: 'scroll'
+	  },
+	  avatar: {
+	    marginRight: 30
 	  }
 	};
 
@@ -65395,13 +65403,15 @@
 	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(User).call(this, props));
 
 	    _this.handleCloseModule = function () {
+
+	      document.getElementById("cy").style.display = 'block';
 	      _this.props.cy.zoomingEnabled(true);
 	      _this.props.cy.panningEnabled(true);
 	      _this.props.closeModule();
 	    };
 
 	    _this.handleOpenModule = function () {
-	      document.getElementById("cy");
+	      document.getElementById("cy").style.display = 'none';
 	      _this.props.cy.zoomingEnabled(false);
 	      _this.props.cy.panningEnabled(false);
 	      setTimeout(function () {
@@ -65734,7 +65744,7 @@
 	                    modal: false,
 	                    bodyStyle: styles.dialogBody,
 	                    contentStyle: styles.dialog,
-	                    open: true,
+	                    open: false,
 	                    width: 800,
 	                    actions: actions,
 	                    onRequestClose: this.handleClose },
@@ -65756,8 +65766,10 @@
 	                      style: styles.question
 	                    },
 	                    _react2.default.createElement(_TextField2.default, {
-	                      hintText: 'Subject',
+	                      hintText: 'Question',
+	                      multiLine: true,
 	                      style: styles.textStyle
+
 	                    })
 	                  )
 	                ),
@@ -65770,7 +65782,33 @@
 	                    actAsExpander: true,
 	                    showExpandableButton: true
 	                  }),
-	                  _react2.default.createElement(_Card.CardMedia, { expandable: true }),
+	                  _react2.default.createElement(
+	                    _Card.CardText,
+	                    { expandable: true },
+	                    'Hey, I have this questions can anyone answer it?',
+	                    _react2.default.createElement('br', null),
+	                    _react2.default.createElement('br', null),
+	                    _react2.default.createElement(_Avatar2.default, {
+	                      size: 30,
+	                      style: styles.avatar
+	                    }),
+	                    _react2.default.createElement(
+	                      'span',
+	                      null,
+	                      'LOL U SUCK But did you try this one thing?'
+	                    ),
+	                    _react2.default.createElement('br', null),
+	                    _react2.default.createElement('br', null),
+	                    _react2.default.createElement(_Avatar2.default, {
+	                      size: 30,
+	                      style: styles.avatar
+	                    }),
+	                    _react2.default.createElement(
+	                      'span',
+	                      null,
+	                      'LOL U SUCK But did you try this one thing?'
+	                    )
+	                  ),
 	                  _react2.default.createElement(
 	                    _Card.CardActions,
 	                    { expandable: true },
