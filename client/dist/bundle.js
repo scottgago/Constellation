@@ -36535,6 +36535,14 @@
 
 	var _mainview2 = _interopRequireDefault(_mainview);
 
+	var _admin = __webpack_require__(430);
+
+	var _admin2 = _interopRequireDefault(_admin);
+
+	var _user = __webpack_require__(528);
+
+	var _user2 = _interopRequireDefault(_user);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -36559,7 +36567,9 @@
 					'div',
 					null,
 					_react2.default.createElement(_menu2.default, null),
-					_react2.default.createElement(_mainview2.default, null)
+					_react2.default.createElement(_mainview2.default, null),
+					_react2.default.createElement(_admin2.default, null),
+					_react2.default.createElement(_user2.default, null)
 				);
 			}
 		}]);
@@ -65135,15 +65145,37 @@
 	var MarkdownEditor = __webpack_require__(491).MarkdownEditor;
 
 
+	var newStyles = {
+	  containerStyle: {
+	    maxWidth: '100%',
+	    display: 'block',
+	    position: 'fixed',
+	    background: 'url(./assets/imgs/metalBackground.jpg)',
+	    top: 0,
+	    bottom: 0,
+	    right: 0,
+	    left: 0,
+	    backgroundSize: 'cover',
+	    zIndex: 100000,
+	    pointerEvents: 'auto'
+	  }
+	};
+
 	var styles = {
 	  containerStyle: {
 	    maxWidth: '100%',
-	    display: 'block ',
-	    position: 'absolute',
-	    background: 'url(./assets/imgs/lol.jpg)',
+	    display: 'none',
+	    position: 'fixed',
+	    background: 'url(./assets/imgs/metalBackground.jpg)',
+	    top: 0,
+	    bottom: 0,
+	    right: 0,
+	    left: 0,
+	    backgroundSize: 'cover',
+	    zIndex: 100000,
 
-	    transitionDuration: '1.5s',
-	    backgroundSize: 'cover'
+	    pointerEvents: 'auto'
+
 	  },
 	  launchContainerStyle: {
 	    maxWidth: '100%',
@@ -65154,15 +65186,41 @@
 	    backgroundSize: 'cover'
 
 	  },
-	  launchContainerStylePanel: {
+	  launchContainerStylePanel2: {
+	    maxWidth: '50%',
+	    display: 'block ',
+	    position: 'absolute',
+	    background: 'url(http://wallpaper.zone/img/210731.jpg)',
+	    backgroundSize: 'cover',
+	    transitionDuration: '1.5s'
+	  },
+	  launchContainerStylePanel3: {
 	    maxWidth: '100%',
 	    display: 'block ',
 	    position: 'absolute',
 	    background: 'url(http://wallpaper.zone/img/210731.jpg)',
 	    backgroundSize: 'cover',
+	    transitionDelay: '.75s',
+	    transitionDuration: '.25s'
+	  },
+	  launchContainerStylePanel4: {
+	    maxWidth: '100%',
+	    display: 'block ',
+	    position: 'absolute',
+	    background: 'url(http://wallpaper.zone/img/210731.jpg)',
+	    backgroundSize: 'cover',
+	    transitionDelay: '1s',
+	    transitionDuration: '.25s'
+	  },
+	  launchContainerStylePanel5: {
+	    maxWidth: '50%',
+	    display: 'block ',
+	    position: 'absolute',
+	    background: 'url(http://wallpaper.zone/img/210731.jpg)',
+	    backgroundSize: 'cover',
+	    transitionDuration: '1.5s',
 	    transitionDelay: '1.5s',
-	    transitionDuration: '1s'
-
+	    zIndex: 10001
 	  },
 	  backButton: {
 	    position: 'fixed',
@@ -65199,10 +65257,10 @@
 	    borderRadius: 3
 	  },
 	  tabsColor: {
-	    backgroundColor: "#186dad"
+	    backgroundColor: "#25383C"
 	  },
 	  tabsColor2: {
-	    backgroundColor: "#7eabca"
+	    backgroundColor: "#737CA1"
 	  },
 	  dialogBackground: {
 	    borderRadius: 500,
@@ -65256,12 +65314,19 @@
 	  },
 	  buttonDecline: {
 	    minWidth: '50%',
-	    color: 'white'
+	    color: 'white',
+	    margin: 'auto 0'
 
 	  },
 	  buttonAccept: {
 	    minWidth: '50%',
-	    color: 'white'
+	    color: 'white',
+
+	    margin: 'auto 0'
+	  },
+	  subject: {
+	    width: '100%',
+	    height: '100%'
 	  },
 	  description: {
 	    padding: 10,
@@ -65293,7 +65358,7 @@
 	    margin: "auto"
 	  },
 	  inkBarStyle: {
-	    backgroundColor: "#c2ddf0"
+	    backgroundColor: "#F88017"
 	  },
 	  radioButton: {
 	    marginBottom: 16
@@ -65304,6 +65369,12 @@
 	  overlayOpacity: {
 	    opacity: 1,
 	    display: "none"
+	  },
+	  panelDivs: {
+	    position: 'relative',
+	    maxHeight: '33.33%',
+	    height: '33.33%',
+	    width: '100%'
 	  }
 	};
 
@@ -65316,15 +65387,26 @@
 	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(User).call(this, props));
 
 	    _this.handleCloseModule = function () {
-	      _this.props.closeModule();
 	      _this.props.cy.zoomingEnabled(true);
 	      _this.props.cy.panningEnabled(true);
+	      _this.props.closeModule();
 	    };
 
 	    _this.handleOpenModule = function () {
+	      document.getElementById("cy");
 	      _this.props.cy.zoomingEnabled(false);
 	      _this.props.cy.panningEnabled(false);
-	      _this.props.openModule();
+	      setTimeout(function () {
+	        _this.props.openModule();
+	      }, 0);
+	      _this.setState({
+	        gates: true
+	      });
+	      setTimeout(function () {
+	        _this.setState({
+	          gates: false
+	        });
+	      }, 750);
 	    };
 
 	    _this.handleToggleNext = function (event) {
@@ -65344,9 +65426,21 @@
 	      console.log("eh?");
 	    };
 
+	    _this.checkStyle = function () {
+	      if (!_this.props.openModuleView) {
+	        console.log(_this.props.openModuleView);
+	        return styles.containerStyle;
+	      } else {
+
+	        console.log(_this.props.openModuleView);
+	        return newStyles.containerStyle;
+	      }
+	    };
+
 	    _this.state = {
 	      open: false,
-	      navigateNext: false
+	      navigateNext: false,
+	      gates: false
 	    };
 	    return _this;
 	  }
@@ -65366,6 +65460,17 @@
 	        onTouchTap: this.props.closeModule
 	      })];
 
+	      var actions = [_react2.default.createElement(_FlatButton2.default, {
+	        label: 'Cancel',
+	        primary: true,
+	        onTouchTap: this.handleClose
+	      }), _react2.default.createElement(_FlatButton2.default, {
+	        label: 'Submit',
+	        primary: true,
+	        disabled: true,
+	        onTouchTap: this.handleClose
+	      })];
+
 	      var contentStyle = {
 	        minWidth: 640,
 	        height: '100%',
@@ -65375,6 +65480,8 @@
 	      };
 
 	      console.log("RENDERING USERVIEW");
+
+	      console.log(this.props);
 
 	      return _react2.default.createElement(
 	        'div',
@@ -65391,13 +65498,69 @@
 	            },
 	            width: 1680,
 	            open: this.props.openUserView },
+	          _react2.default.createElement(_Drawer2.default, {
+	            docked: false,
+
+	            zDepth: 5,
+	            containerStyle: styles.launchContainerStylePanel2,
+	            overlayStyle: styles.overlayOpacity,
+	            onRequestChange: function onRequestChange(open) {
+	              (function () {
+	                console.log("fuck");
+	              })();
+	            },
+	            width: 100,
+	            open: this.props.openUserView }),
+	          _react2.default.createElement(_Drawer2.default, {
+	            docked: false,
+
+	            zDepth: 5,
+	            containerStyle: styles.launchContainerStylePanel2,
+	            overlayStyle: styles.overlayOpacity,
+
+	            openSecondary: true,
+	            onRequestChange: function onRequestChange(open) {
+	              (function () {
+	                console.log("fuck");
+	              })();
+	            },
+	            width: 100,
+	            open: this.props.openUserView }),
+	          _react2.default.createElement(_Drawer2.default, {
+	            docked: false,
+
+	            zDepth: 5,
+	            containerStyle: styles.launchContainerStylePanel3,
+	            overlayStyle: styles.overlayOpacity,
+
+	            openSecondary: true,
+	            onRequestChange: function onRequestChange(open) {
+	              (function () {
+	                console.log("fuck");
+	              })();
+	            },
+	            width: 200,
+	            open: this.props.openUserView }),
+	          _react2.default.createElement(_Drawer2.default, {
+	            docked: false,
+
+	            zDepth: 5,
+	            containerStyle: styles.launchContainerStylePanel3,
+	            overlayStyle: styles.overlayOpacity,
+	            onRequestChange: function onRequestChange(open) {
+	              (function () {
+	                console.log("fuck");
+	              })();
+	            },
+	            width: 200,
+	            open: this.props.openUserView }),
 	          _react2.default.createElement(
 	            _Drawer2.default,
 	            {
 	              docked: false,
 
 	              zDepth: 5,
-	              containerStyle: styles.launchContainerStylePanel,
+	              containerStyle: styles.launchContainerStylePanel4,
 	              overlayStyle: styles.overlayOpacity,
 	              onRequestChange: function onRequestChange(open) {
 	                (function () {
@@ -65406,23 +65569,24 @@
 	              },
 	              width: 300,
 	              open: this.props.openUserView },
+	            _react2.default.createElement('div', { style: styles.panelDivs }),
 	            _react2.default.createElement(
-	              _RaisedButton2.default,
-	              { onClick: this.handleClosePrompt, backgroundColor: '#ff0000', style: styles.buttonDecline },
-	              'ABORT'
-	            )
-	          ),
-	          _react2.default.createElement(
-	            _Paper2.default,
-	            { style: styles.descPadding, zDepth: 5 },
-	            _react2.default.createElement(_markdown2.default, { style: styles.description, markdown: this.props.moduleDescription })
+	              'div',
+	              { style: styles.panelDivs },
+	              _react2.default.createElement(
+	                _RaisedButton2.default,
+	                { onClick: this.handleClosePrompt, backgroundColor: '#ff0000', style: styles.buttonDecline },
+	                'ABORT'
+	              )
+	            ),
+	            _react2.default.createElement('div', { style: styles.panelDivs })
 	          ),
 	          _react2.default.createElement(
 	            _Drawer2.default,
 	            {
 	              docked: false,
 	              zDepth: 5,
-	              containerStyle: styles.launchContainerStylePanel,
+	              containerStyle: styles.launchContainerStylePanel4,
 	              overlayStyle: styles.overlayOpacity,
 	              openSecondary: true,
 	              onRequestChange: function onRequestChange(open) {
@@ -65432,27 +65596,68 @@
 	              },
 	              width: 300,
 	              open: this.props.openUserView },
+	            _react2.default.createElement('div', { style: styles.panelDivs }),
 	            _react2.default.createElement(
-	              _RaisedButton2.default,
-	              { onClick: this.handleOpenModule, backgroundColor: '#3ed715', style: styles.buttonAccept },
-	              'LAUNCH'
-	            )
-	          )
-	        ),
-	        _react2.default.createElement(
-	          _Drawer2.default,
-	          {
+	              'div',
+	              { style: styles.panelDivs },
+	              _react2.default.createElement(
+	                _RaisedButton2.default,
+	                { onClick: this.handleOpenModule, backgroundColor: '#3ed715', style: styles.buttonAccept },
+	                'LAUNCH'
+	              )
+	            ),
+	            _react2.default.createElement('div', { style: styles.panelDivs })
+	          ),
+	          _react2.default.createElement(_Drawer2.default, {
 	            docked: false,
-	            containerStyle: styles.containerStyle,
+	            zDepth: 5,
+	            containerStyle: styles.launchContainerStylePanel2,
+	            openSecondary: true,
 	            onRequestChange: function onRequestChange(open) {
 	              (function () {
 	                console.log("fuck");
 	              })();
 	            },
-
+	            width: 1800,
+	            open: this.state.gates }),
+	          _react2.default.createElement(_Drawer2.default, {
+	            docked: false,
+	            zDepth: 5,
+	            containerStyle: styles.launchContainerStylePanel2,
+	            onRequestChange: function onRequestChange(open) {
+	              (function () {
+	                console.log("fuck");
+	              })();
+	            },
+	            width: 1800,
+	            open: this.state.gates })
+	        ),
+	        _react2.default.createElement(
+	          'div',
+	          { style: this.checkStyle() },
+	          _react2.default.createElement(_Drawer2.default, {
+	            docked: false,
+	            zDepth: 5,
+	            containerStyle: styles.launchContainerStylePanel2,
 	            openSecondary: true,
-	            width: 1680,
-	            open: this.props.openModuleView },
+	            onRequestChange: function onRequestChange(open) {
+	              (function () {
+	                console.log("fuck");
+	              })();
+	            },
+	            width: 1800,
+	            open: this.state.gates }),
+	          _react2.default.createElement(_Drawer2.default, {
+	            docked: false,
+	            zDepth: 5,
+	            containerStyle: styles.launchContainerStylePanel2,
+	            onRequestChange: function onRequestChange(open) {
+	              (function () {
+	                console.log("fuck");
+	              })();
+	            },
+	            width: 1800,
+	            open: this.state.gates }),
 	          _react2.default.createElement(
 	            _Tabs.Tabs,
 	            { tabItemContainerStyle: styles.tabsColor, inkBarStyle: styles.inkBarStyle },
@@ -65497,7 +65702,6 @@
 	                _Tabs.Tabs,
 	                { tabItemContainerStyle: styles.tabsColor2, inkBarStyle: styles.inkBarStyle },
 	                this.props.currentArticles.map(function (value) {
-	                  console.log(value.article);
 	                  return _react2.default.createElement(
 	                    _Tabs.Tab,
 	                    { label: value.name },
@@ -65517,16 +65721,39 @@
 	                'div',
 	                null,
 	                _react2.default.createElement(
-	                  'h2',
-	                  { style: styles.headline },
-	                  'Questions'
+	                  _Dialog2.default,
+	                  {
+	                    modal: false,
+	                    bodyStyle: styles.dialogBody,
+	                    contentStyle: styles.dialog,
+	                    open: true,
+	                    width: 800,
+	                    actions: actions,
+	                    onRequestClose: this.handleClose },
+	                  _react2.default.createElement(
+	                    _Paper2.default,
+	                    { zDepth: 1, style: styles.subject },
+	                    _react2.default.createElement(_TextField2.default, null)
+	                  ),
+	                  _react2.default.createElement(_Paper2.default, { zDepth: 2 })
 	                ),
 	                _react2.default.createElement(
-	                  'p',
+	                  _Card.Card,
 	                  null,
-	                  'Please confirm your edit by typing \'confirm\' in the textbox below '
-	                ),
-	                _react2.default.createElement(_Paper2.default, null)
+	                  _react2.default.createElement(_Card.CardHeader, {
+	                    title: 'Closures',
+	                    subtitle: 'A quiz on closures',
+	                    actAsExpander: true,
+	                    showExpandableButton: true
+	                  }),
+	                  _react2.default.createElement(_Card.CardMedia, { expandable: true }),
+	                  _react2.default.createElement(
+	                    _Card.CardActions,
+	                    { expandable: true },
+	                    _react2.default.createElement(_FlatButton2.default, { label: 'Cancel' }),
+	                    _react2.default.createElement(_FlatButton2.default, { label: 'Submit' })
+	                  )
+	                )
 	              )
 	            ),
 	            _react2.default.createElement(
