@@ -1,34 +1,20 @@
-import { USER_SUBMITANSWER, USER_SUBMITQUESTION, USER_OPEN_SUBMITQUESTION, USER_CLOSE_SUBMITQUESTION, ADMIN_EDIT_EDGES, ADMIN_SUBMIT_EDIT, TOGGLE_ADMIN, FETCH_NODES, ADMIN_CREATE_EDGES, ADMIN_OPEN_ADDARTICLE, ADMIN_CLOSE_ADDARTICLE, ADMIN_OPEN_ADDVIDEO, ADMIN_CLOSE_ADDVIDEO, ADMIN_CREATENODE, ADMIN_OPEN_VIEW, ADMIN_CLOSE_VIEW, ADMIN_OPENCREATE, ADMIN_CREATEDCOMPLETE, ADMIN_DELETENODE, ADMIN_ADDCONNECTIONS, USER_OPEN_MODULE, USER_CLOSE_MODULE,
+import { CLOSE_BLASTDOORS, USER_SUBMITANSWER, OPEN_BLASTDOORS, USER_SUBMITQUESTION, USER_OPEN_SUBMITQUESTION, USER_CLOSE_SUBMITQUESTION, ADMIN_EDIT_EDGES, ADMIN_SUBMIT_EDIT, TOGGLE_ADMIN, FETCH_NODES, ADMIN_CREATE_EDGES, ADMIN_OPEN_ADDARTICLE, ADMIN_CLOSE_ADDARTICLE, ADMIN_OPEN_ADDVIDEO, ADMIN_CLOSE_ADDVIDEO, ADMIN_CREATENODE, ADMIN_OPEN_VIEW, ADMIN_CLOSE_VIEW, ADMIN_OPENCREATE, ADMIN_CREATEDCOMPLETE, ADMIN_DELETENODE, ADMIN_ADDCONNECTIONS, USER_OPEN_MODULE, USER_CLOSE_MODULE,
 		 ADMIN_ADDVIDEO, ADMIN_OPEN_EDIT, ADMIN_CLOSE_EDIT, ADMIN_ADDARTICLE, ADMIN_ADDDESCRIPTION, SELECT_NODE, REGISTER_CY, CLOSE_USER_VIEW } from './actionList'
 import Firebase from 'firebase';
 
 const Posts = new Firebase('https://constellations-3ccaa.firebaseio.com');
 const nodesRef = Posts.child('elements')
 
-// var newNode = nodesRef.push()
-
-// newNode.setWithPriority({
-// 			group: 'nodes',
-//         	data: { 
-//         		firebaseID: newNode.toString(),
-// 	          	id: "JavaScript",
-// 	          	videos: '[]',
-// 	          	articles: '[]',
-// 	          	description: "",
-// 	          	questions: '[]',
-// 	          	quizzes: '[]',
-// 	          	style: {
-// 	          		width: 100,
-// 	          		height: 100,
-// 	          		starType: "./assets/imgs/star (1).png"
-// 	          	}
-//         	}
-//       	}, "JavaScript")
-
-// console.log("creating?")
-
 export function openQuestion(){
 	return {type: USER_OPEN_SUBMITQUESTION, payload: {questionPrompt: true}}
+}
+
+export function openBlastDoor(){
+	return {type: OPEN_BLASTDOORS, payload: {closeBlastDoors: false}}
+}
+
+export function closeBlastDoor(){
+	return {type: CLOSE_BLASTDOORS, payload: {closeBlastDoors: true}}
 }
 
 export function submitAnswer(currentNode){
@@ -149,6 +135,17 @@ export function createNode({cy, currentNode, id, description, styles, admins, wi
 	          	}
         	}
       	}, nodeName)
+
+      	if(!{connections}.connections.length){
+      		nodesRef.push({
+      			group: 'edges',
+      			data: {
+      				id: nodeName + {currentNode}.currentNode._private.data.id,
+      				source: nodeName,
+      				target: {currentNode}.currentNode._private.data.id
+      			}
+      		})
+      	}
 
 
       	for(var i = 0; i < {connections}.connections.length; i++){

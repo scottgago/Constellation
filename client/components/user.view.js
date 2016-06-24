@@ -302,17 +302,14 @@ class User extends Component {
     document.getElementById("cy").style.display = 'none'
     this.props.cy.zoomingEnabled(false)
     this.props.cy.panningEnabled(false)
+    this.props.closeBlastDoor()
     setTimeout(()=>{
       this.props.openModule()
-    },0)
-    this.setState({
-      gates: true
-    })
-    setTimeout(()=>{
-      this.setState({
-        gates: false
-      })
-    }, 750)
+      this.props.openBlastDoor()
+    },800)
+
+    
+    
   };
 
   handleToggleNext = (event) => {
@@ -499,24 +496,6 @@ class User extends Component {
 
           <div style={this.checkStyle()}>
           
-
-          <Drawer
-              docked={false}
-              zDepth={5}
-              containerStyle={styles.launchContainerStylePanel2}
-              openSecondary={true}
-              onRequestChange={(open) => {(()=>{console.log("fuck")})()}}
-              width={1800}
-              open={this.state.gates}>
-            </Drawer>
-            <Drawer
-              docked={false}
-              zDepth={5}
-              containerStyle={styles.launchContainerStylePanel2}
-              onRequestChange={(open) => {(()=>{console.log("fuck")})()}}
-              width={1800}
-              open={this.state.gates}>
-            </Drawer>
         
             
 
