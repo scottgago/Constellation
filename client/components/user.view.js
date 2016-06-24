@@ -12,6 +12,10 @@ import Popover from 'material-ui/Popover';
 import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem';
 import QuizEntry from './quiz.entry';
+import QuestionEntry from './question.entry'
+import AskQuestion from './user.submitQuestion' 
+
+import Avatar from 'material-ui/Avatar';
 
 import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
 
@@ -23,14 +27,83 @@ import * as actions from '../actions/reducerActions';
 var MarkdownEditor = require('react-markdown-editor').MarkdownEditor;
 import TextField from 'material-ui/TextField';
 
+const newStyles = {
+  containerStyle: {
+      maxWidth: '100%',
+      display: 'block',
+      position: 'fixed',
+      background: 'url(./assets/imgs/metalBackground.jpg)',
+      top: 0,
+      bottom: 0,
+      right: 0,
+      left:0, 
+      backgroundSize: 'cover',
+      zIndex: 100000,
+      pointerEvents: 'auto',
+      submitQuestion: false
+    }
+  }
+
 const styles = {
   containerStyle : {
     maxWidth: '100%',
+    display: 'none',
+    position: 'fixed',
+    background: 'url(./assets/imgs/metalBackground.jpg)',
+    top: 0,
+    bottom: 0,
+    right: 0,
+    left:0, 
+    backgroundSize: 'cover',
+    zIndex: 100000,
+
+      pointerEvents: 'auto'
+
+  },
+  launchContainerStyle : {
+    maxWidth: '100%',
     display: 'block ',
     position: 'absolute',
-    background: 'url(./assets/imgs/lol.jpg)',
-    backgroundSize: 'cover'
-    
+    background: 'url(./assets/imgs/metalBackground.jpg)',
+    transitionDuration: '1.5s',
+    backgroundSize: 'cover',
+
+  },
+   launchContainerStylePanel2 : {
+    maxWidth: '50%',
+    display: 'block ',
+    position: 'absolute',
+    background: 'url(http://wallpaper.zone/img/210731.jpg)',
+    backgroundSize: 'cover',
+    transitionDuration: '1.5s'
+  },
+  launchContainerStylePanel3 : {
+    maxWidth: '100%',
+    display: 'block ',
+    position: 'absolute',
+    background: 'url(http://wallpaper.zone/img/210731.jpg)',
+    backgroundSize: 'cover',
+    transitionDelay: '.75s',
+    transitionDuration: '.25s'
+  },
+  launchContainerStylePanel4 : {
+    maxWidth: '100%',
+    display: 'block ',
+    position: 'absolute',
+    background: 'url(http://wallpaper.zone/img/210731.jpg)',
+    backgroundSize: 'cover',
+    transitionDelay: '1s',
+    transitionDuration: '.25s'
+  },
+  launchContainerStylePanel5 : {
+    maxWidth: '50%',
+    display: 'block ',
+    position: 'absolute',
+    background: 'url(http://wallpaper.zone/img/210731.jpg)',
+    backgroundSize: 'cover',
+    transitionDuration: '1.5s',
+    transitionDelay: '1.5s',
+    zIndex: 10001
   },
   backButton: {
     position: 'fixed',
@@ -62,15 +135,15 @@ const styles = {
 	dialogBody: {
 		minHeight: 600,
 		overflow: 'scroll',
-    background: 'url(./assets/imgs/new.png)',
+    background: 'url(./assets/imgs/metalBackground.jpg)',
     backgroundSize: 'cover',
     borderRadius: 3
 	},
   tabsColor: {
-    backgroundColor: "#186dad"
+    backgroundColor: "#25383C"
   },
   tabsColor2: {
-    backgroundColor: "#7eabca"
+    backgroundColor: "#737CA1"
   },
   dialogBackground: {
     borderRadius: 500,
@@ -108,8 +181,7 @@ const styles = {
 		maxWidth: "49%",
     width: '49%',
     marginTop: 10,
-    bottom: 0, 
-    height: '100%',
+    maxHeight: 620,
 		overflow: 'scroll',
     display: 'block',
     marginRight: 10,
@@ -126,15 +198,22 @@ const styles = {
 	buttonDecline: {
 		minWidth: '50%',
 		color: 'white',
+    margin: 'auto 0'
 
 	},
 	buttonAccept: {
 		minWidth: '50%',
 		color: 'white',
+
+    margin: 'auto 0'
 	},
+  subject: {
+    width: '100%',
+    height: '100%'
+  },
 	description: {
     padding: 10,
-    marginTop: 10
+    marginTop: 10,
 	},
   headline: {
     fontSize: 24,
@@ -144,7 +223,10 @@ const styles = {
     opacity: 1,
   },
   textStyle: {
-    marginLeft: 20
+    marginLeft: 20,
+    marginRight: 20,
+    maxWidth: '95%',
+    width: '95%'
   },
   launchDiv : {
     maxWidth: '60%',
@@ -152,13 +234,42 @@ const styles = {
     textColor: "white"
   }, 
   descPadding: {
-    padding: 5
+    height: 600,
+    width: 600,
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    bottom: 0,
+    right: 0,
+    margin: "auto"
   },
   inkBarStyle: {
-    backgroundColor: "#c2ddf0"
+    backgroundColor: "#F88017"
   },
   radioButton: {
     marginBottom: 16,
+  },
+  topIframeMargin: {
+    marginTop: 10
+  },
+  overlayOpacity: {
+    opacity: 1,
+    display: "none"
+  },
+  panelDivs:{
+    position: 'relative',
+    maxHeight: '33.33%',
+    height: '33.33%',
+    width: '100%',
+  },
+  question: {
+    marginTop: 25,
+    width: '100%',
+    height: 300, 
+    overflow: 'scroll'
+  },
+  avatar: {
+    marginRight: 30
   }
 }
 
@@ -170,24 +281,41 @@ class User extends Component {
     super(props)
     this.state = {
         open: false,
-        navigateNext: false
+        navigateNext: false,
+        gates: false
     }
   }
 
   handleCloseModule = () => {
-    this.props.closeModule()
+
+    document.getElementById("cy").style.display = 'block'
     this.props.cy.zoomingEnabled(true)
     this.props.cy.panningEnabled(true)
+    this.props.closeModule()
   };
 
+  handleOpenQuestion = () => {
+    this.props.openQuestion()
+  }
+
   handleOpenModule = () => {
+    document.getElementById("cy").style.display = 'none'
     this.props.cy.zoomingEnabled(false)
     this.props.cy.panningEnabled(false)
-    this.props.openModule()
+    setTimeout(()=>{
+      this.props.openModule()
+    },0)
+    this.setState({
+      gates: true
+    })
+    setTimeout(()=>{
+      this.setState({
+        gates: false
+      })
+    }, 750)
   };
 
   handleToggleNext = (event) => {
-    console.log(event.currentTarget)
     this.setState({
       anchorEl : event.currentTarget,
       lol: true
@@ -201,6 +329,17 @@ class User extends Component {
   handleOpenDrawer = (open, reason) =>{
     console.log(open)
     console.log("eh?")
+  }
+
+  checkStyle = () =>{
+    if(!this.props.openModuleView){
+      console.log(this.props.openModuleView)
+      return styles.containerStyle
+    } else {
+
+      console.log(this.props.openModuleView)
+      return newStyles.containerStyle
+    }
   }
 
   render(){
@@ -218,7 +357,7 @@ class User extends Component {
       />
     ];
 
-      const contentStyle = {
+    const contentStyle = {
       minWidth: 640,
       height: '100%',
       minHeight: 480,
@@ -228,36 +367,162 @@ class User extends Component {
 
     console.log("RENDERING USERVIEW")
 
+    console.log(this.props)
+
 
     return(
   		<div>
-  		  <Dialog
-          modal={false}
-          bodyStyle= {styles.dialogBody}
-          contentStyle= {styles.dialog}
-          open={this.props.openUserView}
-          width={800}
-          onRequestClose={this.handleClose}>
 
-
-          <div style={styles.launchDiv}>
-            <Paper style={styles.buttonDiv} zDepth = {5} >
-              <RaisedButton onClick = {this.handleClosePrompt} backgroundColor ='#ff0000' style={styles.buttonDecline}>ABORT</RaisedButton>
-              <RaisedButton onClick = {this.handleOpenModule} backgroundColor ='#3ed715' style={styles.buttonAccept}>LAUNCH</RaisedButton> 
-            </Paper >
-
-            <Paper style= {styles.descPadding} zDepth = {2}>
-              <MarkdownParser style={styles.description} markdown={this.props.moduleDescription}/>
-            </Paper>
-          </div>
-        </Dialog>
-          <Drawer
+      <Drawer
             docked={false}
-            containerStyle={styles.containerStyle}
-            overlayStyle={styles.containerStyle}
+            containerStyle={styles.launchContainerStyle}
             onRequestChange={(open) => {(()=>{console.log("fuck")})()}}
             width={1680}
-            open={this.props.openModuleView}>
+            open={this.props.openUserView}>
+
+            <Drawer
+              docked={false}
+
+              zDepth={5}
+              containerStyle={styles.launchContainerStylePanel2}
+              overlayStyle={styles.overlayOpacity}
+              onRequestChange={(open) => {(()=>{console.log("fuck")})()}}
+              width={100}
+              open={this.props.openUserView}>
+            </Drawer>
+            <Drawer
+              docked={false}
+
+              zDepth={5}
+              containerStyle={styles.launchContainerStylePanel2}
+              overlayStyle={styles.overlayOpacity}
+
+              openSecondary={true}
+              onRequestChange={(open) => {(()=>{console.log("fuck")})()}}
+              width={100}
+              open={this.props.openUserView}>
+            </Drawer>
+            <Drawer
+              docked={false}
+
+              zDepth={5}
+              containerStyle={styles.launchContainerStylePanel3}
+              overlayStyle={styles.overlayOpacity}
+
+              openSecondary={true}
+              onRequestChange={(open) => {(()=>{console.log("fuck")})()}}
+              width={200}
+              open={this.props.openUserView}>
+            </Drawer>
+            <Drawer
+              docked={false}
+
+              zDepth={5}
+              containerStyle={styles.launchContainerStylePanel3}
+              overlayStyle={styles.overlayOpacity}
+              onRequestChange={(open) => {(()=>{console.log("fuck")})()}}
+              width={200}
+              open={this.props.openUserView}>
+            </Drawer>
+              
+
+              <Drawer
+              docked={false}
+
+              zDepth={5}
+              containerStyle={styles.launchContainerStylePanel4}
+              overlayStyle={styles.overlayOpacity}
+              onRequestChange={(open) => {(()=>{console.log("fuck")})()}}
+              width={300}
+              open={this.props.openUserView}>
+
+              
+
+              <div style={styles.panelDivs}></div>
+              <div style={styles.panelDivs}>
+              <RaisedButton onClick = {this.handleClosePrompt} backgroundColor ='#ff0000' style={styles.buttonDecline}>ABORT</RaisedButton>
+              </div>
+              <div style={styles.panelDivs}></div>
+              </Drawer>
+              {
+              //   <Paper style= {styles.descPadding} zDepth = {5}>
+              //   <MarkdownParser style={styles.description} markdown={this.props.moduleDescription}/>
+              // </Paper>
+            }
+              <Drawer
+              docked={false}
+              zDepth={5}
+              containerStyle={styles.launchContainerStylePanel4}
+              overlayStyle={styles.overlayOpacity}
+              openSecondary={true}
+              onRequestChange={(open) => {(()=>{console.log("fuck")})()}}
+              width={300}
+              open={this.props.openUserView}>
+              <div style={styles.panelDivs}></div>
+              <div style={styles.panelDivs}>
+              <RaisedButton onClick = {this.handleOpenModule} backgroundColor ='#3ed715' style={styles.buttonAccept}>LAUNCH</RaisedButton>
+              </div>
+              <div style={styles.panelDivs}></div> 
+              </Drawer>
+
+               <Drawer
+              docked={false}
+              zDepth={5}
+              containerStyle={styles.launchContainerStylePanel2}
+              openSecondary={true}
+              onRequestChange={(open) => {(()=>{console.log("fuck")})()}}
+              width={1800}
+              open={this.state.gates}>
+            </Drawer>
+            <Drawer
+              docked={false}
+              zDepth={5}
+              containerStyle={styles.launchContainerStylePanel2}
+              onRequestChange={(open) => {(()=>{console.log("fuck")})()}}
+              width={1800}
+              open={this.state.gates}>
+            </Drawer>
+        
+      </Drawer>
+
+
+
+
+
+      {
+  		 
+
+
+
+    }
+
+
+          <div style={this.checkStyle()}>
+          
+
+          <Drawer
+              docked={false}
+              zDepth={5}
+              containerStyle={styles.launchContainerStylePanel2}
+              openSecondary={true}
+              onRequestChange={(open) => {(()=>{console.log("fuck")})()}}
+              width={1800}
+              open={this.state.gates}>
+            </Drawer>
+            <Drawer
+              docked={false}
+              zDepth={5}
+              containerStyle={styles.launchContainerStylePanel2}
+              onRequestChange={(open) => {(()=>{console.log("fuck")})()}}
+              width={1800}
+              open={this.state.gates}>
+            </Drawer>
+        
+            
+
+
+
+
 
             
         	 <Tabs tabItemContainerStyle={styles.tabsColor} inkBarStyle={styles.inkBarStyle}>
@@ -269,11 +534,9 @@ class User extends Component {
                 return (<Tab label={value.name}>
                 <div style={styles.contentDiv}>
                  <div style={styles.floatLeft}>
-                  <Paper zDepth = {4}>
                     <YouTube
                      videoId={value.video}
                      opts={opts} />
-                    </Paper>
                   </div>
                   <div>
                     <Paper style={styles.floatRight} zDepth = {4} >
@@ -290,8 +553,8 @@ class User extends Component {
               <Tabs tabItemContainerStyle={styles.tabsColor2} inkBarStyle={styles.inkBarStyle}>
               {this.props.currentArticles.map((value)=>{
                 return ( <Tab label = {value.name}>
-                  <div style={styles.dialogHugePlayer}>
-                    <iframe style={styles.dialogHugePlayer} src={value.url} height={'50%'} width={'100%'}/>
+                  <div style={styles.topIframeMargin}>
+                    <iframe style={styles.dialogHugePlayer} src={value.article} height={'50%'} width={'100%'}/>
                   </div>
                   </Tab>)
 
@@ -299,11 +562,13 @@ class User extends Component {
               </Tabs>
             </Tab>
             <Tab label="Questions">
+              <AskQuestion />
               <div>
-                <h2 style={styles.headline}>Questions</h2>
-                <p>Please confirm your edit by typing 'confirm' in the textbox below </p>
-                <Paper >
-                </Paper>
+              {this.props.currentQuestions.map((value)=>{
+                
+                return <QuestionEntry question={value }/>
+                
+              })}
               </div>
             </Tab>
             <Tab label="Quizzes">
@@ -315,6 +580,7 @@ class User extends Component {
                 showExpandableButton={true}
               />
               <CardMedia  expandable={true}>
+
               <QuizEntry />
               </CardMedia>
               <CardActions expandable={true}>
@@ -328,11 +594,11 @@ class User extends Component {
       <div style={styles.backButton} > 
       <Paper zDepth = {4}>           
         <FlatButton  onTouchTap={this.handleCloseModule} label="Back to Galactic View"/>
-      
+        <FlatButton  onTouchTap={this.handleOpenQuestion} label="Ask A Question"/>
         <FlatButton  onTouchTap = {this.handleToggleNext} label="Next Nodes"/>
       </Paper>
       </div>
-      </Drawer>
+      </div>
       </div>
   	)
   }
@@ -346,9 +612,11 @@ function mapStateToProps(state){
           moduleDescription: state.selectNode.moduleDescription, 
           currentArticles: state.selectNode.currentArticles, 
           currentVideos: state.selectNode.currentVideos, 
+          currentQuestions: state.selectNode.currentQuestions,
           previousNode: state.selectNode.previousNode, 
           currentNode: state.selectNode.currentNode, 
-          openUserView: state.selectNode.openUserView })
+          openUserView: state.selectNode.openUserView, 
+        })
 }
 
 export default connect(mapStateToProps, actions)(User)

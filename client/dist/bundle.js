@@ -36535,6 +36535,14 @@
 
 	var _mainview2 = _interopRequireDefault(_mainview);
 
+	var _admin = __webpack_require__(430);
+
+	var _admin2 = _interopRequireDefault(_admin);
+
+	var _user = __webpack_require__(528);
+
+	var _user2 = _interopRequireDefault(_user);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -36559,7 +36567,9 @@
 					'div',
 					null,
 					_react2.default.createElement(_menu2.default, null),
-					_react2.default.createElement(_mainview2.default, null)
+					_react2.default.createElement(_mainview2.default, null),
+					_react2.default.createElement(_admin2.default, null),
+					_react2.default.createElement(_user2.default, null)
 				);
 			}
 		}]);
@@ -46163,7 +46173,14 @@
 	Object.defineProperty(exports, "__esModule", {
 		value: true
 	});
+	exports.openQuestion = openQuestion;
+	exports.submitAnswer = submitAnswer;
+	exports.submitQuestion = submitQuestion;
+	exports.closeQuestion = closeQuestion;
 	exports.submitEdit = submitEdit;
+	exports.editEdges = editEdges;
+	exports.addVideo = addVideo;
+	exports.addArticle = addArticle;
 	exports.createNode = createNode;
 	exports.toggleAdmin = toggleAdmin;
 	exports.fetchNodes = fetchNodes;
@@ -46196,7 +46213,7 @@
 	var Posts = new _firebase2.default('https://constellations-3ccaa.firebaseio.com');
 	var nodesRef = Posts.child('elements');
 
-	var newNode = Posts.push();
+	// var newNode = nodesRef.push()
 
 	// newNode.setWithPriority({
 	// 			group: 'nodes',
@@ -46216,25 +46233,114 @@
 	//         	}
 	//       	}, "JavaScript")
 
-	function submitEdit(currentNode) {
+	// console.log("creating?")
 
-		return { type: _actionList.ADMIN_SUBMIT_EDIT, payload: { edgesChanged: true, selectedEdges: selectedEdges } };
+	function openQuestion() {
+		return { type: _actionList.USER_OPEN_SUBMITQUESTION, payload: { questionPrompt: true } };
 	}
 
-	function createNode(_ref) {
-		var cy = _ref.cy;
-		var currentNode = _ref.currentNode;
-		var id = _ref.id;
-		var description = _ref.description;
-		var styles = _ref.styles;
-		var admins = _ref.admins;
-		var width = _ref.width;
-		var height = _ref.height;
-		var type = _ref.type;
-		var connections = _ref.connections;
+	function submitAnswer(currentNode) {
+
+		var nodeRef = new _firebase2.default(currentNode._private.data.firebaseID + "/data");
+
+		nodeRef.update({
+			questions: currentNode._private.data.questions
+		});
+
+		return { type: _actionList.USER_SUBMITANSWER, payload: {} };
+	}
+
+	function submitQuestion(currentNode) {
+
+		var nodeRef = new _firebase2.default(currentNode._private.data.firebaseID + "/data");
+
+		var questionsObject = {
+			question: currentNode._private.data.questions[currentNode._private.data.questions.length - 1].question,
+			subject: currentNode._private.data.questions[currentNode._private.data.questions.length - 1].subject,
+			answers: '[]'
+		};
+
+		var copy = currentNode._private.data.questions.slice();
+		copy.pop();
+		copy.push(questionsObject);
+
+		nodeRef.update({
+			questions: copy
+		});
+
+		return { type: _actionList.USER_SUBMITQUESTION, payload: { questionPrompt: false } };
+	}
+
+	function closeQuestion() {
+		return { type: _actionList.USER_CLOSE_SUBMITQUESTION, payload: { questionPrompt: false } };
+	}
+
+	function submitEdit(currentNode) {
+
+		var nodeRef = new _firebase2.default(currentNode._private.data.firebaseID + "/data/style");
+
+		nodeRef.set({
+			height: currentNode._private.style.height.value,
+			width: currentNode._private.style.width.value,
+			starType: currentNode._private.style['background-image'].strValue
+		});
+
+		return { type: _actionList.ADMIN_SUBMIT_EDIT, payload: {} };
+	}
+
+	function editEdges(_ref) {
+		var selectedEdge = _ref.selectedEdge;
+
+
+		var newEdge = nodesRef.push();
+
+		var newEdgeObj = { selectedEdge: selectedEdge };
+
+		newEdgeObj.selectedEdge.data.firebaseID = newEdge.toString(), console.log(newEdgeObj.selectedEdge);
+
+		newEdge.setWithPriority(newEdgeObj.selectedEdge, newEdgeObj.selectedEdge.data.id);
+		return { type: _actionList.ADMIN_EDIT_EDGES, payload: { edgesChanges: false } };
+	}
+
+	function addVideo(currentNode) {
+
+		var nodeRef = new _firebase2.default(currentNode._private.data.firebaseID + "/data");
+
+		nodeRef.update({
+			videos: currentNode._private.data.videos
+		});
+
+		return { type: _actionList.ADMIN_ADDVIDEO, payload: {} };
+	}
+
+	function addArticle(currentNode) {
+
+		var nodeRef = new _firebase2.default(currentNode._private.data.firebaseID + "/data");
+
+		nodeRef.update({
+			articles: currentNode._private.data.articles
+		});
+
+		return { type: _actionList.ADMIN_ADDARTICLE, payload: {} };
+	}
+
+	function createNode(_ref2) {
+		var cy = _ref2.cy;
+		var currentNode = _ref2.currentNode;
+		var id = _ref2.id;
+		var description = _ref2.description;
+		var styles = _ref2.styles;
+		var admins = _ref2.admins;
+		var width = _ref2.width;
+		var height = _ref2.height;
+		var type = _ref2.type;
+		var connections = _ref2.connections;
 
 
 		var nodeName = { id: id }.id;
+		var height = { height: height }.height;
+		var width = { width: width }.width;
+		var starType = { type: type }.type;
 
 		var newNode = nodesRef.push();
 
@@ -46251,9 +46357,9 @@
 				questions: '[]',
 				quizzes: '[]',
 				style: {
-					width: 100,
-					height: 100,
-					starType: "./assets/imgs/star (1).png"
+					width: width,
+					height: height,
+					starType: starType
 				}
 			}
 		}, nodeName);
@@ -46285,8 +46391,8 @@
 		};
 	}
 
-	function toggleAdmin(_ref2) {
-		var adminMode = _ref2.adminMode;
+	function toggleAdmin(_ref3) {
+		var adminMode = _ref3.adminMode;
 
 		return { type: _actionList.TOGGLE_ADMIN, payload: { adminMode: adminMode } };
 	}
@@ -46306,13 +46412,13 @@
 							group: snapshot.val().elements[key].group,
 							data: {
 								id: snapshot.val().elements[key].data.id,
+								firebaseID: snapshot.val().elements[key].data.firebaseID,
 								description: snapshot.val().elements[key].data.description,
 								style: snapshot.val().elements[key].data.style
 							}
 						};
 					} else {
 						arr.push(snapshot.val().elements[key]);
-						console.log(arr);
 						continue;
 					}
 
@@ -46331,6 +46437,12 @@
 						newObj.data.questions = [];
 					} else {
 						newObj.data.questions = snapshot.val().elements[key].data.questions;
+						for (var i = 0; i < newObj.data.questions.length; i++) {
+							console.log(newObj.data.questions[i]);
+							if (newObj.data.questions[i].answers === '[]' || newObj.data.questions[i].answers === undefined) {
+								newObj.data.questions[i].answers = [];
+							}
+						}
 					}
 					if (snapshot.val().elements[key].data.quizzes === '[]' || snapshot.val().elements[key].data.quizzes === undefined) {
 						newObj.data.quizzes = [];
@@ -46353,8 +46465,8 @@
 		nodesRef.push(connection);
 	}
 
-	function registerEdge(_ref3) {
-		var selectedEdges = _ref3.selectedEdges;
+	function registerEdge(_ref4) {
+		var selectedEdges = _ref4.selectedEdges;
 
 		return { type: _actionList.ADMIN_CREATE_EDGES, payload: { edgesChanged: true, selectedEdges: selectedEdges } };
 	}
@@ -46395,19 +46507,20 @@
 		return { type: _actionList.ADMIN_CREATEDCOMPLETE, payload: { create: false } };
 	}
 
-	function selectNode(_ref4) {
-		var moduleDescription = _ref4.moduleDescription;
-		var currentNode = _ref4.currentNode;
-		var previousNode = _ref4.previousNode;
-		var openUserView = _ref4.openUserView;
-		var currentArticles = _ref4.currentArticles;
-		var currentVideos = _ref4.currentVideos;
+	function selectNode(_ref5) {
+		var moduleDescription = _ref5.moduleDescription;
+		var currentQuestions = _ref5.currentQuestions;
+		var currentNode = _ref5.currentNode;
+		var previousNode = _ref5.previousNode;
+		var openUserView = _ref5.openUserView;
+		var currentArticles = _ref5.currentArticles;
+		var currentVideos = _ref5.currentVideos;
 
-		return { type: _actionList.SELECT_NODE, payload: { moduleDescription: moduleDescription, currentArticles: currentArticles, currentVideos: currentVideos, currentNode: currentNode, previousNode: previousNode, openUserView: openUserView } };
+		return { type: _actionList.SELECT_NODE, payload: { currentQuestions: currentQuestions, moduleDescription: moduleDescription, currentArticles: currentArticles, currentVideos: currentVideos, currentNode: currentNode, previousNode: previousNode, openUserView: openUserView } };
 	}
 
-	function registerCY(_ref5) {
-		var cy = _ref5.cy;
+	function registerCY(_ref6) {
+		var cy = _ref6.cy;
 
 		return { type: _actionList.REGISTER_CY, payload: { cy: cy } };
 	}
@@ -46442,6 +46555,8 @@
 	var ADMIN_OPEN_EDIT = exports.ADMIN_OPEN_EDIT = "ADMIN_OPEN_EDIT";
 	var ADMIN_CLOSE_EDIT = exports.ADMIN_CLOSE_EDIT = "ADMIN_CLOSE_EDIT";
 	var TOGGLE_ADMIN = exports.TOGGLE_ADMIN = "TOGGLE_ADMIN";
+	var ADMIN_SUBMIT_EDIT = exports.ADMIN_SUBMIT_EDIT = "ADMIN_SUBMIT_EDIT";
+	var ADMIN_EDIT_EDGES = exports.ADMIN_EDIT_EDGES = "ADMIN_EDITCONNECTION";
 
 	var ADMIN_OPEN_ADDVIDEO = exports.ADMIN_OPEN_ADDVIDEO = "ADMIN_OPEN_ADDVIDEO";
 	var ADMIN_CLOSE_ADDVIDEO = exports.ADMIN_CLOSE_ADDVIDEO = "ADMIN_CLOSE_ADDVIDEO";
@@ -46464,6 +46579,11 @@
 	var USER_CLOSE_MODULE = exports.USER_CLOSE_MODULE = "USER_CLOSE_MODULE";
 	var ADMIN_OPEN_VIEW = exports.ADMIN_OPEN_VIEW = "ADMIN_OPEN_VIEW";
 	var ADMIN_CLOSE_VIEW = exports.ADMIN_CLOSE_VIEW = "ADMIN_CLOSE_VIEW";
+
+	var USER_SUBMITQUESTION = exports.USER_SUBMITQUESTION = "USER_SUBMITQUESTION";
+	var USER_OPEN_SUBMITQUESTION = exports.USER_OPEN_SUBMITQUESTION = "USER_OPEN_SUBMITQUESTION";
+	var USER_CLOSE_SUBMITQUESTION = exports.USER_CLOSE_SUBMITQUESTION = "USER_CLOSE_SUBMITQUESTION";
+	var USER_SUBMITANSWER = exports.USER_SUBMITANSWER = "USER_SUBMITANSWER";
 
 /***/ },
 /* 425 */
@@ -47532,7 +47652,7 @@
 
 	var _admin2 = _interopRequireDefault(_admin);
 
-	var _user = __webpack_require__(631);
+	var _user = __webpack_require__(528);
 
 	var _user2 = _interopRequireDefault(_user);
 
@@ -47596,6 +47716,47 @@
 	    value: function componentDidMount() {
 	      var _this2 = this;
 
+	      var defaultOptions = {
+	        // Called on `layoutready`
+
+	        name: "cose-bilkent",
+	        ready: function ready() {},
+	        // Called on `layoutstop`
+	        stop: function stop() {},
+	        // Whether to fit the network view after when done
+	        fit: true,
+	        // Padding on fit
+	        padding: 10,
+	        // Whether to enable incremental mode
+	        randomize: true,
+	        // Node repulsion (non overlapping) multiplier
+	        nodeRepulsion: 4500,
+	        // Ideal edge (non nested) length
+	        idealEdgeLength: 50,
+	        // Divisor to compute edge forces
+	        edgeElasticity: 0.45,
+	        // Nesting factor (multiplier) to compute ideal edge length for nested edges
+	        nestingFactor: 0.1,
+	        // Gravity force (constant)
+	        gravity: 0.25,
+	        // Maximum number of iterations to perform
+	        numIter: 2500,
+	        // For enabling tiling
+	        tile: true,
+	        // Type of layout animation. The option set is {'during', 'end', false}
+	        animate: 'end',
+	        // Represents the amount of the vertical space to put between the zero degree members during the tiling operation(can also be a function)
+	        tilingPaddingVertical: 10,
+	        // Represents the amount of the horizontal space to put between the zero degree members during the tiling operation(can also be a function)
+	        tilingPaddingHorizontal: 10,
+	        // Gravity range (constant) for compounds
+	        gravityRangeCompound: 1.5,
+	        // Gravity force (constant) for compounds
+	        gravityCompound: 1.0,
+	        // Gravity range (constant)
+	        gravityRange: 3.8
+	      };
+
 	      var bind = this;
 
 	      var initCy = function initCy(value) {
@@ -47611,7 +47772,7 @@
 	              'background-opacity': 0,
 	              'label': 'data(id)',
 	              'text-valign': 'top',
-	              'font-size': 40,
+	              'font-size': 15,
 	              'color': 'white',
 	              'z-index': '-100',
 	              'width': 100,
@@ -47634,14 +47795,12 @@
 	          }],
 	          layout: {
 	            name: 'cose-bilkent'
+
 	          }
 	        }).on('tap', function (event) {
 
 	          var evtTarget = event.cyTarget;
 	          var holder = bind.props.currentNode;
-
-	          console.log(evtTarget);
-	          console.log(bind, "bind");
 
 	          if (evtTarget._private.ready || evtTarget._private.group === 'edges') {
 	            return;
@@ -47673,7 +47832,7 @@
 	            });
 	          });
 
-	          bind.props.selectNode({ moduleDescription: evtTarget._private.data.description, currentArticles: evtTarget._private.data.articles, currentVideos: evtTarget._private.data.videos, currentNode: evtTarget, previousNode: holder, openUserView: true });
+	          bind.props.selectNode({ currentQuestions: evtTarget._private.data.questions, moduleDescription: evtTarget._private.data.description, currentArticles: evtTarget._private.data.articles, currentVideos: evtTarget._private.data.videos, currentNode: evtTarget, previousNode: holder, openUserView: true });
 
 	          if (bind.props.adminMode) {
 	            bind.props.openAdmin();
@@ -47689,7 +47848,8 @@
 	            if (bind.props.previousNode._private) {
 	              bind.props.previousNode._private.edges.forEach(function (value) {
 	                bind.props.previousNode.style({
-	                  'font-size': 40
+	                  'font-size': 30,
+	                  'color': "#66ff00"
 	                });
 	                if (value._private.data.source !== bind.props.currentNode._private.data.id && value._private.data.target !== bind.props.currentNode._private.data.id) value.style({
 	                  'line-color': '#ccc',
@@ -47709,11 +47869,10 @@
 	          nodes[i].style({
 	            'width': nodes[i]._private.data.style.width,
 	            'height': nodes[i]._private.data.style.height,
-	            'background-fit': 'contain',
 	            'background-image': nodes[i]._private.data.style.starType
 	          });
 	        }
-
+	        cy.layout(defaultOptions);
 	        _this2.props.registerCY({ cy: cy });
 	      };
 
@@ -47723,12 +47882,7 @@
 	    key: 'render',
 	    value: function render() {
 	      console.log("RENDERING MAINVIEW");
-	      return _react2.default.createElement(
-	        'div',
-	        { id: 'cy' },
-	        _react2.default.createElement(_admin2.default, null),
-	        _react2.default.createElement(_user2.default, null)
-	      );
+	      return _react2.default.createElement('div', { id: 'cy' });
 	    }
 	  }]);
 
@@ -47741,302 +47895,6 @@
 	}
 
 	exports.default = (0, _reactRedux.connect)(mapStateToProps, actions)(MainView);
-
-	// [
-	//       {
-	//         group: 'edges',
-	//         data: {
-	//           id: "JavaScriptJavaScript2",
-	//           source : "JavaScript",
-	//           target: "JavaScript2"
-	//         }
-	//       },
-	//        {
-	//         group: 'edges',
-	//         data: {
-	//           id: "JavaScript5JavaScript6",
-	//           source : "JavaScript5",
-	//           target: "JavaScript6"
-	//         }
-	//       },
-	//        {
-	//         group: 'edges',
-	//         data: {
-	//           id: "JavaScript6JavaScript7",
-	//           source : "JavaScript6",
-	//           target: "JavaScript7"
-	//         }
-	//       },
-	//        {
-	//         group: 'edges',
-	//         data: {
-	//           id: "JavaScript7JavaScript8",
-	//           source : "JavaScript7",
-	//           target: "JavaScript8"
-	//         }
-	//       },
-	//         {
-	//         group: 'edges',
-	//         data: {
-	//           id: "JavaScript7JavaScript9",
-	//           source : "JavaScript7",
-	//           target: "JavaScript9"
-	//         }
-	//       },
-	//         {
-	//         group: 'edges',
-	//         data: {
-	//           id: "JavaScript7JavaScript10",
-	//           source : "JavaScript7",
-	//           target: "JavaScript10"
-	//         }
-	//       },
-	//        {
-	//         group: 'edges',
-	//         data: {
-	//           id: "JavaScriptJavaScript2",
-	//           source : "JavaScript",
-	//           target: "JavaScript2"
-	//         }
-	//       },
-	//       {
-	//         group: 'edges',
-	//         data: {
-	//           id: "JavaScriptJavaScript3",
-	//           source : "JavaScript",
-	//           target: "JavaScript3"
-	//         }
-	//       },
-	//       {
-	//         group: 'edges',
-	//         data: {
-	//           id: "JavaScriptJavaScript4",
-	//           source : "JavaScript",
-	//           target: "JavaScript4"
-	//         }
-	//       },
-	//       {
-	//         group: 'edges',
-	//         data: {
-	//           id: "JavaScriptJavaScript5",
-	//           source : "JavaScript",
-	//           target: "JavaScript5"
-	//         }
-	//       },
-	//       { // node a
-	//         group: 'nodes',
-	//         data: {
-	//           id: 'JavaScript10',
-	//           videos: [{
-	//             name: "Introduction into Javascript",
-	//             key: "jkTzHEtHd54",
-	//             video: "jkTzHEtHd54",
-	//             markdown: "# Non neu sive \n## Venite longos ambiguum tollere reliquit quia Phocaica\nLorem markdownum cacumina es corpus belloque forma haberet videri, pendere saepe, talem nomine invictus quiete *quae*: mors. Metuit quod, non de suo tui consolante orbem, qui per indulgere linquit fera; umbra. Enim sentit laqueosque hastam Bacchei. Ante census observata ipsum, e quamvis quod invitus firmas; sunt, ille venerem si: Iuppiter visa trahendo. \n Nimbos populo dicitur. Haustis tuas, sum resilire illa certa! **Quod Quodsi** labefecit venefica tecta hoc [me pendebat](http://seenly.com/) natura quae! Quoniam fetus movit sororum aliorum indueret et virtute laetis primo Phoebe, deorum haud, ire, esse. \n ## Sit saxa vates indoctum \n et auro ecce Discedens illa, [sanguine supersint](http://example.com/) confusaque duae, innixa? Huic habenti huic. Non leves umeris *sola dea oppositas* corpora restant Quae tangi exstabant in caeso cingens pervenit! Non parvo loquenti; ecce sic \n ## Venite longos ambiguum tollere reliquit quia \nPhocaica Lorem markdownum cacumina es corpus belloque forma haberet videri, pendere popularis fera videri. Discedentem stratum remitti iuvenes sociati secutae"
-	//           },
-	//           {
-	//             name: "10 Things",
-	//             video: "6MaOPdQPvow",
-	//             key: "E6MaOPdQPvow",
-	//             markdown:""
-	//           }],
-	//           articles: [{
-	//             name: "Material UI",
-	//             url : "http://www.material-ui.com/#/components/dialog",
-
-	//           }],
-	//           description: "JavaScript® (often shortened to JS) is a lightweight, interpreted, object-oriented language with first-class functions, and is best known as the scripting language for Web pages, but it's used in many non-browser environments as well. It is a prototype-based, multi-paradigm scripting language that is dynamic, and supports object-oriented, imperative, and functional programming styles. JavaScript runs on the client side of the web, which can be used to design / program how the web pages behave on the occurrence of an event. JavaScript is an easy to learn and also powerful scripting language, widely used for controlling web page behaviour. Contrary to popular misconception, JavaScript is not 'Interpreted Java'. In a nutshell, JavaScript is a dynamic scripting language supporting prototype based object construction. The basic syntax is intentionally similar to both Java and C++ to reduce the number of new concepts required to learn the language. Language constructs, such as if statements, for and while loops, and switch and try ... catch blocks function the same as in these languages (or nearly so.) JavaScript can function as both a procedural and an object oriented language. Objects are created programmatically in JavaScript, by attaching methods and properties to otherwise empty objects at run time, as opposed to the syntactic class definitions common in compiled languages like C++ and Java. Once an object has been constructed it can be used as a blueprint (or prototype) for creating similar objects. JavaScript's dynamic capabilities include runtime object construction, variable parameter lists, function variables, dynamic script creation (via eval), object introspection (via for ... in), and source code recovery (JavaScript programs can decompile function bodies back into their source text). For a more in depth discussion of JavaScript programming follow the JavaScript resources links below."
-	//         }
-	//       },
-	//       { // node a
-	//         group: 'nodes',
-	//         data: {
-	//           id: 'JavaScript9',
-	//           videos: [{
-	//             name: "Introduction into Javascript",
-	//             key: "jkTzHEtHd54",
-	//             video: "jkTzHEtHd54",
-	//             markdown: "# Non neu sive \n## Venite longos ambiguum tollere reliquit quia Phocaica\nLorem markdownum cacumina es corpus belloque forma haberet videri, pendere saepe, talem nomine invictus quiete *quae*: mors. Metuit quod, non de suo tui consolante orbem, qui per indulgere linquit fera; umbra. Enim sentit laqueosque hastam Bacchei. Ante census observata ipsum, e quamvis quod invitus firmas; sunt, ille venerem si: Iuppiter visa trahendo. \n Nimbos populo dicitur. Haustis tuas, sum resilire illa certa! **Quod Quodsi** labefecit venefica tecta hoc [me pendebat](http://seenly.com/) natura quae! Quoniam fetus movit sororum aliorum indueret et virtute laetis primo Phoebe, deorum haud, ire, esse. \n ## Sit saxa vates indoctum \n et auro ecce Discedens illa, [sanguine supersint](http://example.com/) confusaque duae, innixa? Huic habenti huic. Non leves umeris *sola dea oppositas* corpora restant Quae tangi exstabant in caeso cingens pervenit! Non parvo loquenti; ecce sic \n ## Venite longos ambiguum tollere reliquit quia \nPhocaica Lorem markdownum cacumina es corpus belloque forma haberet videri, pendere popularis fera videri. Discedentem stratum remitti iuvenes sociati secutae"
-	//           },
-	//           {
-	//             name: "10 Things",
-	//             video: "6MaOPdQPvow",
-	//             key: "E6MaOPdQPvow",
-	//             markdown:""
-	//           }],
-	//           articles: [],
-	//           description: "JavaScript® (often shortened to JS) is a lightweight, interpreted, object-oriented language with first-class functions, and is best known as the scripting language for Web pages, but it's used in many non-browser environments as well. It is a prototype-based, multi-paradigm scripting language that is dynamic, and supports object-oriented, imperative, and functional programming styles. JavaScript runs on the client side of the web, which can be used to design / program how the web pages behave on the occurrence of an event. JavaScript is an easy to learn and also powerful scripting language, widely used for controlling web page behaviour. Contrary to popular misconception, JavaScript is not 'Interpreted Java'. In a nutshell, JavaScript is a dynamic scripting language supporting prototype based object construction. The basic syntax is intentionally similar to both Java and C++ to reduce the number of new concepts required to learn the language. Language constructs, such as if statements, for and while loops, and switch and try ... catch blocks function the same as in these languages (or nearly so.) JavaScript can function as both a procedural and an object oriented language. Objects are created programmatically in JavaScript, by attaching methods and properties to otherwise empty objects at run time, as opposed to the syntactic class definitions common in compiled languages like C++ and Java. Once an object has been constructed it can be used as a blueprint (or prototype) for creating similar objects. JavaScript's dynamic capabilities include runtime object construction, variable parameter lists, function variables, dynamic script creation (via eval), object introspection (via for ... in), and source code recovery (JavaScript programs can decompile function bodies back into their source text). For a more in depth discussion of JavaScript programming follow the JavaScript resources links below."
-	//         }
-	//       },
-	//       { // node a
-	//         group: 'nodes',
-	//         data: {
-	//           id: 'JavaScript8',
-	//           videos: [{
-	//             name: "Introduction into Javascript",
-	//             key: "jkTzHEtHd54",
-	//             video: "jkTzHEtHd54",
-	//             markdown: "# Non neu sive \n## Venite longos ambiguum tollere reliquit quia Phocaica\nLorem markdownum cacumina es corpus belloque forma haberet videri, pendere saepe, talem nomine invictus quiete *quae*: mors. Metuit quod, non de suo tui consolante orbem, qui per indulgere linquit fera; umbra. Enim sentit laqueosque hastam Bacchei. Ante census observata ipsum, e quamvis quod invitus firmas; sunt, ille venerem si: Iuppiter visa trahendo. \n Nimbos populo dicitur. Haustis tuas, sum resilire illa certa! **Quod Quodsi** labefecit venefica tecta hoc [me pendebat](http://seenly.com/) natura quae! Quoniam fetus movit sororum aliorum indueret et virtute laetis primo Phoebe, deorum haud, ire, esse. \n ## Sit saxa vates indoctum \n et auro ecce Discedens illa, [sanguine supersint](http://example.com/) confusaque duae, innixa? Huic habenti huic. Non leves umeris *sola dea oppositas* corpora restant Quae tangi exstabant in caeso cingens pervenit! Non parvo loquenti; ecce sic \n ## Venite longos ambiguum tollere reliquit quia \nPhocaica Lorem markdownum cacumina es corpus belloque forma haberet videri, pendere popularis fera videri. Discedentem stratum remitti iuvenes sociati secutae"
-	//           },
-	//           {
-	//             name: "10 Things",
-	//             video: "6MaOPdQPvow",
-	//             key: "E6MaOPdQPvow",
-	//             markdown:""
-	//           }],
-	//           articles: [],
-	//           description: "JavaScript® (often shortened to JS) is a lightweight, interpreted, object-oriented language with first-class functions, and is best known as the scripting language for Web pages, but it's used in many non-browser environments as well. It is a prototype-based, multi-paradigm scripting language that is dynamic, and supports object-oriented, imperative, and functional programming styles. JavaScript runs on the client side of the web, which can be used to design / program how the web pages behave on the occurrence of an event. JavaScript is an easy to learn and also powerful scripting language, widely used for controlling web page behaviour. Contrary to popular misconception, JavaScript is not 'Interpreted Java'. In a nutshell, JavaScript is a dynamic scripting language supporting prototype based object construction. The basic syntax is intentionally similar to both Java and C++ to reduce the number of new concepts required to learn the language. Language constructs, such as if statements, for and while loops, and switch and try ... catch blocks function the same as in these languages (or nearly so.) JavaScript can function as both a procedural and an object oriented language. Objects are created programmatically in JavaScript, by attaching methods and properties to otherwise empty objects at run time, as opposed to the syntactic class definitions common in compiled languages like C++ and Java. Once an object has been constructed it can be used as a blueprint (or prototype) for creating similar objects. JavaScript's dynamic capabilities include runtime object construction, variable parameter lists, function variables, dynamic script creation (via eval), object introspection (via for ... in), and source code recovery (JavaScript programs can decompile function bodies back into their source text). For a more in depth discussion of JavaScript programming follow the JavaScript resources links below."
-	//         }
-	//       },
-	//       { // node a
-	//         group: 'nodes',
-	//         data: {
-	//           id: 'JavaScript7',
-	//           videos: [{
-	//             name: "Introduction into Javascript",
-	//             key: "jkTzHEtHd54",
-	//             video: "jkTzHEtHd54",
-	//             markdown: "# Non neu sive \n## Venite longos ambiguum tollere reliquit quia Phocaica\nLorem markdownum cacumina es corpus belloque forma haberet videri, pendere saepe, talem nomine invictus quiete *quae*: mors. Metuit quod, non de suo tui consolante orbem, qui per indulgere linquit fera; umbra. Enim sentit laqueosque hastam Bacchei. Ante census observata ipsum, e quamvis quod invitus firmas; sunt, ille venerem si: Iuppiter visa trahendo. \n Nimbos populo dicitur. Haustis tuas, sum resilire illa certa! **Quod Quodsi** labefecit venefica tecta hoc [me pendebat](http://seenly.com/) natura quae! Quoniam fetus movit sororum aliorum indueret et virtute laetis primo Phoebe, deorum haud, ire, esse. \n ## Sit saxa vates indoctum \n et auro ecce Discedens illa, [sanguine supersint](http://example.com/) confusaque duae, innixa? Huic habenti huic. Non leves umeris *sola dea oppositas* corpora restant Quae tangi exstabant in caeso cingens pervenit! Non parvo loquenti; ecce sic \n ## Venite longos ambiguum tollere reliquit quia \nPhocaica Lorem markdownum cacumina es corpus belloque forma haberet videri, pendere popularis fera videri. Discedentem stratum remitti iuvenes sociati secutae"
-	//           },
-	//           {
-	//             name: "10 Things",
-	//             video: "6MaOPdQPvow",
-	//             key: "E6MaOPdQPvow",
-	//             markdown:""
-	//           }],
-	//           articles: [],
-	//           description: "JavaScript® (often shortened to JS) is a lightweight, interpreted, object-oriented language with first-class functions, and is best known as the scripting language for Web pages, but it's used in many non-browser environments as well. It is a prototype-based, multi-paradigm scripting language that is dynamic, and supports object-oriented, imperative, and functional programming styles. JavaScript runs on the client side of the web, which can be used to design / program how the web pages behave on the occurrence of an event. JavaScript is an easy to learn and also powerful scripting language, widely used for controlling web page behaviour. Contrary to popular misconception, JavaScript is not 'Interpreted Java'. In a nutshell, JavaScript is a dynamic scripting language supporting prototype based object construction. The basic syntax is intentionally similar to both Java and C++ to reduce the number of new concepts required to learn the language. Language constructs, such as if statements, for and while loops, and switch and try ... catch blocks function the same as in these languages (or nearly so.) JavaScript can function as both a procedural and an object oriented language. Objects are created programmatically in JavaScript, by attaching methods and properties to otherwise empty objects at run time, as opposed to the syntactic class definitions common in compiled languages like C++ and Java. Once an object has been constructed it can be used as a blueprint (or prototype) for creating similar objects. JavaScript's dynamic capabilities include runtime object construction, variable parameter lists, function variables, dynamic script creation (via eval), object introspection (via for ... in), and source code recovery (JavaScript programs can decompile function bodies back into their source text). For a more in depth discussion of JavaScript programming follow the JavaScript resources links below."
-	//         }
-	//       },
-	//       { // node a
-	//         group: 'nodes',
-	//         data: {
-	//           id: 'JavaScript6',
-	//           videos: [{
-	//             name: "Introduction into Javascript",
-	//             key: "jkTzHEtHd54",
-	//             video: "jkTzHEtHd54",
-	//             markdown: "# Non neu sive \n## Venite longos ambiguum tollere reliquit quia Phocaica\nLorem markdownum cacumina es corpus belloque forma haberet videri, pendere saepe, talem nomine invictus quiete *quae*: mors. Metuit quod, non de suo tui consolante orbem, qui per indulgere linquit fera; umbra. Enim sentit laqueosque hastam Bacchei. Ante census observata ipsum, e quamvis quod invitus firmas; sunt, ille venerem si: Iuppiter visa trahendo. \n Nimbos populo dicitur. Haustis tuas, sum resilire illa certa! **Quod Quodsi** labefecit venefica tecta hoc [me pendebat](http://seenly.com/) natura quae! Quoniam fetus movit sororum aliorum indueret et virtute laetis primo Phoebe, deorum haud, ire, esse. \n ## Sit saxa vates indoctum \n et auro ecce Discedens illa, [sanguine supersint](http://example.com/) confusaque duae, innixa? Huic habenti huic. Non leves umeris *sola dea oppositas* corpora restant Quae tangi exstabant in caeso cingens pervenit! Non parvo loquenti; ecce sic \n ## Venite longos ambiguum tollere reliquit quia \nPhocaica Lorem markdownum cacumina es corpus belloque forma haberet videri, pendere popularis fera videri. Discedentem stratum remitti iuvenes sociati secutae"
-	//           },
-	//           {
-	//             name: "10 Things",
-	//             video: "6MaOPdQPvow",
-	//             key: "E6MaOPdQPvow",
-	//             markdown:""
-	//           }],
-	//           articles: [],
-	//           description: "JavaScript® (often shortened to JS) is a lightweight, interpreted, object-oriented language with first-class functions, and is best known as the scripting language for Web pages, but it's used in many non-browser environments as well. It is a prototype-based, multi-paradigm scripting language that is dynamic, and supports object-oriented, imperative, and functional programming styles. JavaScript runs on the client side of the web, which can be used to design / program how the web pages behave on the occurrence of an event. JavaScript is an easy to learn and also powerful scripting language, widely used for controlling web page behaviour. Contrary to popular misconception, JavaScript is not 'Interpreted Java'. In a nutshell, JavaScript is a dynamic scripting language supporting prototype based object construction. The basic syntax is intentionally similar to both Java and C++ to reduce the number of new concepts required to learn the language. Language constructs, such as if statements, for and while loops, and switch and try ... catch blocks function the same as in these languages (or nearly so.) JavaScript can function as both a procedural and an object oriented language. Objects are created programmatically in JavaScript, by attaching methods and properties to otherwise empty objects at run time, as opposed to the syntactic class definitions common in compiled languages like C++ and Java. Once an object has been constructed it can be used as a blueprint (or prototype) for creating similar objects. JavaScript's dynamic capabilities include runtime object construction, variable parameter lists, function variables, dynamic script creation (via eval), object introspection (via for ... in), and source code recovery (JavaScript programs can decompile function bodies back into their source text). For a more in depth discussion of JavaScript programming follow the JavaScript resources links below."
-	//         }
-	//       },   // list of graph elements to start with
-	//       { // node a
-	//         group: 'nodes',
-	//         data: {
-	//           id: 'JavaScript',
-	//           quizzes: [{
-	//             quizName: "",
-	//             questions: [
-	//             {
-	//               question: "What is a closure?",
-	//               options: ["A thing", "Athing2", "Athing3", "Athing4", "Athing5"],
-	//               answer: "Athing2"
-	//             }
-	//             ]
-	//           }],
-	//           videos: [{
-	//             name: "Introduction into Javascript",
-	//             key: "jkTzHEtHd54",
-	//             video: "jkTzHEtHd54",
-	//             markdown: "# Non neu sive \n## Venite longos ambiguum tollere reliquit quia Phocaica\nLorem markdownum cacumina es corpus belloque forma haberet videri, pendere saepe, talem nomine invictus quiete *quae*: mors. Metuit quod, non de suo tui consolante orbem, qui per indulgere linquit fera; umbra. Enim sentit laqueosque hastam Bacchei. Ante census observata ipsum, e quamvis quod invitus firmas; sunt, ille venerem si: Iuppiter visa trahendo. \n Nimbos populo dicitur. Haustis tuas, sum resilire illa certa! **Quod Quodsi** labefecit venefica tecta hoc [me pendebat](http://seenly.com/) natura quae! Quoniam fetus movit sororum aliorum indueret et virtute laetis primo Phoebe, deorum haud, ire, esse. \n ## Sit saxa vates indoctum \n et auro ecce Discedens illa, [sanguine supersint](http://example.com/) confusaque duae, innixa? Huic habenti huic. Non leves umeris *sola dea oppositas* corpora restant Quae tangi exstabant in caeso cingens pervenit! Non parvo loquenti; ecce sic \n ## Venite longos ambiguum tollere reliquit quia \nPhocaica Lorem markdownum cacumina es corpus belloque forma haberet videri, pendere popularis fera videri. Discedentem stratum remitti iuvenes sociati secutae"
-	//           },
-	//           {
-	//             name: "10 Things",
-	//             video: "6MaOPdQPvow",
-	//             key: "E6MaOPdQPvow",
-	//             markdown:""
-	//           }],
-	//           articles: [],
-	//           description: "JavaScript® (often shortened to JS) is a lightweight, interpreted, object-oriented language with first-class functions, and is best known as the scripting language for Web pages, but it's used in many non-browser environments as well. It is a prototype-based, multi-paradigm scripting language that is dynamic, and supports object-oriented, imperative, and functional programming styles. JavaScript runs on the client side of the web, which can be used to design / program how the web pages behave on the occurrence of an event. JavaScript is an easy to learn and also powerful scripting language, widely used for controlling web page behaviour. Contrary to popular misconception, JavaScript is not 'Interpreted Java'. In a nutshell, JavaScript is a dynamic scripting language supporting prototype based object construction. The basic syntax is intentionally similar to both Java and C++ to reduce the number of new concepts required to learn the language. Language constructs, such as if statements, for and while loops, and switch and try ... catch blocks function the same as in these languages (or nearly so.) JavaScript can function as both a procedural and an object oriented language. Objects are created programmatically in JavaScript, by attaching methods and properties to otherwise empty objects at run time, as opposed to the syntactic class definitions common in compiled languages like C++ and Java. Once an object has been constructed it can be used as a blueprint (or prototype) for creating similar objects. JavaScript's dynamic capabilities include runtime object construction, variable parameter lists, function variables, dynamic script creation (via eval), object introspection (via for ... in), and source code recovery (JavaScript programs can decompile function bodies back into their source text). For a more in depth discussion of JavaScript programming follow the JavaScript resources links below."
-	//         }
-	//       },
-	//       { // node a
-	//         group: 'nodes',
-	//         data: {
-	//           id: 'JavaScript2',
-	//           videos: [{
-	//             name: "Introduction into Javascript",
-	//             key: "jkTzHEtHd54",
-	//             video: "jkTzHEtHd54",
-	//             markdown: "# Non neu sive \n## Venite longos ambiguum tollere reliquit quia Phocaica\nLorem markdownum cacumina es corpus belloque forma haberet videri, pendere saepe, talem nomine invictus quiete *quae*: mors. Metuit quod, non de suo tui consolante orbem, qui per indulgere linquit fera; umbra. Enim sentit laqueosque hastam Bacchei. Ante census observata ipsum, e quamvis quod invitus firmas; sunt, ille venerem si: Iuppiter visa trahendo. \n Nimbos populo dicitur. Haustis tuas, sum resilire illa certa! **Quod Quodsi** labefecit venefica tecta hoc [me pendebat](http://seenly.com/) natura quae! Quoniam fetus movit sororum aliorum indueret et virtute laetis primo Phoebe, deorum haud, ire, esse. \n ## Sit saxa vates indoctum \n et auro ecce Discedens illa, [sanguine supersint](http://example.com/) confusaque duae, innixa? Huic habenti huic. Non leves umeris *sola dea oppositas* corpora restant Quae tangi exstabant in caeso cingens pervenit! Non parvo loquenti; ecce sic \n ## Venite longos ambiguum tollere reliquit quia \nPhocaica Lorem markdownum cacumina es corpus belloque forma haberet videri, pendere popularis fera videri. Discedentem stratum remitti iuvenes sociati secutae"
-	//           },
-	//           {
-	//             name: "10 Things",
-	//             video: "6MaOPdQPvow",
-	//             key: "E6MaOPdQPvow",
-	//             markdown:""
-	//           }],
-	//           articles: [],
-	//           description: "JavaScript® (often shortened to JS) is a lightweight, interpreted, object-oriented language with first-class functions, and is best known as the scripting language for Web pages, but it's used in many non-browser environments as well. It is a prototype-based, multi-paradigm scripting language that is dynamic, and supports object-oriented, imperative, and functional programming styles. JavaScript runs on the client side of the web, which can be used to design / program how the web pages behave on the occurrence of an event. JavaScript is an easy to learn and also powerful scripting language, widely used for controlling web page behaviour. Contrary to popular misconception, JavaScript is not 'Interpreted Java'. In a nutshell, JavaScript is a dynamic scripting language supporting prototype based object construction. The basic syntax is intentionally similar to both Java and C++ to reduce the number of new concepts required to learn the language. Language constructs, such as if statements, for and while loops, and switch and try ... catch blocks function the same as in these languages (or nearly so.) JavaScript can function as both a procedural and an object oriented language. Objects are created programmatically in JavaScript, by attaching methods and properties to otherwise empty objects at run time, as opposed to the syntactic class definitions common in compiled languages like C++ and Java. Once an object has been constructed it can be used as a blueprint (or prototype) for creating similar objects. JavaScript's dynamic capabilities include runtime object construction, variable parameter lists, function variables, dynamic script creation (via eval), object introspection (via for ... in), and source code recovery (JavaScript programs can decompile function bodies back into their source text). For a more in depth discussion of JavaScript programming follow the JavaScript resources links below."
-	//         }
-	//       },
-	//       { // node a
-	//         group: 'nodes',
-	//         data: {
-	//           id: 'JavaScript3',
-	//           videos: [{
-	//             name: "Introduction into Javascript",
-	//             key: "jkTzHEtHd54",
-	//             video: "jkTzHEtHd54",
-	//             markdown: "# Non neu sive \n## Venite longos ambiguum tollere reliquit quia Phocaica\nLorem markdownum cacumina es corpus belloque forma haberet videri, pendere saepe, talem nomine invictus quiete *quae*: mors. Metuit quod, non de suo tui consolante orbem, qui per indulgere linquit fera; umbra. Enim sentit laqueosque hastam Bacchei. Ante census observata ipsum, e quamvis quod invitus firmas; sunt, ille venerem si: Iuppiter visa trahendo. \n Nimbos populo dicitur. Haustis tuas, sum resilire illa certa! **Quod Quodsi** labefecit venefica tecta hoc [me pendebat](http://seenly.com/) natura quae! Quoniam fetus movit sororum aliorum indueret et virtute laetis primo Phoebe, deorum haud, ire, esse. \n ## Sit saxa vates indoctum \n et auro ecce Discedens illa, [sanguine supersint](http://example.com/) confusaque duae, innixa? Huic habenti huic. Non leves umeris *sola dea oppositas* corpora restant Quae tangi exstabant in caeso cingens pervenit! Non parvo loquenti; ecce sic \n ## Venite longos ambiguum tollere reliquit quia \nPhocaica Lorem markdownum cacumina es corpus belloque forma haberet videri, pendere popularis fera videri. Discedentem stratum remitti iuvenes sociati secutae"
-	//           },
-	//           {
-	//             name: "10 Things",
-	//             video: "6MaOPdQPvow",
-	//             key: "E6MaOPdQPvow",
-	//             markdown:""
-	//           }],
-	//           articles: [],
-	//           description: "JavaScript® (often shortened to JS) is a lightweight, interpreted, object-oriented language with first-class functions, and is best known as the scripting language for Web pages, but it's used in many non-browser environments as well. It is a prototype-based, multi-paradigm scripting language that is dynamic, and supports object-oriented, imperative, and functional programming styles. JavaScript runs on the client side of the web, which can be used to design / program how the web pages behave on the occurrence of an event. JavaScript is an easy to learn and also powerful scripting language, widely used for controlling web page behaviour. Contrary to popular misconception, JavaScript is not 'Interpreted Java'. In a nutshell, JavaScript is a dynamic scripting language supporting prototype based object construction. The basic syntax is intentionally similar to both Java and C++ to reduce the number of new concepts required to learn the language. Language constructs, such as if statements, for and while loops, and switch and try ... catch blocks function the same as in these languages (or nearly so.) JavaScript can function as both a procedural and an object oriented language. Objects are created programmatically in JavaScript, by attaching methods and properties to otherwise empty objects at run time, as opposed to the syntactic class definitions common in compiled languages like C++ and Java. Once an object has been constructed it can be used as a blueprint (or prototype) for creating similar objects. JavaScript's dynamic capabilities include runtime object construction, variable parameter lists, function variables, dynamic script creation (via eval), object introspection (via for ... in), and source code recovery (JavaScript programs can decompile function bodies back into their source text). For a more in depth discussion of JavaScript programming follow the JavaScript resources links below."
-	//         }
-	//       },
-	//       { // node a
-	//         group: 'nodes',
-	//         data: {
-	//           id: 'JavaScript4',
-	//           videos: [{
-	//             name: "Introduction into Javascript",
-	//             key: "jkTzHEtHd54",
-	//             video: "jkTzHEtHd54",
-	//             markdown: "# Non neu sive \n## Venite longos ambiguum tollere reliquit quia Phocaica\nLorem markdownum cacumina es corpus belloque forma haberet videri, pendere saepe, talem nomine invictus quiete *quae*: mors. Metuit quod, non de suo tui consolante orbem, qui per indulgere linquit fera; umbra. Enim sentit laqueosque hastam Bacchei. Ante census observata ipsum, e quamvis quod invitus firmas; sunt, ille venerem si: Iuppiter visa trahendo. \n Nimbos populo dicitur. Haustis tuas, sum resilire illa certa! **Quod Quodsi** labefecit venefica tecta hoc [me pendebat](http://seenly.com/) natura quae! Quoniam fetus movit sororum aliorum indueret et virtute laetis primo Phoebe, deorum haud, ire, esse. \n ## Sit saxa vates indoctum \n et auro ecce Discedens illa, [sanguine supersint](http://example.com/) confusaque duae, innixa? Huic habenti huic. Non leves umeris *sola dea oppositas* corpora restant Quae tangi exstabant in caeso cingens pervenit! Non parvo loquenti; ecce sic \n ## Venite longos ambiguum tollere reliquit quia \nPhocaica Lorem markdownum cacumina es corpus belloque forma haberet videri, pendere popularis fera videri. Discedentem stratum remitti iuvenes sociati secutae"
-	//           },
-	//           {
-	//             name: "10 Things",
-	//             video: "6MaOPdQPvow",
-	//             key: "E6MaOPdQPvow",
-	//             markdown:""
-	//           }],
-	//           articles: [],
-	//           description: "JavaScript® (often shortened to JS) is a lightweight, interpreted, object-oriented language with first-class functions, and is best known as the scripting language for Web pages, but it's used in many non-browser environments as well. It is a prototype-based, multi-paradigm scripting language that is dynamic, and supports object-oriented, imperative, and functional programming styles. JavaScript runs on the client side of the web, which can be used to design / program how the web pages behave on the occurrence of an event. JavaScript is an easy to learn and also powerful scripting language, widely used for controlling web page behaviour. Contrary to popular misconception, JavaScript is not 'Interpreted Java'. In a nutshell, JavaScript is a dynamic scripting language supporting prototype based object construction. The basic syntax is intentionally similar to both Java and C++ to reduce the number of new concepts required to learn the language. Language constructs, such as if statements, for and while loops, and switch and try ... catch blocks function the same as in these languages (or nearly so.) JavaScript can function as both a procedural and an object oriented language. Objects are created programmatically in JavaScript, by attaching methods and properties to otherwise empty objects at run time, as opposed to the syntactic class definitions common in compiled languages like C++ and Java. Once an object has been constructed it can be used as a blueprint (or prototype) for creating similar objects. JavaScript's dynamic capabilities include runtime object construction, variable parameter lists, function variables, dynamic script creation (via eval), object introspection (via for ... in), and source code recovery (JavaScript programs can decompile function bodies back into their source text). For a more in depth discussion of JavaScript programming follow the JavaScript resources links below."
-	//         }
-	//       },
-	//       { // node a
-	//         group: 'nodes',
-	//         data: {
-	//           id: 'JavaScript5',
-	//           videos: [{
-	//             name: "Introduction into Javascript",
-	//             key: "jkTzHEtHd54",
-	//             video: "jkTzHEtHd54",
-	//             markdown: "# Non neu sive \n## Venite longos ambiguum tollere reliquit quia Phocaica\nLorem markdownum cacumina es corpus belloque forma haberet videri, pendere saepe, talem nomine invictus quiete *quae*: mors. Metuit quod, non de suo tui consolante orbem, qui per indulgere linquit fera; umbra. Enim sentit laqueosque hastam Bacchei. Ante census observata ipsum, e quamvis quod invitus firmas; sunt, ille venerem si: Iuppiter visa trahendo. \n Nimbos populo dicitur. Haustis tuas, sum resilire illa certa! **Quod Quodsi** labefecit venefica tecta hoc [me pendebat](http://seenly.com/) natura quae! Quoniam fetus movit sororum aliorum indueret et virtute laetis primo Phoebe, deorum haud, ire, esse. \n ## Sit saxa vates indoctum \n et auro ecce Discedens illa, [sanguine supersint](http://example.com/) confusaque duae, innixa? Huic habenti huic. Non leves umeris *sola dea oppositas* corpora restant Quae tangi exstabant in caeso cingens pervenit! Non parvo loquenti; ecce sic \n ## Venite longos ambiguum tollere reliquit quia \nPhocaica Lorem markdownum cacumina es corpus belloque forma haberet videri, pendere popularis fera videri. Discedentem stratum remitti iuvenes sociati secutae"
-	//           },
-	//           {
-	//             name: "10 Things",
-	//             video: "6MaOPdQPvow",
-	//             key: "E6MaOPdQPvow",
-	//             markdown:""
-	//           }],
-	//           articles: [],
-	//           description: "JavaScript® (often shortened to JS) is a lightweight, interpreted, object-oriented language with first-class functions, and is best known as the scripting language for Web pages, but it's used in many non-browser environments as well. It is a prototype-based, multi-paradigm scripting language that is dynamic, and supports object-oriented, imperative, and functional programming styles. JavaScript runs on the client side of the web, which can be used to design / program how the web pages behave on the occurrence of an event. JavaScript is an easy to learn and also powerful scripting language, widely used for controlling web page behaviour. Contrary to popular misconception, JavaScript is not 'Interpreted Java'. In a nutshell, JavaScript is a dynamic scripting language supporting prototype based object construction. The basic syntax is intentionally similar to both Java and C++ to reduce the number of new concepts required to learn the language. Language constructs, such as if statements, for and while loops, and switch and try ... catch blocks function the same as in these languages (or nearly so.) JavaScript can function as both a procedural and an object oriented language. Objects are created programmatically in JavaScript, by attaching methods and properties to otherwise empty objects at run time, as opposed to the syntactic class definitions common in compiled languages like C++ and Java. Once an object has been constructed it can be used as a blueprint (or prototype) for creating similar objects. JavaScript's dynamic capabilities include runtime object construction, variable parameter lists, function variables, dynamic script creation (via eval), object introspection (via for ... in), and source code recovery (JavaScript programs can decompile function bodies back into their source text). For a more in depth discussion of JavaScript programming follow the JavaScript resources links below."
-	//         }
-	//       }]
 
 /***/ },
 /* 430 */
@@ -48118,7 +47976,7 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	var MarkdownEditor = __webpack_require__(591).MarkdownEditor;
+	var MarkdownEditor = __webpack_require__(491).MarkdownEditor;
 
 
 	var style = {
@@ -53991,11 +53849,11 @@
 
 	var _Table = __webpack_require__(465);
 
-	var _admin3 = __webpack_require__(629);
+	var _admin3 = __webpack_require__(489);
 
 	var _admin4 = _interopRequireDefault(_admin3);
 
-	var _admin5 = __webpack_require__(630);
+	var _admin5 = __webpack_require__(490);
 
 	var _admin6 = _interopRequireDefault(_admin5);
 
@@ -54015,7 +53873,7 @@
 
 	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-	var MarkdownEditor = __webpack_require__(591).MarkdownEditor;
+	var MarkdownEditor = __webpack_require__(491).MarkdownEditor;
 
 	var style = {
 	  contentDiv: {
@@ -55006,15 +54864,15 @@
 
 	var _admin2 = _interopRequireDefault(_admin);
 
-	var _admin3 = __webpack_require__(628);
+	var _admin3 = __webpack_require__(478);
 
 	var _admin4 = _interopRequireDefault(_admin3);
 
-	var _admin5 = __webpack_require__(629);
+	var _admin5 = __webpack_require__(489);
 
 	var _admin6 = _interopRequireDefault(_admin5);
 
-	var _admin7 = __webpack_require__(630);
+	var _admin7 = __webpack_require__(490);
 
 	var _admin8 = _interopRequireDefault(_admin7);
 
@@ -55034,7 +54892,7 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	var MarkdownEditor = __webpack_require__(591).MarkdownEditor;
+	var MarkdownEditor = __webpack_require__(491).MarkdownEditor;
 
 	var style = {
 	  contentDiv: {
@@ -55164,18 +55022,20 @@
 
 	      for (var i = 0; i < addNodes.length; i++) {
 
-	        _this.props.cy.add({
+	        var newEdge = {
+
 	          group: 'edges',
 	          data: {
 	            id: _this.props.currentNode._private.data.id + addNodes[i],
 	            source: _this.props.currentNode._private.data.id,
 	            target: addNodes[i]
 	          }
-	        });
-	        _this.props.addConnection();
+	        };
+
+	        _this.props.cy.add(newEdge);
+	        _this.props.editEdges({ selectedEdge: newEdge });
 	      }
 
-	      _this.props.submitEdit(currentNode);
 	      _this.props.closeEdit();
 	    }, _this.handleCancel = function () {
 	      _this.props.closeEdit();
@@ -55311,7 +55171,7 @@
 	                            _react2.default.createElement(
 	                              _Table.TableRowColumn,
 	                              null,
-	                              'Name'
+	                              value.name
 	                            ),
 	                            _react2.default.createElement(
 	                              _Table.TableRowColumn,
@@ -55321,7 +55181,7 @@
 	                            _react2.default.createElement(
 	                              _Table.TableRowColumn,
 	                              null,
-	                              'Employed'
+	                              value.description
 	                            ),
 	                            _react2.default.createElement(
 	                              _Table.TableRowColumn,
@@ -57741,7 +57601,7 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _Stepper = __webpack_require__(478);
+	var _Stepper = __webpack_require__(479);
 
 	var _RaisedButton = __webpack_require__(437);
 
@@ -57759,7 +57619,7 @@
 
 	var _markdown2 = _interopRequireDefault(_markdown);
 
-	var _reactYoutube = __webpack_require__(488);
+	var _reactYoutube = __webpack_require__(529);
 
 	var _reactYoutube2 = _interopRequireDefault(_reactYoutube);
 
@@ -57791,7 +57651,7 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	var MarkdownEditor = __webpack_require__(591).MarkdownEditor;
+	var MarkdownEditor = __webpack_require__(491).MarkdownEditor;
 
 	var opts = {
 	  height: 390,
@@ -57963,6 +57823,12 @@
 	      });
 	    };
 
+	    _this.handleTextChangeName = function (e, value) {
+	      _this.setState({
+	        name: value
+	      });
+	    };
+
 	    _this.handleClose = function () {
 	      _this.props.closeAddVideo();
 	    };
@@ -57984,9 +57850,11 @@
 
 	        _this.props.currentNode._private.data.videos.push({
 	          video: anchor.state.videoURL,
-	          markdown: anchor.state.description
+	          markdown: anchor.state.description,
+	          name: anchor.state.name
 	        });
 
+	        _this.props.addVideo(_this.props.currentNode);
 	        _this.props.closeAddVideo();
 	      }
 	    };
@@ -58005,6 +57873,7 @@
 	      description: "",
 	      currentNode: null,
 	      videoURL: "",
+	      name: "",
 	      currentVideo: "2g811Eo7K8U"
 	    };
 	    return _this;
@@ -58019,20 +57888,12 @@
 	            'div',
 	            { style: style.contentDiv },
 	            _react2.default.createElement(
-	              'div',
-	              { style: styles.floatLeftTopButton },
-	              _react2.default.createElement(_TextField2.default, { onChange: this.handleTextChange, hintText: 'Confirm', style: style.textStyle, underlineShow: false }),
+	              _Paper2.default,
+	              { zDepth: 5 },
+	              _react2.default.createElement(_TextField2.default, { onChange: this.handleTextChangeName, hintText: 'Name', style: style.textStyle, underlineShow: false }),
+	              _react2.default.createElement(_Divider2.default, null),
+	              _react2.default.createElement(_TextField2.default, { onChange: this.handleTextChange, hintText: 'URL', style: style.textStyle, underlineShow: false }),
 	              _react2.default.createElement(_Divider2.default, null)
-	            ),
-	            _react2.default.createElement(
-	              'div',
-	              { style: styles.floatRightTopButton },
-	              _react2.default.createElement(_RaisedButton2.default, {
-	                style: styles.fill,
-	                label: 'Submit',
-	                primary: true,
-	                onTouchTap: this.handleSubmit
-	              })
 	            ),
 	            _react2.default.createElement(
 	              _Paper2.default,
@@ -58093,6 +57954,7 @@
 	        justifyContent: 'center'
 	      };
 
+	      console.log(this.props, "huh?");
 	      return _react2.default.createElement(
 	        'div',
 	        null,
@@ -58100,7 +57962,7 @@
 	          _Dialog2.default,
 	          {
 	            modal: false,
-	            open: this.props.addVideo,
+	            open: this.props.addVideoOpen,
 	            style: style.modalStyle,
 	            onRequestClose: this.handleClose },
 	          _react2.default.createElement(
@@ -58183,7 +58045,9 @@
 
 	function mapStateToProps(state) {
 	  console.debug("MAPPING PROPS TO STATE IN ADDVIDEO");
-	  return { addVideo: state.adminEdit.addVideo, currentNode: state.selectNode.currentNode };
+
+	  console.log(state.adminEdit);
+	  return { addVideoOpen: state.adminEdit.addVideo, currentNode: state.selectNode.currentNode };
 	}
 
 	exports.default = (0, _reactRedux.connect)(mapStateToProps, actions)(AddVideo);
@@ -58197,25 +58061,341 @@
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _Stepper = __webpack_require__(479);
+
+	var _RaisedButton = __webpack_require__(437);
+
+	var _RaisedButton2 = _interopRequireDefault(_RaisedButton);
+
+	var _FlatButton = __webpack_require__(420);
+
+	var _FlatButton2 = _interopRequireDefault(_FlatButton);
+
+	var _Dialog = __webpack_require__(450);
+
+	var _Dialog2 = _interopRequireDefault(_Dialog);
+
+	var _TextField = __webpack_require__(431);
+
+	var _TextField2 = _interopRequireDefault(_TextField);
+
+	var _Divider = __webpack_require__(452);
+
+	var _Divider2 = _interopRequireDefault(_Divider);
+
+	var _Paper = __webpack_require__(391);
+
+	var _Paper2 = _interopRequireDefault(_Paper);
+
+	var _reducerActions = __webpack_require__(423);
+
+	var actions = _interopRequireWildcard(_reducerActions);
+
+	var _reactRedux = __webpack_require__(341);
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var opts = {
+	  height: 390,
+	  width: '100%'
+	};
+
+	var style = {
+
+	  dialogHugePlayer: {
+	    position: 'relative',
+	    height: '100%',
+	    minHeight: 400,
+	    maxHeight: '100%',
+	    width: '100%',
+	    maxWidth: 'none',
+	    overflow: 'scroll'
+	  },
+	  fill: {
+	    width: '100%',
+	    height: 50,
+	    maxHeight: 'none'
+	  },
+	  contentDiv: {
+	    width: '100%',
+	    height: '100%'
+	  },
+	  floatLeftTopButton: {
+	    float: 'left',
+	    minWidth: "75%"
+	  },
+	  floatRightTopButton: {
+	    float: 'right',
+	    minWidth: "25%"
+	  },
+	  textStyle: {
+	    marginLeft: 20
+	  },
+	  contentStyle: {
+	    minWidth: 640,
+	    height: '100%',
+	    minHeight: 400,
+	    alignItems: 'center',
+	    justifyContent: 'center'
+	  }
+	};
+
+	var AddArticle = function (_Component) {
+	  _inherits(AddArticle, _Component);
+
+	  function AddArticle(props) {
+	    _classCallCheck(this, AddArticle);
+
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(AddArticle).call(this, props));
+
+	    _this.contentChange = function (e, value) {
+	      _this.setState({
+	        description: e
+	      });
+	    };
+
+	    _this.handleSubmit = function () {
+	      _this.setState({
+	        currentArticle: _this.state.articleURL
+	      });
+	    };
+
+	    _this.handleTextChange = function (e, value) {
+	      _this.setState({
+	        articleURL: value
+	      });
+	    };
+
+	    _this.handleNext = function () {
+
+	      var index = _this.state.stepIndex + 1;
+
+	      _this.setState({
+	        stepIndex: _this.state.stepIndex + 1,
+	        finished: _this.state.stepIndex > 1
+	      });
+	      if (_this.state.stepIndex === 1) {
+	        _this.setState({
+	          stepIndex: 0
+	        });
+
+	        _this.props.currentNode._private.data.articles.push({
+	          article: _this.state.articleURL,
+	          name: _this.state.name
+	        });
+	        _this.props.addArticle(_this.props.currentNode);
+	        _this.props.closeAddArticle();
+	      }
+	    };
+
+	    _this.handlePrev = function () {
+	      var stepIndex = _this.state.stepIndex;
+
+	      if (stepIndex > 0) {
+	        _this.setState({ stepIndex: stepIndex - 1 });
+	      }
+	    };
+
+	    _this.state = {
+	      finished: false,
+	      stepIndex: 0,
+	      description: "",
+	      currentNode: null,
+	      articleURL: 'http://www.material-ui.com/#/components/dialog',
+	      currentArticle: 'http://www.material-ui.com/#/components/dialog',
+	      name: "lol"
+	    };
+	    return _this;
+	  }
+
+	  // Listen for changes on the description change field, if so, update the description state
+
+	  // On button press, submit the current textbox value article URL to the completed current article
+
+	  // Listen for changes on the articleURL text box and map them to the articleURL state
+
+	  _createClass(AddArticle, [{
+	    key: 'getStepContent',
+	    value: function getStepContent(stepIndex) {
+	      switch (stepIndex) {
+	        case 0:
+	          return _react2.default.createElement(
+	            'div',
+	            { style: style.contentDiv },
+	            _react2.default.createElement(
+	              'div',
+	              { style: style.floatLeftTopButton },
+	              _react2.default.createElement(_TextField2.default, { onChange: this.handleTextChange, hintText: 'Confirm', style: style.textStyle, underlineShow: false }),
+	              _react2.default.createElement(_Divider2.default, null)
+	            ),
+	            _react2.default.createElement(
+	              'div',
+	              { style: style.floatRightTopButton },
+	              _react2.default.createElement(_RaisedButton2.default, {
+	                style: style.fill,
+	                label: 'Submit',
+	                primary: true,
+	                onTouchTap: this.handleSubmit
+	              })
+	            ),
+	            _react2.default.createElement(
+	              _Paper2.default,
+	              { zDepth: 2 },
+	              _react2.default.createElement('iframe', { style: style.dialogHugePlayer, src: this.state.currentArticle, height: '100%', width: '100%' })
+	            )
+	          );
+	        case 1:
+	          return _react2.default.createElement(
+	            'div',
+	            null,
+	            _react2.default.createElement(
+	              _Paper2.default,
+	              { zDepth: 2 },
+	              _react2.default.createElement('iframe', { style: style.dialogHugePlayer, src: this.state.currentArticle, height: '100%', width: '100%' })
+	            )
+	          );
+	        default:
+	          return 'You\'re a long way from home sonny jim!';
+	      }
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render() {
+	      var _this2 = this;
+
+	      console.log("RENDERING ADDARTICLE");
+	      var _state = this.state;
+	      var finished = _state.finished;
+	      var stepIndex = _state.stepIndex;
+
+	      return _react2.default.createElement(
+	        'div',
+	        null,
+	        _react2.default.createElement(
+	          _Dialog2.default,
+	          {
+	            modal: false,
+	            open: this.props.addArticleOpen,
+	            contentStyle: style.modalStyle,
+	            onRequestClose: this.handleClose },
+	          _react2.default.createElement(
+	            _Stepper.Stepper,
+	            { activeStep: stepIndex },
+	            _react2.default.createElement(
+	              _Stepper.Step,
+	              null,
+	              _react2.default.createElement(
+	                _Stepper.StepLabel,
+	                null,
+	                'Select an artcle'
+	              )
+	            ),
+	            _react2.default.createElement(
+	              _Stepper.Step,
+	              null,
+	              _react2.default.createElement(
+	                _Stepper.StepLabel,
+	                null,
+	                'Preview and submit'
+	              )
+	            )
+	          ),
+	          _react2.default.createElement(
+	            'div',
+	            { style: style.contentStyle },
+	            finished ? _react2.default.createElement(
+	              'p',
+	              null,
+	              _react2.default.createElement(
+	                'a',
+	                {
+	                  href: '#',
+	                  onClick: function onClick(event) {
+	                    event.preventDefault();
+	                    _this2.setState({ stepIndex: 0, finished: false });
+	                  }
+	                },
+	                'Click here'
+	              ),
+	              ' to reset the example.'
+	            ) : _react2.default.createElement(
+	              'div',
+	              null,
+	              this.getStepContent(stepIndex),
+	              _react2.default.createElement(
+	                'div',
+	                { style: { marginTop: 12 } },
+	                _react2.default.createElement(_FlatButton2.default, {
+	                  label: 'Back',
+	                  disabled: stepIndex === 0,
+	                  onTouchTap: this.handlePrev,
+	                  style: { marginRight: 12 } }),
+	                _react2.default.createElement(_RaisedButton2.default, {
+	                  label: stepIndex === 1 ? 'Finish' : 'Next',
+	                  primary: true,
+	                  onTouchTap: this.handleNext })
+	              )
+	            )
+	          )
+	        )
+	      );
+	    }
+	  }]);
+
+	  return AddArticle;
+	}(_react.Component);
+
+	function mapStateToProps(state) {
+
+	  console.debug("MAPPING PROPS TO STATE IN ADDARTICLE");
+	  return { currentNode: state.selectNode.currentNode, addArticleOpen: state.adminEdit.addArticle };
+	}
+
+	exports.default = (0, _reactRedux.connect)(mapStateToProps, actions)(AddArticle);
+
+/***/ },
+/* 479 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
 	exports.Stepper = exports.StepLabel = exports.StepContent = exports.StepButton = exports.Step = undefined;
 
-	var _Step2 = __webpack_require__(479);
+	var _Step2 = __webpack_require__(480);
 
 	var _Step3 = _interopRequireDefault(_Step2);
 
-	var _StepButton2 = __webpack_require__(480);
+	var _StepButton2 = __webpack_require__(481);
 
 	var _StepButton3 = _interopRequireDefault(_StepButton2);
 
-	var _StepContent2 = __webpack_require__(483);
+	var _StepContent2 = __webpack_require__(484);
 
 	var _StepContent3 = _interopRequireDefault(_StepContent2);
 
-	var _StepLabel2 = __webpack_require__(481);
+	var _StepLabel2 = __webpack_require__(482);
 
 	var _StepLabel3 = _interopRequireDefault(_StepLabel2);
 
-	var _Stepper2 = __webpack_require__(486);
+	var _Stepper2 = __webpack_require__(487);
 
 	var _Stepper3 = _interopRequireDefault(_Stepper2);
 
@@ -58228,7 +58408,7 @@
 	exports.Stepper = _Stepper3.default;
 
 /***/ },
-/* 479 */
+/* 480 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -58373,7 +58553,7 @@
 	exports.default = Step;
 
 /***/ },
-/* 480 */
+/* 481 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -58402,7 +58582,7 @@
 
 	var _EnhancedButton2 = _interopRequireDefault(_EnhancedButton);
 
-	var _StepLabel = __webpack_require__(481);
+	var _StepLabel = __webpack_require__(482);
 
 	var _StepLabel2 = _interopRequireDefault(_StepLabel);
 
@@ -58575,7 +58755,7 @@
 	exports.default = StepButton;
 
 /***/ },
-/* 481 */
+/* 482 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -58598,7 +58778,7 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _checkCircle = __webpack_require__(482);
+	var _checkCircle = __webpack_require__(483);
 
 	var _checkCircle2 = _interopRequireDefault(_checkCircle);
 
@@ -58779,7 +58959,7 @@
 	exports.default = StepLabel;
 
 /***/ },
-/* 482 */
+/* 483 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -58815,7 +58995,7 @@
 	exports.default = ActionCheckCircle;
 
 /***/ },
-/* 483 */
+/* 484 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
@@ -58836,7 +59016,7 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _ExpandTransition = __webpack_require__(484);
+	var _ExpandTransition = __webpack_require__(485);
 
 	var _ExpandTransition2 = _interopRequireDefault(_ExpandTransition);
 
@@ -58950,7 +59130,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 484 */
+/* 485 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -58975,7 +59155,7 @@
 
 	var _reactAddonsTransitionGroup2 = _interopRequireDefault(_reactAddonsTransitionGroup);
 
-	var _ExpandTransitionChild = __webpack_require__(485);
+	var _ExpandTransitionChild = __webpack_require__(486);
 
 	var _ExpandTransitionChild2 = _interopRequireDefault(_ExpandTransitionChild);
 
@@ -59072,7 +59252,7 @@
 	exports.default = ExpandTransition;
 
 /***/ },
-/* 485 */
+/* 486 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -59229,7 +59409,7 @@
 	exports.default = ExpandTransitionChild;
 
 /***/ },
-/* 486 */
+/* 487 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -59248,7 +59428,7 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _StepConnector = __webpack_require__(487);
+	var _StepConnector = __webpack_require__(488);
 
 	var _StepConnector2 = _interopRequireDefault(_StepConnector);
 
@@ -59369,7 +59549,7 @@
 	exports.default = Stepper;
 
 /***/ },
-/* 487 */
+/* 488 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -59447,7 +59627,5942 @@
 	exports.default = (0, _pure2.default)(StepConnector);
 
 /***/ },
-/* 488 */
+/* 489 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _Table = __webpack_require__(465);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var style = {
+	  adminList: {
+	    marginTop: 15,
+	    float: 'left',
+	    width: '48%',
+	    left: 0,
+	    height: 450
+	  }
+	};
+
+	var AddAdmin = function (_Component) {
+	  _inherits(AddAdmin, _Component);
+
+	  function AddAdmin() {
+	    _classCallCheck(this, AddAdmin);
+
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(AddAdmin).apply(this, arguments));
+	  }
+
+	  _createClass(AddAdmin, [{
+	    key: 'render',
+	    value: function render() {
+	      return _react2.default.createElement(
+	        'div',
+	        { style: style.adminList },
+	        _react2.default.createElement(
+	          'span',
+	          null,
+	          'Admins'
+	        ),
+	        _react2.default.createElement(
+	          _Table.Table,
+	          null,
+	          _react2.default.createElement(
+	            _Table.TableHeader,
+	            null,
+	            _react2.default.createElement(
+	              _Table.TableRow,
+	              null,
+	              _react2.default.createElement(
+	                _Table.TableHeaderColumn,
+	                null,
+	                'ID'
+	              ),
+	              _react2.default.createElement(
+	                _Table.TableHeaderColumn,
+	                null,
+	                'Name'
+	              ),
+	              _react2.default.createElement(
+	                _Table.TableHeaderColumn,
+	                null,
+	                'Priviledges'
+	              )
+	            )
+	          ),
+	          _react2.default.createElement(
+	            _Table.TableBody,
+	            null,
+	            _react2.default.createElement(
+	              _Table.TableRow,
+	              null,
+	              _react2.default.createElement(
+	                _Table.TableRowColumn,
+	                null,
+	                '1'
+	              ),
+	              _react2.default.createElement(
+	                _Table.TableRowColumn,
+	                null,
+	                'Scott'
+	              ),
+	              _react2.default.createElement(
+	                _Table.TableRowColumn,
+	                null,
+	                'Full'
+	              )
+	            ),
+	            _react2.default.createElement(
+	              _Table.TableRow,
+	              null,
+	              _react2.default.createElement(
+	                _Table.TableRowColumn,
+	                null,
+	                '2'
+	              ),
+	              _react2.default.createElement(
+	                _Table.TableRowColumn,
+	                null,
+	                'Michael'
+	              ),
+	              _react2.default.createElement(
+	                _Table.TableRowColumn,
+	                null,
+	                'Full'
+	              )
+	            ),
+	            _react2.default.createElement(
+	              _Table.TableRow,
+	              null,
+	              _react2.default.createElement(
+	                _Table.TableRowColumn,
+	                null,
+	                '3'
+	              ),
+	              _react2.default.createElement(
+	                _Table.TableRowColumn,
+	                null,
+	                'Rong'
+	              ),
+	              _react2.default.createElement(
+	                _Table.TableRowColumn,
+	                null,
+	                'Full'
+	              )
+	            ),
+	            _react2.default.createElement(
+	              _Table.TableRow,
+	              null,
+	              _react2.default.createElement(
+	                _Table.TableRowColumn,
+	                null,
+	                '4'
+	              ),
+	              _react2.default.createElement(
+	                _Table.TableRowColumn,
+	                null,
+	                'Jon'
+	              ),
+	              _react2.default.createElement(
+	                _Table.TableRowColumn,
+	                null,
+	                'Full'
+	              )
+	            )
+	          )
+	        )
+	      );
+	    }
+	  }]);
+
+	  return AddAdmin;
+	}(_react.Component);
+
+	exports.default = AddAdmin;
+
+/***/ },
+/* 490 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _Table = __webpack_require__(465);
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _Paper = __webpack_require__(391);
+
+	var _Paper2 = _interopRequireDefault(_Paper);
+
+	var _reactRedux = __webpack_require__(341);
+
+	var _reducerActions = __webpack_require__(423);
+
+	var actions = _interopRequireWildcard(_reducerActions);
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var style = {
+		nodeList: {
+			marginTop: 15,
+			float: 'right',
+			width: '48%',
+			height: 450,
+			right: 0,
+			overflow: "scroll"
+		}
+	};
+
+	var AddConnections = function (_Component) {
+		_inherits(AddConnections, _Component);
+
+		function AddConnections(props) {
+			_classCallCheck(this, AddConnections);
+
+			var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(AddConnections).call(this, props));
+
+			_this.selectorFunction = function (value) {
+
+				var newList = [];
+
+				for (var i = 0; i < value.length; i++) {
+					newList.push(_this.state.availableConnections[value[i]]);
+				}
+
+				_this.props.registerEdge({ selectedEdges: newList });
+			};
+
+			_this.state = {
+				edit_currentEdges: [],
+				currentSelected: [],
+				availableConnections: [],
+				selectedEdges: []
+			};
+			return _this;
+		}
+
+		_createClass(AddConnections, [{
+			key: 'render',
+			value: function render() {
+				var _this2 = this;
+
+				console.log("RENDERING ADDCONNECTION");
+
+				var checkAdd_root = function checkAdd_root() {
+
+					if (_this2.props.create) {
+
+						_this2.state.availableConnections = [_this2.props.currentNode._private.data.id];
+
+						return _react2.default.createElement(
+							_Table.TableRow,
+							{ selected: true, selectable: false },
+							_react2.default.createElement(
+								_Table.TableRowColumn,
+								null,
+								_this2.props.currentNode._private.data.id
+							),
+							_react2.default.createElement(
+								_Table.TableRowColumn,
+								null,
+								_this2.props.currentNode._private.data.id
+							),
+							_react2.default.createElement(
+								_Table.TableRowColumn,
+								null,
+								'Yes'
+							)
+						);
+					}
+				};
+
+				var checkAdd_all = function checkAdd_all() {
+
+					if (_this2.props.create) {
+						var allNodes = [];
+						var newnodes = _this2.props.cy.nodes();
+
+						for (var i = 0; i < newnodes.length; i++) {
+							if (newnodes[i]._private.data.id !== _this2.props.currentNode._private.data.id) {
+								allNodes.push(newnodes[i]._private.data.id);
+								_this2.state.availableConnections.push(newnodes[i]._private.data.id);
+							}
+						}
+
+						return allNodes.map(function (value) {
+							return _react2.default.createElement(
+								_Table.TableRow,
+								null,
+								_react2.default.createElement(
+									_Table.TableRowColumn,
+									null,
+									value,
+									' '
+								),
+								_react2.default.createElement(
+									_Table.TableRowColumn,
+									null,
+									value
+								),
+								_react2.default.createElement(
+									_Table.TableRowColumn,
+									null,
+									'No'
+								)
+							);
+						});
+					}
+				};
+
+				var checkEdit_root = function checkEdit_root() {
+					if (_this2.props.edit) {
+
+						var currentEdges = [];
+						_this2.state.availableConnections = [];
+						_this2.state.edit_currentEdges = [];
+						for (var i = 0; i < _this2.props.currentNode._private.edges.length; i++) {
+							if (_this2.props.currentNode._private.edges[i]._private.data.source === _this2.props.currentNode._private.data.id) {
+								currentEdges.push(_this2.props.currentNode._private.edges[i]._private.data.target);
+								_this2.state.availableConnections.push(_this2.props.currentNode._private.edges[i]._private.data.target);
+								continue;
+							}
+							currentEdges.push(_this2.props.currentNode._private.edges[i]._private.data.source);
+							_this2.state.availableConnections.push(_this2.props.currentNode._private.edges[i]._private.data.source);
+						}
+
+						_this2.state.edit_currentEdges = currentEdges;
+
+						return currentEdges.map(function (value) {
+							return _react2.default.createElement(
+								_Table.TableRow,
+								{ selected: true, selectable: true },
+								_react2.default.createElement(
+									_Table.TableRowColumn,
+									null,
+									value
+								),
+								_react2.default.createElement(
+									_Table.TableRowColumn,
+									null,
+									value
+								),
+								_react2.default.createElement(
+									_Table.TableRowColumn,
+									null,
+									'Yes'
+								)
+							);
+						});
+					}
+				};
+
+				var checkEdit_all = function checkEdit_all() {
+
+					if (_this2.props.edit) {
+
+						var allNodes = [];
+						var newNodes = _this2.props.cy.nodes();
+						var holderObject = {};
+
+						for (var i = 0; i < newNodes.length; i++) {
+							allNodes.push(newNodes[i]._private.data.id);
+						}
+
+						for (var i = 0; i < _this2.state.edit_currentEdges.length; i++) {
+							holderObject[_this2.state.edit_currentEdges[i]] = 1;
+						}
+
+						return allNodes.map(function (value) {
+							if (!holderObject[value] && value !== _this2.props.currentNode._private.data.id) {
+								_this2.state.availableConnections.push(value);
+								return _react2.default.createElement(
+									_Table.TableRow,
+									{ selected: false, selectable: true },
+									_react2.default.createElement(
+										_Table.TableRowColumn,
+										null,
+										value
+									),
+									_react2.default.createElement(
+										_Table.TableRowColumn,
+										null,
+										value
+									),
+									_react2.default.createElement(
+										_Table.TableRowColumn,
+										null,
+										'No'
+									)
+								);
+							}
+						});
+					}
+				};
+
+				return _react2.default.createElement(
+					'div',
+					{ style: style.nodeList },
+					_react2.default.createElement(
+						'span',
+						null,
+						'Node Connections'
+					),
+					_react2.default.createElement(
+						_Table.Table,
+						{ multiSelectable: true, onRowSelection: this.selectorFunction },
+						_react2.default.createElement(
+							_Table.TableHeader,
+							{ enableSelectAll: false },
+							_react2.default.createElement(
+								_Table.TableRow,
+								null,
+								_react2.default.createElement(
+									_Table.TableHeaderColumn,
+									null,
+									'ID'
+								),
+								_react2.default.createElement(
+									_Table.TableHeaderColumn,
+									null,
+									'Name'
+								),
+								_react2.default.createElement(
+									_Table.TableHeaderColumn,
+									null,
+									'Connection Status'
+								)
+							)
+						),
+						_react2.default.createElement(
+							_Table.TableBody,
+							{ deselectOnClickaway: false },
+							checkAdd_root(),
+							checkAdd_all(),
+							checkEdit_root(),
+							checkEdit_all()
+						)
+					)
+				);
+			}
+		}]);
+
+		return AddConnections;
+	}(_react.Component);
+
+	function mapStateToProps(state) {
+		console.debug("MAPPING PROPS TO STATE IN ADDCONNECTIONS");
+		return { create: state.adminAdd.create, edit: state.adminEdit.edit, cy: state.selectNode.cy, currentNode: state.selectNode.currentNode };
+	}
+
+	exports.default = (0, _reactRedux.connect)(mapStateToProps, actions)(AddConnections);
+
+/***/ },
+/* 491 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = {
+		MarkdownEditor: __webpack_require__(492),
+		MarkdownEditorContentStore: __webpack_require__(527)
+	}
+
+/***/ },
+/* 492 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/** @jsx React.DOM */
+
+	var React = __webpack_require__(1);
+	var ReactDOM = __webpack_require__(38);
+	var Reflux = __webpack_require__(493);
+	var Markdown = __webpack_require__(512).markdown;
+	var MarkdownEditorActions = __webpack_require__(517);
+	var PublicMarkdownEditorActions = __webpack_require__(518);
+	var MarkdownSelectionActions = __webpack_require__(519);
+	var TextAreaSelectionMixin = __webpack_require__(520);
+	var ButtonManagerMixin = __webpack_require__(521);
+	var MarkdownEditorStore = __webpack_require__(522);
+	var MarkdownSelectionStore = __webpack_require__(523);
+	var MarkdownEditorTabsInteractionStore = __webpack_require__(524);
+	var MarkdownTokenFactory = __webpack_require__(525);
+	var MarkdownUtils = __webpack_require__(526);
+
+	var NullMarkdownToken = MarkdownTokenFactory.NullMarkdownToken;
+	var RegularMarkdownToken = MarkdownTokenFactory.RegularMarkdownToken;
+	var HeaderMarkdownToken = MarkdownTokenFactory.HeaderMarkdownToken;
+	var SubHeaderMarkdownToken = MarkdownTokenFactory.SubHeaderMarkdownToken;
+	var UrlMarkdownToken = MarkdownTokenFactory.UrlMarkdownToken;
+	var ListMarkdownToken = MarkdownTokenFactory.ListMarkdownToken;
+	var ImageMarkdownToken = MarkdownTokenFactory.ImageMarkdownToken;
+
+	var MarkdownEditorMenu = React.createClass({displayName: "MarkdownEditorMenu",
+	  mixins: [Reflux.ListenerMixin, ButtonManagerMixin],
+
+	  propTypes: {
+	    iconsSet: React.PropTypes.string.isRequired
+	  },
+
+	  getInitialState: function() {
+	    return {
+	      enabled: false
+	    };
+	  },
+
+	  componentWillMount: function() {
+	    this.listenTo(MarkdownSelectionStore, this.handleMarkdownSelectionStore);
+	    this.setIconsProvider(this.props.iconsSet);
+	  },
+
+	  render: function() {
+	    var styleMarkdownMenu = {
+	      'margin': '5px 0',
+	      'flex': '1',
+	      'display': 'flex',
+	      'position': 'absolute',
+	      'right': '20px',
+	      'top': '10px'
+	    };
+
+	    var _disabled = (!this.state.enabled) ? 'disabled' : '';
+	    var boldButton = this.getBoldButton(_disabled, this.handleBoldButtonClick);
+	    var italicButton = this.getItalicButton(_disabled, this.handleItalicButtonClick);
+	    var makeListButton = this.getMakeListButton(_disabled, this.handleListButtonClick);
+	    var imageButton = this.getImageButton(_disabled, this.handleImageButtonClick);
+	    var linkButton = this.getLinkButton(_disabled, this.handleLinkButtonClick);
+	    var headerButton = this.getButtonWithoutIcon(_disabled, this.handleHeaderButtonClick, 'md-editor-menu-header', 'Header');
+	    var subHeaderButton = this.getButtonWithoutIcon(_disabled, this.handleSubHeaderButtonClick, 'md-editor-menu-subheader', 'Subheader');
+
+	    return (
+	      React.createElement("div", {style: styleMarkdownMenu, className: "md-editor-menu"}, 
+	        boldButton, 
+	        italicButton, 
+	        headerButton, 
+	        subHeaderButton, 
+	        makeListButton, 
+	        imageButton, 
+	        linkButton
+	      )
+	    );
+	  },
+
+	  handleMarkdownSelectionStore: function(data) {
+	    if (data.type === 'clear') {
+	      this.setState({enabled: false});
+	    } else if (data.type === 'set') {
+	      this.setState({enabled: true});
+	    }
+	  },
+
+	  handleBoldButtonClick: function() {
+	    MarkdownEditorActions.makeBold();
+	  },
+
+	  handleImageButtonClick: function() {
+	    MarkdownEditorActions.makeImage();
+	  },
+
+	  handleItalicButtonClick: function() {
+	    MarkdownEditorActions.makeItalic();
+	  },
+
+	  handleUnderlineButtonClick: function() {
+	    MarkdownEditorActions.makeUnderline();
+	  },
+
+	  handleHeaderButtonClick: function() {
+	    MarkdownEditorActions.makeHeader();
+	  },
+
+	  handleSubHeaderButtonClick: function() {
+	    MarkdownEditorActions.makeSubHeader();
+	  },
+
+	  handleLinkButtonClick: function() {
+	    MarkdownEditorActions.makeLink();
+	  },
+
+	  handleListButtonClick: function() {
+	    MarkdownEditorActions.makeList();
+	  }
+	});
+
+	var MarkdownEditorTabs = React.createClass({displayName: "MarkdownEditorTabs",
+	  mixins: [Reflux.ListenerMixin],
+
+	  getInitialState: function() {
+	    return {
+	      activeTab: 0
+	    };
+	  },
+
+	  componentWillMount: function() {
+	    this.listenTo(MarkdownEditorTabsInteractionStore, this.handleMDEditorTabsInteractionStoreUpdated);
+	  },
+
+	  handleMDEditorTabsInteractionStoreUpdated: function(storeState) {
+	    if (storeState.activeTab != null) {
+	      this.setState({activeTab: storeState.activeTab});
+	    }
+	  },
+
+	  render: function() {
+	    var styleMarkdownEditorTabs = {
+	      'border': 'none',
+	      'display': 'flex',
+	      'justifyContent': 'flex-start'
+	    };
+
+	    var styleTab = {
+	      'padding': '0px 20px',
+	      'cursor': 'pointer',
+	      'display': 'flex',
+	      'justifyContent': 'center',
+	      'alignItems': 'center',
+	      'height': '50px'
+	    };
+
+	    var styleActiveTab = {
+	      'padding': '0px 20px',
+	      'cursor': 'pointer',
+	      'display': 'flex',
+	      'justifyContent': 'center',
+	      'alignItems': 'center',
+	      'height': '50px',
+	      'borderLeft': '1px solid #ddd',
+	      'borderRight': '1px solid #ddd',
+	      'borderTop': '1px solid #ddd',
+	      'backgroundColor': '#fff',
+	      'borderRadius': '3px'
+	    };
+
+	    var editorTabStyle;
+	    var previewTabStyle;
+	    if (this.state.activeTab === 0) {
+	      editorTabStyle = styleActiveTab;
+	      previewTabStyle = styleTab;
+	    } else if (this.state.activeTab === 1) {
+	      previewTabStyle = styleActiveTab;
+	      editorTabStyle = styleTab;
+	    }
+
+	    return (
+	      React.createElement("div", {style: styleMarkdownEditorTabs, className: "md-editor-tabs"}, 
+	        React.createElement("div", {style: editorTabStyle, 
+	          className: "md-editor-tabs-item", 
+	          onClick: this.handleClick.bind(this, 'clickEditorTab')}, 
+	          React.createElement("span", null, "Editor")
+	        ), 
+	        React.createElement("div", {style: previewTabStyle, 
+	          className: "md-editor-tabs-item", 
+	          onClick: this.handleClick.bind(this, 'clickPreviewTab')}, 
+	          React.createElement("span", null, "Preview")
+	        )
+	      )
+	    );
+	  },
+
+	  handleClick: function(actionName) {
+	    MarkdownEditorActions[actionName]();
+	  }
+	});
+
+	var MarkdownEditorContent = React.createClass({displayName: "MarkdownEditorContent",
+	  propTypes: {
+	    content: React.PropTypes.string.isRequired,
+	    onChangeHandler: React.PropTypes.func.isRequired
+	  },
+
+	  mixins: [TextAreaSelectionMixin],
+
+	  render: function() {
+	    var styleMarkdownTextArea = {
+	      'height': 400,
+	      'width': '100%',
+	      'padding': '30px 10px',
+	      'backgroundColor': '#fff',
+	      'border': 'none'
+	    };
+
+	    return (
+	      React.createElement("textarea", {
+	        ref: "editor", 
+	        className: "md-editor-textarea", 
+	        style: styleMarkdownTextArea, 
+	        onChange: this.onChange, 
+	        onClick: this.clearSelection, 
+	        onKeyUp: this.clearSelection}
+	      )
+	    );
+	  },
+
+	  onChange: function() {
+	    var content = this.refs.editor.value;
+	    var markdownContent = MarkdownUtils.toMarkdown(content);
+	    PublicMarkdownEditorActions.updateText(markdownContent);
+
+	    this.props.onChangeHandler(content.replace(/[\n\r]/g, '\n'));
+	  },
+
+	  componentDidMount: function() {
+	    this.refs.editor.value = this.props.content;
+	  },
+
+	  componentDidUpdate: function() {
+	    this.refs.editor.value = this.props.content;
+	  }
+	});
+
+	var MarkdownEditorPreview = React.createClass({displayName: "MarkdownEditorPreview",
+	  propTypes: {
+	    content: React.PropTypes.string.isRequired
+	  },
+
+	  render: function() {
+	    // Breaklines in markdown are actually when a line is ended with two spaces + carriage-return
+	    var htmlContent = this.props.content.replace(/[\n]/g, '  \n');
+	    htmlContent = Markdown.toHTML(htmlContent);
+
+	    var styleMarkdownPreviewArea = {
+	      'height': 400,
+	      'width': '100%',
+	      'padding': '30px 10px',
+	      'backgroundColor': '#fff',
+	      'border': 'none',
+	      'overflow': 'scroll'
+	    };
+
+	    return (
+	      React.createElement("div", {
+	        style: styleMarkdownPreviewArea, 
+	        dangerouslySetInnerHTML: {__html: htmlContent}}
+	      )
+	    );
+	  }
+	});
+
+	var MarkdownEditor = React.createClass({displayName: "MarkdownEditor",
+	  mixins: [Reflux.ListenerMixin],
+
+	  propTypes: {
+	    initialContent: React.PropTypes.string.isRequired,
+	    iconsSet: React.PropTypes.oneOf(['font-awesome', 'materialize-ui']).isRequired,
+	    onContentChange: React.PropTypes.func
+	  },
+
+	  getInitialState: function() {
+	    return {content: this.props.initialContent, inEditMode: true};
+	  },
+
+	  render: function() {
+	    var divContent;
+	    var editorMenu;
+
+	    if (this.state.inEditMode) {
+	      divContent = React.createElement(MarkdownEditorContent, {content: this.state.content, onChangeHandler: this.onChangeHandler});
+	      editorMenu = React.createElement(MarkdownEditorMenu, {iconsSet: this.props.iconsSet});
+	    } else {
+	      divContent = React.createElement(MarkdownEditorPreview, {content: this.state.content});
+	      editorMenu = null;
+	    }
+
+	    var styleMarkdownEditorHeader = {
+	      'display': 'flex',
+	      'flexDirection': 'column',
+	      'borderBottom': '1px solid #ddd',
+	      'marginLeft': '0px',
+	      'marginRight': '0px',
+	      'minHeight': '50px',
+	      'justifyContent': 'center',
+	      'position': 'relative'
+	    };
+
+	    var styleMarkdownEditorContainer = {
+	      'display': 'flex',
+	      'flexDirection': 'column',
+	      'marginTop': '2px',
+	      'paddingTop': '10px',
+	      'border': '1px solid #ddd',
+	      'backgroundColor': '#f7f7f7'
+	    };
+
+	    return (
+	      React.createElement("div", {
+	        style: styleMarkdownEditorContainer}, 
+	        React.createElement("div", {style: styleMarkdownEditorHeader, className: "md-editor-header"}, 
+	          editorMenu, 
+	          React.createElement(MarkdownEditorTabs, null)
+	        ), 
+	        divContent
+	      )
+	    );
+	  },
+
+	  onChangeHandler: function(newContent) {
+	    if (this.props.onContentChange) {
+	      this.props.onContentChange(newContent);
+	    }
+
+	    this.setState({content: newContent});
+	  },
+
+	  componentDidMount: function() {
+	    this.listenTo(MarkdownEditorStore, this.handleMarkdowEditorStoreUpdated);
+	    this.listenTo(MarkdownEditorTabsInteractionStore, this.handleMDEditorTabsInteractionStoreUpdated);
+	  },
+
+	  handleMarkdowEditorStoreUpdated: function(markdownEditorStoreState) {
+	    var currentSelection = markdownEditorStoreState.currentSelection;
+
+	    if (currentSelection != null) {
+	      this.updateText(this.state.content, currentSelection, markdownEditorStoreState.action);
+	    }
+	  },
+
+	  handleMDEditorTabsInteractionStoreUpdated: function(mdEditorTabsInteractionStoreState) {
+	    if (mdEditorTabsInteractionStoreState.activeTab != null) {
+	      var _inEditMode = mdEditorTabsInteractionStoreState.activeTab === 0;
+	      this.setState({inEditMode: _inEditMode});
+	    }
+	  },
+
+	  updateText: function(text, selection, actionType) {
+	    var token = this.generateMarkdownToken(actionType);
+	    var beforeSelectionContent = text.slice(0, selection.selectionStart);
+	    var afterSelectionContent = text.slice(selection.selectionEnd, text.length);
+	    var updatedText = token.applyTokenTo(selection.selectedText);
+
+	    var _updatedContent = beforeSelectionContent + updatedText + afterSelectionContent;
+	    PublicMarkdownEditorActions.updateText(MarkdownUtils.toMarkdown(_updatedContent));
+	    this.setState({content: _updatedContent});
+	  },
+
+	  generateMarkdownToken: function(actionType) {
+	    switch (actionType) {
+	      case 'bold':
+	        return new RegularMarkdownToken('**', true);
+
+	      case 'italic':
+	        return new RegularMarkdownToken('_', true);
+
+	      case 'header':
+	        return new HeaderMarkdownToken();
+
+	      case 'subheader':
+	        return new SubHeaderMarkdownToken();
+
+	      case 'link':
+	        return new UrlMarkdownToken();
+
+	      case 'list':
+	        return new ListMarkdownToken();
+
+	      case 'image':
+	        return new ImageMarkdownToken();
+
+	      default:
+	        return new NullMarkdownToken();
+	    }
+	  }
+	});
+
+	module.exports = MarkdownEditor;
+
+
+/***/ },
+/* 493 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Reflux = __webpack_require__(494);
+
+	Reflux.connect = __webpack_require__(507);
+
+	Reflux.connectFilter = __webpack_require__(509);
+
+	Reflux.ListenerMixin = __webpack_require__(508);
+
+	Reflux.listenTo = __webpack_require__(510);
+
+	Reflux.listenToMany = __webpack_require__(511);
+
+	module.exports = Reflux;
+
+
+/***/ },
+/* 494 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	var Reflux = {
+	    version: {
+	        "reflux-core": "0.3.0"
+	    }
+	};
+
+	Reflux.ActionMethods = __webpack_require__(495);
+
+	Reflux.ListenerMethods = __webpack_require__(496);
+
+	Reflux.PublisherMethods = __webpack_require__(505);
+
+	Reflux.StoreMethods = __webpack_require__(504);
+
+	Reflux.createAction = __webpack_require__(506);
+
+	Reflux.createStore = __webpack_require__(500);
+
+	var maker = __webpack_require__(499).staticJoinCreator;
+
+	Reflux.joinTrailing = Reflux.all = maker("last"); // Reflux.all alias for backward compatibility
+
+	Reflux.joinLeading = maker("first");
+
+	Reflux.joinStrict = maker("strict");
+
+	Reflux.joinConcat = maker("all");
+
+	var _ = Reflux.utils = __webpack_require__(497);
+
+	Reflux.EventEmitter = _.EventEmitter;
+
+	Reflux.Promise = _.Promise;
+
+	/**
+	 * Convenience function for creating a set of actions
+	 *
+	 * @param definitions the definitions for the actions to be created
+	 * @returns an object with actions of corresponding action names
+	 */
+	Reflux.createActions = (function () {
+	    var reducer = function reducer(definitions, actions) {
+	        Object.keys(definitions).forEach(function (actionName) {
+	            var val = definitions[actionName];
+	            actions[actionName] = Reflux.createAction(val);
+	        });
+	    };
+
+	    return function (definitions) {
+	        var actions = {};
+	        if (definitions instanceof Array) {
+	            definitions.forEach(function (val) {
+	                if (_.isObject(val)) {
+	                    reducer(val, actions);
+	                } else {
+	                    actions[val] = Reflux.createAction(val);
+	                }
+	            });
+	        } else {
+	            reducer(definitions, actions);
+	        }
+	        return actions;
+	    };
+	})();
+
+	/**
+	 * Sets the eventmitter that Reflux uses
+	 */
+	Reflux.setEventEmitter = function (ctx) {
+	    Reflux.EventEmitter = _.EventEmitter = ctx;
+	};
+
+	/**
+	 * Sets the method used for deferring actions and stores
+	 */
+	Reflux.nextTick = function (nextTick) {
+	    _.nextTick = nextTick;
+	};
+
+	Reflux.use = function (pluginCb) {
+	    pluginCb(Reflux);
+	};
+
+	/**
+	 * Provides the set of created actions and stores for introspection
+	 */
+	/*eslint-disable no-underscore-dangle*/
+	Reflux.__keep = __webpack_require__(501);
+	/*eslint-enable no-underscore-dangle*/
+
+	/**
+	 * Warn if Function.prototype.bind not available
+	 */
+	if (!Function.prototype.bind) {
+	    console.error("Function.prototype.bind not available. " + "ES5 shim required. " + "https://github.com/spoike/refluxjs#es5");
+	}
+
+	exports["default"] = Reflux;
+	module.exports = exports["default"];
+
+/***/ },
+/* 495 */
+/***/ function(module, exports) {
+
+	/**
+	 * A module of methods that you want to include in all actions.
+	 * This module is consumed by `createAction`.
+	 */
+	"use strict";
+
+	module.exports = {};
+
+/***/ },
+/* 496 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	var _ = __webpack_require__(497),
+	    maker = __webpack_require__(499).instanceJoinCreator;
+
+	/**
+	 * Extract child listenables from a parent from their
+	 * children property and return them in a keyed Object
+	 *
+	 * @param {Object} listenable The parent listenable
+	 */
+	var mapChildListenables = function mapChildListenables(listenable) {
+	    var i = 0,
+	        children = {},
+	        childName;
+	    for (; i < (listenable.children || []).length; ++i) {
+	        childName = listenable.children[i];
+	        if (listenable[childName]) {
+	            children[childName] = listenable[childName];
+	        }
+	    }
+	    return children;
+	};
+
+	/**
+	 * Make a flat dictionary of all listenables including their
+	 * possible children (recursively), concatenating names in camelCase.
+	 *
+	 * @param {Object} listenables The top-level listenables
+	 */
+	var flattenListenables = function flattenListenables(listenables) {
+	    var flattened = {};
+	    for (var key in listenables) {
+	        var listenable = listenables[key];
+	        var childMap = mapChildListenables(listenable);
+
+	        // recursively flatten children
+	        var children = flattenListenables(childMap);
+
+	        // add the primary listenable and chilren
+	        flattened[key] = listenable;
+	        for (var childKey in children) {
+	            var childListenable = children[childKey];
+	            flattened[key + _.capitalize(childKey)] = childListenable;
+	        }
+	    }
+
+	    return flattened;
+	};
+
+	/**
+	 * A module of methods related to listening.
+	 */
+	module.exports = {
+
+	    /**
+	     * An internal utility function used by `validateListening`
+	     *
+	     * @param {Action|Store} listenable The listenable we want to search for
+	     * @returns {Boolean} The result of a recursive search among `this.subscriptions`
+	     */
+	    hasListener: function hasListener(listenable) {
+	        var i = 0,
+	            j,
+	            listener,
+	            listenables;
+	        for (; i < (this.subscriptions || []).length; ++i) {
+	            listenables = [].concat(this.subscriptions[i].listenable);
+	            for (j = 0; j < listenables.length; j++) {
+	                listener = listenables[j];
+	                if (listener === listenable || listener.hasListener && listener.hasListener(listenable)) {
+	                    return true;
+	                }
+	            }
+	        }
+	        return false;
+	    },
+
+	    /**
+	     * A convenience method that listens to all listenables in the given object.
+	     *
+	     * @param {Object} listenables An object of listenables. Keys will be used as callback method names.
+	     */
+	    listenToMany: function listenToMany(listenables) {
+	        var allListenables = flattenListenables(listenables);
+	        for (var key in allListenables) {
+	            var cbname = _.callbackName(key),
+	                localname = this[cbname] ? cbname : this[key] ? key : undefined;
+	            if (localname) {
+	                this.listenTo(allListenables[key], localname, this[cbname + "Default"] || this[localname + "Default"] || localname);
+	            }
+	        }
+	    },
+
+	    /**
+	     * Checks if the current context can listen to the supplied listenable
+	     *
+	     * @param {Action|Store} listenable An Action or Store that should be
+	     *  listened to.
+	     * @returns {String|Undefined} An error message, or undefined if there was no problem.
+	     */
+	    validateListening: function validateListening(listenable) {
+	        if (listenable === this) {
+	            return "Listener is not able to listen to itself";
+	        }
+	        if (!_.isFunction(listenable.listen)) {
+	            return listenable + " is missing a listen method";
+	        }
+	        if (listenable.hasListener && listenable.hasListener(this)) {
+	            return "Listener cannot listen to this listenable because of circular loop";
+	        }
+	    },
+
+	    /**
+	     * Sets up a subscription to the given listenable for the context object
+	     *
+	     * @param {Action|Store} listenable An Action or Store that should be
+	     *  listened to.
+	     * @param {Function|String} callback The callback to register as event handler
+	     * @param {Function|String} defaultCallback The callback to register as default handler
+	     * @returns {Object} A subscription obj where `stop` is an unsub function and `listenable` is the object being listened to
+	     */
+	    listenTo: function listenTo(listenable, callback, defaultCallback) {
+	        var desub,
+	            unsubscriber,
+	            subscriptionobj,
+	            subs = this.subscriptions = this.subscriptions || [];
+	        _.throwIf(this.validateListening(listenable));
+	        this.fetchInitialState(listenable, defaultCallback);
+	        desub = listenable.listen(this[callback] || callback, this);
+	        unsubscriber = function () {
+	            var index = subs.indexOf(subscriptionobj);
+	            _.throwIf(index === -1, "Tried to remove listen already gone from subscriptions list!");
+	            subs.splice(index, 1);
+	            desub();
+	        };
+	        subscriptionobj = {
+	            stop: unsubscriber,
+	            listenable: listenable
+	        };
+	        subs.push(subscriptionobj);
+	        return subscriptionobj;
+	    },
+
+	    /**
+	     * Stops listening to a single listenable
+	     *
+	     * @param {Action|Store} listenable The action or store we no longer want to listen to
+	     * @returns {Boolean} True if a subscription was found and removed, otherwise false.
+	     */
+	    stopListeningTo: function stopListeningTo(listenable) {
+	        var sub,
+	            i = 0,
+	            subs = this.subscriptions || [];
+	        for (; i < subs.length; i++) {
+	            sub = subs[i];
+	            if (sub.listenable === listenable) {
+	                sub.stop();
+	                _.throwIf(subs.indexOf(sub) !== -1, "Failed to remove listen from subscriptions list!");
+	                return true;
+	            }
+	        }
+	        return false;
+	    },
+
+	    /**
+	     * Stops all subscriptions and empties subscriptions array
+	     */
+	    stopListeningToAll: function stopListeningToAll() {
+	        var remaining,
+	            subs = this.subscriptions || [];
+	        while (remaining = subs.length) {
+	            subs[0].stop();
+	            _.throwIf(subs.length !== remaining - 1, "Failed to remove listen from subscriptions list!");
+	        }
+	    },
+
+	    /**
+	     * Used in `listenTo`. Fetches initial data from a publisher if it has a `getInitialState` method.
+	     * @param {Action|Store} listenable The publisher we want to get initial state from
+	     * @param {Function|String} defaultCallback The method to receive the data
+	     */
+	    fetchInitialState: function fetchInitialState(listenable, defaultCallback) {
+	        defaultCallback = defaultCallback && this[defaultCallback] || defaultCallback;
+	        var me = this;
+	        if (_.isFunction(defaultCallback) && _.isFunction(listenable.getInitialState)) {
+	            var data = listenable.getInitialState();
+	            if (data && _.isFunction(data.then)) {
+	                data.then(function () {
+	                    defaultCallback.apply(me, arguments);
+	                });
+	            } else {
+	                defaultCallback.call(this, data);
+	            }
+	        }
+	    },
+
+	    /**
+	     * The callback will be called once all listenables have triggered at least once.
+	     * It will be invoked with the last emission from each listenable.
+	     * @param {...Publishers} publishers Publishers that should be tracked.
+	     * @param {Function|String} callback The method to call when all publishers have emitted
+	     * @returns {Object} A subscription obj where `stop` is an unsub function and `listenable` is an array of listenables
+	     */
+	    joinTrailing: maker("last"),
+
+	    /**
+	     * The callback will be called once all listenables have triggered at least once.
+	     * It will be invoked with the first emission from each listenable.
+	     * @param {...Publishers} publishers Publishers that should be tracked.
+	     * @param {Function|String} callback The method to call when all publishers have emitted
+	     * @returns {Object} A subscription obj where `stop` is an unsub function and `listenable` is an array of listenables
+	     */
+	    joinLeading: maker("first"),
+
+	    /**
+	     * The callback will be called once all listenables have triggered at least once.
+	     * It will be invoked with all emission from each listenable.
+	     * @param {...Publishers} publishers Publishers that should be tracked.
+	     * @param {Function|String} callback The method to call when all publishers have emitted
+	     * @returns {Object} A subscription obj where `stop` is an unsub function and `listenable` is an array of listenables
+	     */
+	    joinConcat: maker("all"),
+
+	    /**
+	     * The callback will be called once all listenables have triggered.
+	     * If a callback triggers twice before that happens, an error is thrown.
+	     * @param {...Publishers} publishers Publishers that should be tracked.
+	     * @param {Function|String} callback The method to call when all publishers have emitted
+	     * @returns {Object} A subscription obj where `stop` is an unsub function and `listenable` is an array of listenables
+	     */
+	    joinStrict: maker("strict")
+	};
+
+/***/ },
+/* 497 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	exports.capitalize = capitalize;
+	exports.callbackName = callbackName;
+	exports.isObject = isObject;
+	exports.extend = extend;
+	exports.isFunction = isFunction;
+	exports.object = object;
+	exports.isArguments = isArguments;
+	exports.throwIf = throwIf;
+
+	function capitalize(string) {
+	    return string.charAt(0).toUpperCase() + string.slice(1);
+	}
+
+	function callbackName(string, prefix) {
+	    prefix = prefix || "on";
+	    return prefix + exports.capitalize(string);
+	}
+
+	/*
+	 * isObject, extend, isFunction, isArguments are taken from undescore/lodash in
+	 * order to remove the dependency
+	 */
+
+	function isObject(obj) {
+	    var type = typeof obj;
+	    return type === "function" || type === "object" && !!obj;
+	}
+
+	function extend(obj) {
+	    if (!isObject(obj)) {
+	        return obj;
+	    }
+	    var source, prop;
+	    for (var i = 1, length = arguments.length; i < length; i++) {
+	        source = arguments[i];
+	        for (prop in source) {
+	            if (Object.getOwnPropertyDescriptor && Object.defineProperty) {
+	                var propertyDescriptor = Object.getOwnPropertyDescriptor(source, prop);
+	                Object.defineProperty(obj, prop, propertyDescriptor);
+	            } else {
+	                obj[prop] = source[prop];
+	            }
+	        }
+	    }
+	    return obj;
+	}
+
+	function isFunction(value) {
+	    return typeof value === "function";
+	}
+
+	exports.EventEmitter = __webpack_require__(498);
+
+	exports.nextTick = function (callback) {
+	    setTimeout(callback, 0);
+	};
+
+	function object(keys, vals) {
+	    var o = {},
+	        i = 0;
+	    for (; i < keys.length; i++) {
+	        o[keys[i]] = vals[i];
+	    }
+	    return o;
+	}
+
+	function isArguments(value) {
+	    return typeof value === "object" && "callee" in value && typeof value.length === "number";
+	}
+
+	function throwIf(val, msg) {
+	    if (val) {
+	        throw Error(msg || val);
+	    }
+	}
+
+/***/ },
+/* 498 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var has = Object.prototype.hasOwnProperty;
+
+	//
+	// We store our EE objects in a plain object whose properties are event names.
+	// If `Object.create(null)` is not supported we prefix the event names with a
+	// `~` to make sure that the built-in object properties are not overridden or
+	// used as an attack vector.
+	// We also assume that `Object.create(null)` is available when the event name
+	// is an ES6 Symbol.
+	//
+	var prefix = typeof Object.create !== 'function' ? '~' : false;
+
+	/**
+	 * Representation of a single EventEmitter function.
+	 *
+	 * @param {Function} fn Event handler to be called.
+	 * @param {Mixed} context Context for function execution.
+	 * @param {Boolean} [once=false] Only emit once
+	 * @api private
+	 */
+	function EE(fn, context, once) {
+	  this.fn = fn;
+	  this.context = context;
+	  this.once = once || false;
+	}
+
+	/**
+	 * Minimal EventEmitter interface that is molded against the Node.js
+	 * EventEmitter interface.
+	 *
+	 * @constructor
+	 * @api public
+	 */
+	function EventEmitter() { /* Nothing to set */ }
+
+	/**
+	 * Hold the assigned EventEmitters by name.
+	 *
+	 * @type {Object}
+	 * @private
+	 */
+	EventEmitter.prototype._events = undefined;
+
+	/**
+	 * Return an array listing the events for which the emitter has registered
+	 * listeners.
+	 *
+	 * @returns {Array}
+	 * @api public
+	 */
+	EventEmitter.prototype.eventNames = function eventNames() {
+	  var events = this._events
+	    , names = []
+	    , name;
+
+	  if (!events) return names;
+
+	  for (name in events) {
+	    if (has.call(events, name)) names.push(prefix ? name.slice(1) : name);
+	  }
+
+	  if (Object.getOwnPropertySymbols) {
+	    return names.concat(Object.getOwnPropertySymbols(events));
+	  }
+
+	  return names;
+	};
+
+	/**
+	 * Return a list of assigned event listeners.
+	 *
+	 * @param {String} event The events that should be listed.
+	 * @param {Boolean} exists We only need to know if there are listeners.
+	 * @returns {Array|Boolean}
+	 * @api public
+	 */
+	EventEmitter.prototype.listeners = function listeners(event, exists) {
+	  var evt = prefix ? prefix + event : event
+	    , available = this._events && this._events[evt];
+
+	  if (exists) return !!available;
+	  if (!available) return [];
+	  if (available.fn) return [available.fn];
+
+	  for (var i = 0, l = available.length, ee = new Array(l); i < l; i++) {
+	    ee[i] = available[i].fn;
+	  }
+
+	  return ee;
+	};
+
+	/**
+	 * Emit an event to all registered event listeners.
+	 *
+	 * @param {String} event The name of the event.
+	 * @returns {Boolean} Indication if we've emitted an event.
+	 * @api public
+	 */
+	EventEmitter.prototype.emit = function emit(event, a1, a2, a3, a4, a5) {
+	  var evt = prefix ? prefix + event : event;
+
+	  if (!this._events || !this._events[evt]) return false;
+
+	  var listeners = this._events[evt]
+	    , len = arguments.length
+	    , args
+	    , i;
+
+	  if ('function' === typeof listeners.fn) {
+	    if (listeners.once) this.removeListener(event, listeners.fn, undefined, true);
+
+	    switch (len) {
+	      case 1: return listeners.fn.call(listeners.context), true;
+	      case 2: return listeners.fn.call(listeners.context, a1), true;
+	      case 3: return listeners.fn.call(listeners.context, a1, a2), true;
+	      case 4: return listeners.fn.call(listeners.context, a1, a2, a3), true;
+	      case 5: return listeners.fn.call(listeners.context, a1, a2, a3, a4), true;
+	      case 6: return listeners.fn.call(listeners.context, a1, a2, a3, a4, a5), true;
+	    }
+
+	    for (i = 1, args = new Array(len -1); i < len; i++) {
+	      args[i - 1] = arguments[i];
+	    }
+
+	    listeners.fn.apply(listeners.context, args);
+	  } else {
+	    var length = listeners.length
+	      , j;
+
+	    for (i = 0; i < length; i++) {
+	      if (listeners[i].once) this.removeListener(event, listeners[i].fn, undefined, true);
+
+	      switch (len) {
+	        case 1: listeners[i].fn.call(listeners[i].context); break;
+	        case 2: listeners[i].fn.call(listeners[i].context, a1); break;
+	        case 3: listeners[i].fn.call(listeners[i].context, a1, a2); break;
+	        default:
+	          if (!args) for (j = 1, args = new Array(len -1); j < len; j++) {
+	            args[j - 1] = arguments[j];
+	          }
+
+	          listeners[i].fn.apply(listeners[i].context, args);
+	      }
+	    }
+	  }
+
+	  return true;
+	};
+
+	/**
+	 * Register a new EventListener for the given event.
+	 *
+	 * @param {String} event Name of the event.
+	 * @param {Function} fn Callback function.
+	 * @param {Mixed} [context=this] The context of the function.
+	 * @api public
+	 */
+	EventEmitter.prototype.on = function on(event, fn, context) {
+	  var listener = new EE(fn, context || this)
+	    , evt = prefix ? prefix + event : event;
+
+	  if (!this._events) this._events = prefix ? {} : Object.create(null);
+	  if (!this._events[evt]) this._events[evt] = listener;
+	  else {
+	    if (!this._events[evt].fn) this._events[evt].push(listener);
+	    else this._events[evt] = [
+	      this._events[evt], listener
+	    ];
+	  }
+
+	  return this;
+	};
+
+	/**
+	 * Add an EventListener that's only called once.
+	 *
+	 * @param {String} event Name of the event.
+	 * @param {Function} fn Callback function.
+	 * @param {Mixed} [context=this] The context of the function.
+	 * @api public
+	 */
+	EventEmitter.prototype.once = function once(event, fn, context) {
+	  var listener = new EE(fn, context || this, true)
+	    , evt = prefix ? prefix + event : event;
+
+	  if (!this._events) this._events = prefix ? {} : Object.create(null);
+	  if (!this._events[evt]) this._events[evt] = listener;
+	  else {
+	    if (!this._events[evt].fn) this._events[evt].push(listener);
+	    else this._events[evt] = [
+	      this._events[evt], listener
+	    ];
+	  }
+
+	  return this;
+	};
+
+	/**
+	 * Remove event listeners.
+	 *
+	 * @param {String} event The event we want to remove.
+	 * @param {Function} fn The listener that we need to find.
+	 * @param {Mixed} context Only remove listeners matching this context.
+	 * @param {Boolean} once Only remove once listeners.
+	 * @api public
+	 */
+	EventEmitter.prototype.removeListener = function removeListener(event, fn, context, once) {
+	  var evt = prefix ? prefix + event : event;
+
+	  if (!this._events || !this._events[evt]) return this;
+
+	  var listeners = this._events[evt]
+	    , events = [];
+
+	  if (fn) {
+	    if (listeners.fn) {
+	      if (
+	           listeners.fn !== fn
+	        || (once && !listeners.once)
+	        || (context && listeners.context !== context)
+	      ) {
+	        events.push(listeners);
+	      }
+	    } else {
+	      for (var i = 0, length = listeners.length; i < length; i++) {
+	        if (
+	             listeners[i].fn !== fn
+	          || (once && !listeners[i].once)
+	          || (context && listeners[i].context !== context)
+	        ) {
+	          events.push(listeners[i]);
+	        }
+	      }
+	    }
+	  }
+
+	  //
+	  // Reset the array, or remove it completely if we have no more listeners.
+	  //
+	  if (events.length) {
+	    this._events[evt] = events.length === 1 ? events[0] : events;
+	  } else {
+	    delete this._events[evt];
+	  }
+
+	  return this;
+	};
+
+	/**
+	 * Remove all listeners or only the listeners for the specified event.
+	 *
+	 * @param {String} event The event want to remove all listeners for.
+	 * @api public
+	 */
+	EventEmitter.prototype.removeAllListeners = function removeAllListeners(event) {
+	  if (!this._events) return this;
+
+	  if (event) delete this._events[prefix ? prefix + event : event];
+	  else this._events = prefix ? {} : Object.create(null);
+
+	  return this;
+	};
+
+	//
+	// Alias methods names because people roll like that.
+	//
+	EventEmitter.prototype.off = EventEmitter.prototype.removeListener;
+	EventEmitter.prototype.addListener = EventEmitter.prototype.on;
+
+	//
+	// This function doesn't apply anymore.
+	//
+	EventEmitter.prototype.setMaxListeners = function setMaxListeners() {
+	  return this;
+	};
+
+	//
+	// Expose the prefix.
+	//
+	EventEmitter.prefixed = prefix;
+
+	//
+	// Expose the module.
+	//
+	if (true) {
+	  module.exports = EventEmitter;
+	}
+
+
+/***/ },
+/* 499 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * Internal module used to create static and instance join methods
+	 */
+
+	"use strict";
+
+	var createStore = __webpack_require__(500),
+	    _ = __webpack_require__(497);
+
+	var slice = Array.prototype.slice,
+	    strategyMethodNames = {
+	    strict: "joinStrict",
+	    first: "joinLeading",
+	    last: "joinTrailing",
+	    all: "joinConcat"
+	};
+
+	/**
+	 * Used in `index.js` to create the static join methods
+	 * @param {String} strategy Which strategy to use when tracking listenable trigger arguments
+	 * @returns {Function} A static function which returns a store with a join listen on the given listenables using the given strategy
+	 */
+	exports.staticJoinCreator = function (strategy) {
+	    return function () /* listenables... */{
+	        var listenables = slice.call(arguments);
+	        return createStore({
+	            init: function init() {
+	                this[strategyMethodNames[strategy]].apply(this, listenables.concat("triggerAsync"));
+	            }
+	        });
+	    };
+	};
+
+	/**
+	 * Used in `ListenerMethods.js` to create the instance join methods
+	 * @param {String} strategy Which strategy to use when tracking listenable trigger arguments
+	 * @returns {Function} An instance method which sets up a join listen on the given listenables using the given strategy
+	 */
+	exports.instanceJoinCreator = function (strategy) {
+	    return function () /* listenables..., callback*/{
+	        _.throwIf(arguments.length < 2, "Cannot create a join with less than 2 listenables!");
+	        var listenables = slice.call(arguments),
+	            callback = listenables.pop(),
+	            numberOfListenables = listenables.length,
+	            join = {
+	            numberOfListenables: numberOfListenables,
+	            callback: this[callback] || callback,
+	            listener: this,
+	            strategy: strategy
+	        },
+	            i,
+	            cancels = [],
+	            subobj;
+	        for (i = 0; i < numberOfListenables; i++) {
+	            _.throwIf(this.validateListening(listenables[i]));
+	        }
+	        for (i = 0; i < numberOfListenables; i++) {
+	            cancels.push(listenables[i].listen(newListener(i, join), this));
+	        }
+	        reset(join);
+	        subobj = { listenable: listenables };
+	        subobj.stop = makeStopper(subobj, cancels, this);
+	        this.subscriptions = (this.subscriptions || []).concat(subobj);
+	        return subobj;
+	    };
+	};
+
+	// ---- internal join functions ----
+
+	function makeStopper(subobj, cancels, context) {
+	    return function () {
+	        var i,
+	            subs = context.subscriptions,
+	            index = subs ? subs.indexOf(subobj) : -1;
+	        _.throwIf(index === -1, "Tried to remove join already gone from subscriptions list!");
+	        for (i = 0; i < cancels.length; i++) {
+	            cancels[i]();
+	        }
+	        subs.splice(index, 1);
+	    };
+	}
+
+	function reset(join) {
+	    join.listenablesEmitted = new Array(join.numberOfListenables);
+	    join.args = new Array(join.numberOfListenables);
+	}
+
+	function newListener(i, join) {
+	    return function () {
+	        var callargs = slice.call(arguments);
+	        if (join.listenablesEmitted[i]) {
+	            switch (join.strategy) {
+	                case "strict":
+	                    throw new Error("Strict join failed because listener triggered twice.");
+	                case "last":
+	                    join.args[i] = callargs;break;
+	                case "all":
+	                    join.args[i].push(callargs);
+	            }
+	        } else {
+	            join.listenablesEmitted[i] = true;
+	            join.args[i] = join.strategy === "all" ? [callargs] : callargs;
+	        }
+	        emitIfAllListenablesEmitted(join);
+	    };
+	}
+
+	function emitIfAllListenablesEmitted(join) {
+	    for (var i = 0; i < join.numberOfListenables; i++) {
+	        if (!join.listenablesEmitted[i]) {
+	            return;
+	        }
+	    }
+	    join.callback.apply(join.listener, join.args);
+	    reset(join);
+	}
+
+/***/ },
+/* 500 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	var _ = __webpack_require__(497),
+	    Keep = __webpack_require__(501),
+	    mixer = __webpack_require__(502),
+	    bindMethods = __webpack_require__(503);
+
+	var allowed = { preEmit: 1, shouldEmit: 1 };
+
+	/**
+	 * Creates an event emitting Data Store. It is mixed in with functions
+	 * from the `ListenerMethods` and `PublisherMethods` mixins. `preEmit`
+	 * and `shouldEmit` may be overridden in the definition object.
+	 *
+	 * @param {Object} definition The data store object definition
+	 * @returns {Store} A data store instance
+	 */
+	module.exports = function (definition) {
+
+	    var StoreMethods = __webpack_require__(504),
+	        PublisherMethods = __webpack_require__(505),
+	        ListenerMethods = __webpack_require__(496);
+
+	    definition = definition || {};
+
+	    for (var a in StoreMethods) {
+	        if (!allowed[a] && (PublisherMethods[a] || ListenerMethods[a])) {
+	            throw new Error("Cannot override API method " + a + " in Reflux.StoreMethods. Use another method name or override it on Reflux.PublisherMethods / Reflux.ListenerMethods instead.");
+	        }
+	    }
+
+	    for (var d in definition) {
+	        if (!allowed[d] && (PublisherMethods[d] || ListenerMethods[d])) {
+	            throw new Error("Cannot override API method " + d + " in store creation. Use another method name or override it on Reflux.PublisherMethods / Reflux.ListenerMethods instead.");
+	        }
+	    }
+
+	    definition = mixer(definition);
+
+	    function Store() {
+	        var i = 0,
+	            arr;
+	        this.subscriptions = [];
+	        this.emitter = new _.EventEmitter();
+	        this.eventLabel = "change";
+	        bindMethods(this, definition);
+	        if (this.init && _.isFunction(this.init)) {
+	            this.init();
+	        }
+	        if (this.listenables) {
+	            arr = [].concat(this.listenables);
+	            for (; i < arr.length; i++) {
+	                this.listenToMany(arr[i]);
+	            }
+	        }
+	    }
+
+	    _.extend(Store.prototype, ListenerMethods, PublisherMethods, StoreMethods, definition);
+
+	    var store = new Store();
+	    Keep.createdStores.push(store);
+
+	    return store;
+	};
+
+/***/ },
+/* 501 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	exports.createdStores = [];
+
+	exports.createdActions = [];
+
+	exports.reset = function () {
+	    while (exports.createdStores.length) {
+	        exports.createdStores.pop();
+	    }
+	    while (exports.createdActions.length) {
+	        exports.createdActions.pop();
+	    }
+	};
+
+/***/ },
+/* 502 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	var _ = __webpack_require__(497);
+
+	module.exports = function mix(def) {
+	    var composed = {
+	        init: [],
+	        preEmit: [],
+	        shouldEmit: []
+	    };
+
+	    var updated = (function mixDef(mixin) {
+	        var mixed = {};
+	        if (mixin.mixins) {
+	            mixin.mixins.forEach(function (subMixin) {
+	                _.extend(mixed, mixDef(subMixin));
+	            });
+	        }
+	        _.extend(mixed, mixin);
+	        Object.keys(composed).forEach(function (composable) {
+	            if (mixin.hasOwnProperty(composable)) {
+	                composed[composable].push(mixin[composable]);
+	            }
+	        });
+	        return mixed;
+	    })(def);
+
+	    if (composed.init.length > 1) {
+	        updated.init = function () {
+	            var args = arguments;
+	            composed.init.forEach(function (init) {
+	                init.apply(this, args);
+	            }, this);
+	        };
+	    }
+	    if (composed.preEmit.length > 1) {
+	        updated.preEmit = function () {
+	            return composed.preEmit.reduce((function (args, preEmit) {
+	                var newValue = preEmit.apply(this, args);
+	                return newValue === undefined ? args : [newValue];
+	            }).bind(this), arguments);
+	        };
+	    }
+	    if (composed.shouldEmit.length > 1) {
+	        updated.shouldEmit = function () {
+	            var args = arguments;
+	            return !composed.shouldEmit.some(function (shouldEmit) {
+	                return !shouldEmit.apply(this, args);
+	            }, this);
+	        };
+	    }
+	    Object.keys(composed).forEach(function (composable) {
+	        if (composed[composable].length === 1) {
+	            updated[composable] = composed[composable][0];
+	        }
+	    });
+
+	    return updated;
+	};
+
+/***/ },
+/* 503 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	module.exports = function (store, definition) {
+	    for (var name in definition) {
+	        if (Object.getOwnPropertyDescriptor && Object.defineProperty) {
+	            var propertyDescriptor = Object.getOwnPropertyDescriptor(definition, name);
+
+	            if (!propertyDescriptor.value || typeof propertyDescriptor.value !== "function" || !definition.hasOwnProperty(name)) {
+	                continue;
+	            }
+
+	            store[name] = definition[name].bind(store);
+	        } else {
+	            var property = definition[name];
+
+	            if (typeof property !== "function" || !definition.hasOwnProperty(name)) {
+	                continue;
+	            }
+
+	            store[name] = property.bind(store);
+	        }
+	    }
+
+	    return store;
+	};
+
+/***/ },
+/* 504 */
+/***/ function(module, exports) {
+
+	/**
+	 * A module of methods that you want to include in all stores.
+	 * This module is consumed by `createStore`.
+	 */
+	"use strict";
+
+	module.exports = {};
+
+/***/ },
+/* 505 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	var _ = __webpack_require__(497);
+
+	/**
+	 * A module of methods for object that you want to be able to listen to.
+	 * This module is consumed by `createStore` and `createAction`
+	 */
+	module.exports = {
+
+	    /**
+	     * Hook used by the publisher that is invoked before emitting
+	     * and before `shouldEmit`. The arguments are the ones that the action
+	     * is invoked with. If this function returns something other than
+	     * undefined, that will be passed on as arguments for shouldEmit and
+	     * emission.
+	     */
+	    preEmit: function preEmit() {},
+
+	    /**
+	     * Hook used by the publisher after `preEmit` to determine if the
+	     * event should be emitted with given arguments. This may be overridden
+	     * in your application, default implementation always returns true.
+	     *
+	     * @returns {Boolean} true if event should be emitted
+	     */
+	    shouldEmit: function shouldEmit() {
+	        return true;
+	    },
+
+	    /**
+	     * Subscribes the given callback for action triggered
+	     *
+	     * @param {Function} callback The callback to register as event handler
+	     * @param {Mixed} [optional] bindContext The context to bind the callback with
+	     * @returns {Function} Callback that unsubscribes the registered event handler
+	     */
+	    listen: function listen(callback, bindContext) {
+	        bindContext = bindContext || this;
+	        var eventHandler = function eventHandler(args) {
+	            if (aborted) {
+	                return;
+	            }
+	            callback.apply(bindContext, args);
+	        },
+	            me = this,
+	            aborted = false;
+	        this.emitter.addListener(this.eventLabel, eventHandler);
+	        return function () {
+	            aborted = true;
+	            me.emitter.removeListener(me.eventLabel, eventHandler);
+	        };
+	    },
+
+	    /**
+	     * Publishes an event using `this.emitter` (if `shouldEmit` agrees)
+	     */
+	    trigger: function trigger() {
+	        var args = arguments,
+	            pre = this.preEmit.apply(this, args);
+	        args = pre === undefined ? args : _.isArguments(pre) ? pre : [].concat(pre);
+	        if (this.shouldEmit.apply(this, args)) {
+	            this.emitter.emit(this.eventLabel, args);
+	        }
+	    },
+
+	    /**
+	     * Tries to publish the event on the next tick
+	     */
+	    triggerAsync: function triggerAsync() {
+	        var args = arguments,
+	            me = this;
+	        _.nextTick(function () {
+	            me.trigger.apply(me, args);
+	        });
+	    },
+
+	    /**
+	     * Wraps the trigger mechanism with a deferral function.
+	     *
+	     * @param {Function} callback the deferral function,
+	     *        first argument is the resolving function and the
+	     *        rest are the arguments provided from the previous
+	     *        trigger invocation
+	     */
+	    deferWith: function deferWith(callback) {
+	        var oldTrigger = this.trigger,
+	            ctx = this,
+	            resolver = function resolver() {
+	            oldTrigger.apply(ctx, arguments);
+	        };
+	        this.trigger = function () {
+	            callback.apply(ctx, [resolver].concat([].splice.call(arguments, 0)));
+	        };
+	    }
+
+	};
+
+/***/ },
+/* 506 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	var _ = __webpack_require__(497),
+	    ActionMethods = __webpack_require__(495),
+	    PublisherMethods = __webpack_require__(505),
+	    Keep = __webpack_require__(501);
+
+	var allowed = { preEmit: 1, shouldEmit: 1 };
+
+	/**
+	 * Creates an action functor object. It is mixed in with functions
+	 * from the `PublisherMethods` mixin. `preEmit` and `shouldEmit` may
+	 * be overridden in the definition object.
+	 *
+	 * @param {Object} definition The action object definition
+	 */
+	var createAction = function createAction(definition) {
+
+	    definition = definition || {};
+	    if (!_.isObject(definition)) {
+	        definition = { actionName: definition };
+	    }
+
+	    for (var a in ActionMethods) {
+	        if (!allowed[a] && PublisherMethods[a]) {
+	            throw new Error("Cannot override API method " + a + " in Reflux.ActionMethods. Use another method name or override it on Reflux.PublisherMethods instead.");
+	        }
+	    }
+
+	    for (var d in definition) {
+	        if (!allowed[d] && PublisherMethods[d]) {
+	            throw new Error("Cannot override API method " + d + " in action creation. Use another method name or override it on Reflux.PublisherMethods instead.");
+	        }
+	    }
+
+	    definition.children = definition.children || [];
+	    if (definition.asyncResult) {
+	        definition.children = definition.children.concat(["completed", "failed"]);
+	    }
+
+	    var i = 0,
+	        childActions = {};
+	    for (; i < definition.children.length; i++) {
+	        var name = definition.children[i];
+	        childActions[name] = createAction(name);
+	    }
+
+	    var context = _.extend({
+	        eventLabel: "action",
+	        emitter: new _.EventEmitter(),
+	        _isAction: true
+	    }, PublisherMethods, ActionMethods, definition);
+
+	    var functor = function functor() {
+	        var triggerType = functor.sync ? "trigger" : "triggerAsync";
+	        return functor[triggerType].apply(functor, arguments);
+	    };
+
+	    _.extend(functor, childActions, context);
+
+	    Keep.createdActions.push(functor);
+
+	    return functor;
+	};
+
+	module.exports = createAction;
+
+/***/ },
+/* 507 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var ListenerMethods = __webpack_require__(496),
+	    ListenerMixin = __webpack_require__(508),
+	    _ = __webpack_require__(497);
+
+	module.exports = function(listenable,key){
+	    return {
+	        getInitialState: function(){
+	            if (!_.isFunction(listenable.getInitialState)) {
+	                return {};
+	            } else if (key === undefined) {
+	                return listenable.getInitialState();
+	            } else {
+	                return _.object([key],[listenable.getInitialState()]);
+	            }
+	        },
+	        componentDidMount: function(){
+	            _.extend(this,ListenerMethods);
+	            var me = this, cb = (key === undefined ? this.setState : function(v){
+	                if (typeof me.isMounted === "undefined" || me.isMounted() === true) {
+	                    me.setState(_.object([key],[v]));
+	                }
+	            });
+	            this.listenTo(listenable,cb);
+	        },
+	        componentWillUnmount: ListenerMixin.componentWillUnmount
+	    };
+	};
+
+
+/***/ },
+/* 508 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var _ = __webpack_require__(497),
+	    ListenerMethods = __webpack_require__(496);
+
+	/**
+	 * A module meant to be consumed as a mixin by a React component. Supplies the methods from
+	 * `ListenerMethods` mixin and takes care of teardown of subscriptions.
+	 * Note that if you're using the `connect` mixin you don't need this mixin, as connect will
+	 * import everything this mixin contains!
+	 */
+	module.exports = _.extend({
+
+	    /**
+	     * Cleans up all listener previously registered.
+	     */
+	    componentWillUnmount: ListenerMethods.stopListeningToAll
+
+	}, ListenerMethods);
+
+
+/***/ },
+/* 509 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var ListenerMethods = __webpack_require__(496),
+	    ListenerMixin = __webpack_require__(508),
+	    _ = __webpack_require__(497);
+
+	module.exports = function(listenable, key, filterFunc) {
+	    filterFunc = _.isFunction(key) ? key : filterFunc;
+	    return {
+	        getInitialState: function() {
+	            if (!_.isFunction(listenable.getInitialState)) {
+	                return {};
+	            } else if (_.isFunction(key)) {
+	                return filterFunc.call(this, listenable.getInitialState());
+	            } else {
+	                // Filter initial payload from store.
+	                var result = filterFunc.call(this, listenable.getInitialState());
+	                if (typeof(result) !== "undefined") {
+	                    return _.object([key], [result]);
+	                } else {
+	                    return {};
+	                }
+	            }
+	        },
+	        componentDidMount: function() {
+	            _.extend(this, ListenerMethods);
+	            var me = this;
+	            var cb = function(value) {
+	                if (_.isFunction(key)) {
+	                    me.setState(filterFunc.call(me, value));
+	                } else {
+	                    var result = filterFunc.call(me, value);
+	                    me.setState(_.object([key], [result]));
+	                }
+	            };
+
+	            this.listenTo(listenable, cb);
+	        },
+	        componentWillUnmount: ListenerMixin.componentWillUnmount
+	    };
+	};
+
+
+
+/***/ },
+/* 510 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var ListenerMethods = __webpack_require__(496);
+
+	/**
+	 * A mixin factory for a React component. Meant as a more convenient way of using the `ListenerMixin`,
+	 * without having to manually set listeners in the `componentDidMount` method.
+	 *
+	 * @param {Action|Store} listenable An Action or Store that should be
+	 *  listened to.
+	 * @param {Function|String} callback The callback to register as event handler
+	 * @param {Function|String} defaultCallback The callback to register as default handler
+	 * @returns {Object} An object to be used as a mixin, which sets up the listener for the given listenable.
+	 */
+	module.exports = function(listenable,callback,initial){
+	    return {
+	        /**
+	         * Set up the mixin before the initial rendering occurs. Import methods from `ListenerMethods`
+	         * and then make the call to `listenTo` with the arguments provided to the factory function
+	         */
+	        componentDidMount: function() {
+	            for(var m in ListenerMethods){
+	                if (this[m] !== ListenerMethods[m]){
+	                    if (this[m]){
+	                        throw "Can't have other property '"+m+"' when using Reflux.listenTo!";
+	                    }
+	                    this[m] = ListenerMethods[m];
+	                }
+	            }
+	            this.listenTo(listenable,callback,initial);
+	        },
+	        /**
+	         * Cleans up all listener previously registered.
+	         */
+	        componentWillUnmount: ListenerMethods.stopListeningToAll
+	    };
+	};
+
+
+/***/ },
+/* 511 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var ListenerMethods = __webpack_require__(496);
+
+	/**
+	 * A mixin factory for a React component. Meant as a more convenient way of using the `listenerMixin`,
+	 * without having to manually set listeners in the `componentDidMount` method. This version is used
+	 * to automatically set up a `listenToMany` call.
+	 *
+	 * @param {Object} listenables An object of listenables
+	 * @returns {Object} An object to be used as a mixin, which sets up the listeners for the given listenables.
+	 */
+	module.exports = function(listenables){
+	    return {
+	        /**
+	         * Set up the mixin before the initial rendering occurs. Import methods from `ListenerMethods`
+	         * and then make the call to `listenTo` with the arguments provided to the factory function
+	         */
+	        componentDidMount: function() {
+	            for(var m in ListenerMethods){
+	                if (this[m] !== ListenerMethods[m]){
+	                    if (this[m]){
+	                        throw "Can't have other property '"+m+"' when using Reflux.listenToMany!";
+	                    }
+	                    this[m] = ListenerMethods[m];
+	                }
+	            }
+	            this.listenToMany(listenables);
+	        },
+	        /**
+	         * Cleans up all listener previously registered.
+	         */
+	        componentWillUnmount: ListenerMethods.stopListeningToAll
+	    };
+	};
+
+
+/***/ },
+/* 512 */
+/***/ function(module, exports, __webpack_require__) {
+
+	// super simple module for the most common nodejs use case.
+	exports.markdown = __webpack_require__(513);
+	exports.parse = exports.markdown.toHTML;
+
+
+/***/ },
+/* 513 */
+/***/ function(module, exports, __webpack_require__) {
+
+	// Released under MIT license
+	// Copyright (c) 2009-2010 Dominic Baggott
+	// Copyright (c) 2009-2010 Ash Berlin
+	// Copyright (c) 2011 Christoph Dorn <christoph@christophdorn.com> (http://www.christophdorn.com)
+
+	/*jshint browser:true, devel:true */
+
+	(function( expose ) {
+
+	/**
+	 *  class Markdown
+	 *
+	 *  Markdown processing in Javascript done right. We have very particular views
+	 *  on what constitutes 'right' which include:
+	 *
+	 *  - produces well-formed HTML (this means that em and strong nesting is
+	 *    important)
+	 *
+	 *  - has an intermediate representation to allow processing of parsed data (We
+	 *    in fact have two, both as [JsonML]: a markdown tree and an HTML tree).
+	 *
+	 *  - is easily extensible to add new dialects without having to rewrite the
+	 *    entire parsing mechanics
+	 *
+	 *  - has a good test suite
+	 *
+	 *  This implementation fulfills all of these (except that the test suite could
+	 *  do with expanding to automatically run all the fixtures from other Markdown
+	 *  implementations.)
+	 *
+	 *  ##### Intermediate Representation
+	 *
+	 *  *TODO* Talk about this :) Its JsonML, but document the node names we use.
+	 *
+	 *  [JsonML]: http://jsonml.org/ "JSON Markup Language"
+	 **/
+	var Markdown = expose.Markdown = function(dialect) {
+	  switch (typeof dialect) {
+	    case "undefined":
+	      this.dialect = Markdown.dialects.Gruber;
+	      break;
+	    case "object":
+	      this.dialect = dialect;
+	      break;
+	    default:
+	      if ( dialect in Markdown.dialects ) {
+	        this.dialect = Markdown.dialects[dialect];
+	      }
+	      else {
+	        throw new Error("Unknown Markdown dialect '" + String(dialect) + "'");
+	      }
+	      break;
+	  }
+	  this.em_state = [];
+	  this.strong_state = [];
+	  this.debug_indent = "";
+	};
+
+	/**
+	 *  parse( markdown, [dialect] ) -> JsonML
+	 *  - markdown (String): markdown string to parse
+	 *  - dialect (String | Dialect): the dialect to use, defaults to gruber
+	 *
+	 *  Parse `markdown` and return a markdown document as a Markdown.JsonML tree.
+	 **/
+	expose.parse = function( source, dialect ) {
+	  // dialect will default if undefined
+	  var md = new Markdown( dialect );
+	  return md.toTree( source );
+	};
+
+	/**
+	 *  toHTML( markdown, [dialect]  ) -> String
+	 *  toHTML( md_tree ) -> String
+	 *  - markdown (String): markdown string to parse
+	 *  - md_tree (Markdown.JsonML): parsed markdown tree
+	 *
+	 *  Take markdown (either as a string or as a JsonML tree) and run it through
+	 *  [[toHTMLTree]] then turn it into a well-formated HTML fragment.
+	 **/
+	expose.toHTML = function toHTML( source , dialect , options ) {
+	  var input = expose.toHTMLTree( source , dialect , options );
+
+	  return expose.renderJsonML( input );
+	};
+
+	/**
+	 *  toHTMLTree( markdown, [dialect] ) -> JsonML
+	 *  toHTMLTree( md_tree ) -> JsonML
+	 *  - markdown (String): markdown string to parse
+	 *  - dialect (String | Dialect): the dialect to use, defaults to gruber
+	 *  - md_tree (Markdown.JsonML): parsed markdown tree
+	 *
+	 *  Turn markdown into HTML, represented as a JsonML tree. If a string is given
+	 *  to this function, it is first parsed into a markdown tree by calling
+	 *  [[parse]].
+	 **/
+	expose.toHTMLTree = function toHTMLTree( input, dialect , options ) {
+	  // convert string input to an MD tree
+	  if ( typeof input ==="string" ) input = this.parse( input, dialect );
+
+	  // Now convert the MD tree to an HTML tree
+
+	  // remove references from the tree
+	  var attrs = extract_attr( input ),
+	      refs = {};
+
+	  if ( attrs && attrs.references ) {
+	    refs = attrs.references;
+	  }
+
+	  var html = convert_tree_to_html( input, refs , options );
+	  merge_text_nodes( html );
+	  return html;
+	};
+
+	// For Spidermonkey based engines
+	function mk_block_toSource() {
+	  return "Markdown.mk_block( " +
+	          uneval(this.toString()) +
+	          ", " +
+	          uneval(this.trailing) +
+	          ", " +
+	          uneval(this.lineNumber) +
+	          " )";
+	}
+
+	// node
+	function mk_block_inspect() {
+	  var util = __webpack_require__(514);
+	  return "Markdown.mk_block( " +
+	          util.inspect(this.toString()) +
+	          ", " +
+	          util.inspect(this.trailing) +
+	          ", " +
+	          util.inspect(this.lineNumber) +
+	          " )";
+
+	}
+
+	var mk_block = Markdown.mk_block = function(block, trail, line) {
+	  // Be helpful for default case in tests.
+	  if ( arguments.length == 1 ) trail = "\n\n";
+
+	  var s = new String(block);
+	  s.trailing = trail;
+	  // To make it clear its not just a string
+	  s.inspect = mk_block_inspect;
+	  s.toSource = mk_block_toSource;
+
+	  if ( line != undefined )
+	    s.lineNumber = line;
+
+	  return s;
+	};
+
+	function count_lines( str ) {
+	  var n = 0, i = -1;
+	  while ( ( i = str.indexOf("\n", i + 1) ) !== -1 ) n++;
+	  return n;
+	}
+
+	// Internal - split source into rough blocks
+	Markdown.prototype.split_blocks = function splitBlocks( input, startLine ) {
+	  input = input.replace(/(\r\n|\n|\r)/g, "\n");
+	  // [\s\S] matches _anything_ (newline or space)
+	  // [^] is equivalent but doesn't work in IEs.
+	  var re = /([\s\S]+?)($|\n#|\n(?:\s*\n|$)+)/g,
+	      blocks = [],
+	      m;
+
+	  var line_no = 1;
+
+	  if ( ( m = /^(\s*\n)/.exec(input) ) != null ) {
+	    // skip (but count) leading blank lines
+	    line_no += count_lines( m[0] );
+	    re.lastIndex = m[0].length;
+	  }
+
+	  while ( ( m = re.exec(input) ) !== null ) {
+	    if (m[2] == "\n#") {
+	      m[2] = "\n";
+	      re.lastIndex--;
+	    }
+	    blocks.push( mk_block( m[1], m[2], line_no ) );
+	    line_no += count_lines( m[0] );
+	  }
+
+	  return blocks;
+	};
+
+	/**
+	 *  Markdown#processBlock( block, next ) -> undefined | [ JsonML, ... ]
+	 *  - block (String): the block to process
+	 *  - next (Array): the following blocks
+	 *
+	 * Process `block` and return an array of JsonML nodes representing `block`.
+	 *
+	 * It does this by asking each block level function in the dialect to process
+	 * the block until one can. Succesful handling is indicated by returning an
+	 * array (with zero or more JsonML nodes), failure by a false value.
+	 *
+	 * Blocks handlers are responsible for calling [[Markdown#processInline]]
+	 * themselves as appropriate.
+	 *
+	 * If the blocks were split incorrectly or adjacent blocks need collapsing you
+	 * can adjust `next` in place using shift/splice etc.
+	 *
+	 * If any of this default behaviour is not right for the dialect, you can
+	 * define a `__call__` method on the dialect that will get invoked to handle
+	 * the block processing.
+	 */
+	Markdown.prototype.processBlock = function processBlock( block, next ) {
+	  var cbs = this.dialect.block,
+	      ord = cbs.__order__;
+
+	  if ( "__call__" in cbs ) {
+	    return cbs.__call__.call(this, block, next);
+	  }
+
+	  for ( var i = 0; i < ord.length; i++ ) {
+	    //D:this.debug( "Testing", ord[i] );
+	    var res = cbs[ ord[i] ].call( this, block, next );
+	    if ( res ) {
+	      //D:this.debug("  matched");
+	      if ( !isArray(res) || ( res.length > 0 && !( isArray(res[0]) ) ) )
+	        this.debug(ord[i], "didn't return a proper array");
+	      //D:this.debug( "" );
+	      return res;
+	    }
+	  }
+
+	  // Uhoh! no match! Should we throw an error?
+	  return [];
+	};
+
+	Markdown.prototype.processInline = function processInline( block ) {
+	  return this.dialect.inline.__call__.call( this, String( block ) );
+	};
+
+	/**
+	 *  Markdown#toTree( source ) -> JsonML
+	 *  - source (String): markdown source to parse
+	 *
+	 *  Parse `source` into a JsonML tree representing the markdown document.
+	 **/
+	// custom_tree means set this.tree to `custom_tree` and restore old value on return
+	Markdown.prototype.toTree = function toTree( source, custom_root ) {
+	  var blocks = source instanceof Array ? source : this.split_blocks( source );
+
+	  // Make tree a member variable so its easier to mess with in extensions
+	  var old_tree = this.tree;
+	  try {
+	    this.tree = custom_root || this.tree || [ "markdown" ];
+
+	    blocks:
+	    while ( blocks.length ) {
+	      var b = this.processBlock( blocks.shift(), blocks );
+
+	      // Reference blocks and the like won't return any content
+	      if ( !b.length ) continue blocks;
+
+	      this.tree.push.apply( this.tree, b );
+	    }
+	    return this.tree;
+	  }
+	  finally {
+	    if ( custom_root ) {
+	      this.tree = old_tree;
+	    }
+	  }
+	};
+
+	// Noop by default
+	Markdown.prototype.debug = function () {
+	  var args = Array.prototype.slice.call( arguments);
+	  args.unshift(this.debug_indent);
+	  if ( typeof print !== "undefined" )
+	      print.apply( print, args );
+	  if ( typeof console !== "undefined" && typeof console.log !== "undefined" )
+	      console.log.apply( null, args );
+	}
+
+	Markdown.prototype.loop_re_over_block = function( re, block, cb ) {
+	  // Dont use /g regexps with this
+	  var m,
+	      b = block.valueOf();
+
+	  while ( b.length && (m = re.exec(b) ) != null ) {
+	    b = b.substr( m[0].length );
+	    cb.call(this, m);
+	  }
+	  return b;
+	};
+
+	/**
+	 * Markdown.dialects
+	 *
+	 * Namespace of built-in dialects.
+	 **/
+	Markdown.dialects = {};
+
+	/**
+	 * Markdown.dialects.Gruber
+	 *
+	 * The default dialect that follows the rules set out by John Gruber's
+	 * markdown.pl as closely as possible. Well actually we follow the behaviour of
+	 * that script which in some places is not exactly what the syntax web page
+	 * says.
+	 **/
+	Markdown.dialects.Gruber = {
+	  block: {
+	    atxHeader: function atxHeader( block, next ) {
+	      var m = block.match( /^(#{1,6})\s*(.*?)\s*#*\s*(?:\n|$)/ );
+
+	      if ( !m ) return undefined;
+
+	      var header = [ "header", { level: m[ 1 ].length } ];
+	      Array.prototype.push.apply(header, this.processInline(m[ 2 ]));
+
+	      if ( m[0].length < block.length )
+	        next.unshift( mk_block( block.substr( m[0].length ), block.trailing, block.lineNumber + 2 ) );
+
+	      return [ header ];
+	    },
+
+	    setextHeader: function setextHeader( block, next ) {
+	      var m = block.match( /^(.*)\n([-=])\2\2+(?:\n|$)/ );
+
+	      if ( !m ) return undefined;
+
+	      var level = ( m[ 2 ] === "=" ) ? 1 : 2;
+	      var header = [ "header", { level : level }, m[ 1 ] ];
+
+	      if ( m[0].length < block.length )
+	        next.unshift( mk_block( block.substr( m[0].length ), block.trailing, block.lineNumber + 2 ) );
+
+	      return [ header ];
+	    },
+
+	    code: function code( block, next ) {
+	      // |    Foo
+	      // |bar
+	      // should be a code block followed by a paragraph. Fun
+	      //
+	      // There might also be adjacent code block to merge.
+
+	      var ret = [],
+	          re = /^(?: {0,3}\t| {4})(.*)\n?/,
+	          lines;
+
+	      // 4 spaces + content
+	      if ( !block.match( re ) ) return undefined;
+
+	      block_search:
+	      do {
+	        // Now pull out the rest of the lines
+	        var b = this.loop_re_over_block(
+	                  re, block.valueOf(), function( m ) { ret.push( m[1] ); } );
+
+	        if ( b.length ) {
+	          // Case alluded to in first comment. push it back on as a new block
+	          next.unshift( mk_block(b, block.trailing) );
+	          break block_search;
+	        }
+	        else if ( next.length ) {
+	          // Check the next block - it might be code too
+	          if ( !next[0].match( re ) ) break block_search;
+
+	          // Pull how how many blanks lines follow - minus two to account for .join
+	          ret.push ( block.trailing.replace(/[^\n]/g, "").substring(2) );
+
+	          block = next.shift();
+	        }
+	        else {
+	          break block_search;
+	        }
+	      } while ( true );
+
+	      return [ [ "code_block", ret.join("\n") ] ];
+	    },
+
+	    horizRule: function horizRule( block, next ) {
+	      // this needs to find any hr in the block to handle abutting blocks
+	      var m = block.match( /^(?:([\s\S]*?)\n)?[ \t]*([-_*])(?:[ \t]*\2){2,}[ \t]*(?:\n([\s\S]*))?$/ );
+
+	      if ( !m ) {
+	        return undefined;
+	      }
+
+	      var jsonml = [ [ "hr" ] ];
+
+	      // if there's a leading abutting block, process it
+	      if ( m[ 1 ] ) {
+	        jsonml.unshift.apply( jsonml, this.processBlock( m[ 1 ], [] ) );
+	      }
+
+	      // if there's a trailing abutting block, stick it into next
+	      if ( m[ 3 ] ) {
+	        next.unshift( mk_block( m[ 3 ] ) );
+	      }
+
+	      return jsonml;
+	    },
+
+	    // There are two types of lists. Tight and loose. Tight lists have no whitespace
+	    // between the items (and result in text just in the <li>) and loose lists,
+	    // which have an empty line between list items, resulting in (one or more)
+	    // paragraphs inside the <li>.
+	    //
+	    // There are all sorts weird edge cases about the original markdown.pl's
+	    // handling of lists:
+	    //
+	    // * Nested lists are supposed to be indented by four chars per level. But
+	    //   if they aren't, you can get a nested list by indenting by less than
+	    //   four so long as the indent doesn't match an indent of an existing list
+	    //   item in the 'nest stack'.
+	    //
+	    // * The type of the list (bullet or number) is controlled just by the
+	    //    first item at the indent. Subsequent changes are ignored unless they
+	    //    are for nested lists
+	    //
+	    lists: (function( ) {
+	      // Use a closure to hide a few variables.
+	      var any_list = "[*+-]|\\d+\\.",
+	          bullet_list = /[*+-]/,
+	          number_list = /\d+\./,
+	          // Capture leading indent as it matters for determining nested lists.
+	          is_list_re = new RegExp( "^( {0,3})(" + any_list + ")[ \t]+" ),
+	          indent_re = "(?: {0,3}\\t| {4})";
+
+	      // TODO: Cache this regexp for certain depths.
+	      // Create a regexp suitable for matching an li for a given stack depth
+	      function regex_for_depth( depth ) {
+
+	        return new RegExp(
+	          // m[1] = indent, m[2] = list_type
+	          "(?:^(" + indent_re + "{0," + depth + "} {0,3})(" + any_list + ")\\s+)|" +
+	          // m[3] = cont
+	          "(^" + indent_re + "{0," + (depth-1) + "}[ ]{0,4})"
+	        );
+	      }
+	      function expand_tab( input ) {
+	        return input.replace( / {0,3}\t/g, "    " );
+	      }
+
+	      // Add inline content `inline` to `li`. inline comes from processInline
+	      // so is an array of content
+	      function add(li, loose, inline, nl) {
+	        if ( loose ) {
+	          li.push( [ "para" ].concat(inline) );
+	          return;
+	        }
+	        // Hmmm, should this be any block level element or just paras?
+	        var add_to = li[li.length -1] instanceof Array && li[li.length - 1][0] == "para"
+	                   ? li[li.length -1]
+	                   : li;
+
+	        // If there is already some content in this list, add the new line in
+	        if ( nl && li.length > 1 ) inline.unshift(nl);
+
+	        for ( var i = 0; i < inline.length; i++ ) {
+	          var what = inline[i],
+	              is_str = typeof what == "string";
+	          if ( is_str && add_to.length > 1 && typeof add_to[add_to.length-1] == "string" ) {
+	            add_to[ add_to.length-1 ] += what;
+	          }
+	          else {
+	            add_to.push( what );
+	          }
+	        }
+	      }
+
+	      // contained means have an indent greater than the current one. On
+	      // *every* line in the block
+	      function get_contained_blocks( depth, blocks ) {
+
+	        var re = new RegExp( "^(" + indent_re + "{" + depth + "}.*?\\n?)*$" ),
+	            replace = new RegExp("^" + indent_re + "{" + depth + "}", "gm"),
+	            ret = [];
+
+	        while ( blocks.length > 0 ) {
+	          if ( re.exec( blocks[0] ) ) {
+	            var b = blocks.shift(),
+	                // Now remove that indent
+	                x = b.replace( replace, "");
+
+	            ret.push( mk_block( x, b.trailing, b.lineNumber ) );
+	          }
+	          else {
+	            break;
+	          }
+	        }
+	        return ret;
+	      }
+
+	      // passed to stack.forEach to turn list items up the stack into paras
+	      function paragraphify(s, i, stack) {
+	        var list = s.list;
+	        var last_li = list[list.length-1];
+
+	        if ( last_li[1] instanceof Array && last_li[1][0] == "para" ) {
+	          return;
+	        }
+	        if ( i + 1 == stack.length ) {
+	          // Last stack frame
+	          // Keep the same array, but replace the contents
+	          last_li.push( ["para"].concat( last_li.splice(1, last_li.length - 1) ) );
+	        }
+	        else {
+	          var sublist = last_li.pop();
+	          last_li.push( ["para"].concat( last_li.splice(1, last_li.length - 1) ), sublist );
+	        }
+	      }
+
+	      // The matcher function
+	      return function( block, next ) {
+	        var m = block.match( is_list_re );
+	        if ( !m ) return undefined;
+
+	        function make_list( m ) {
+	          var list = bullet_list.exec( m[2] )
+	                   ? ["bulletlist"]
+	                   : ["numberlist"];
+
+	          stack.push( { list: list, indent: m[1] } );
+	          return list;
+	        }
+
+
+	        var stack = [], // Stack of lists for nesting.
+	            list = make_list( m ),
+	            last_li,
+	            loose = false,
+	            ret = [ stack[0].list ],
+	            i;
+
+	        // Loop to search over block looking for inner block elements and loose lists
+	        loose_search:
+	        while ( true ) {
+	          // Split into lines preserving new lines at end of line
+	          var lines = block.split( /(?=\n)/ );
+
+	          // We have to grab all lines for a li and call processInline on them
+	          // once as there are some inline things that can span lines.
+	          var li_accumulate = "";
+
+	          // Loop over the lines in this block looking for tight lists.
+	          tight_search:
+	          for ( var line_no = 0; line_no < lines.length; line_no++ ) {
+	            var nl = "",
+	                l = lines[line_no].replace(/^\n/, function(n) { nl = n; return ""; });
+
+	            // TODO: really should cache this
+	            var line_re = regex_for_depth( stack.length );
+
+	            m = l.match( line_re );
+	            //print( "line:", uneval(l), "\nline match:", uneval(m) );
+
+	            // We have a list item
+	            if ( m[1] !== undefined ) {
+	              // Process the previous list item, if any
+	              if ( li_accumulate.length ) {
+	                add( last_li, loose, this.processInline( li_accumulate ), nl );
+	                // Loose mode will have been dealt with. Reset it
+	                loose = false;
+	                li_accumulate = "";
+	              }
+
+	              m[1] = expand_tab( m[1] );
+	              var wanted_depth = Math.floor(m[1].length/4)+1;
+	              //print( "want:", wanted_depth, "stack:", stack.length);
+	              if ( wanted_depth > stack.length ) {
+	                // Deep enough for a nested list outright
+	                //print ( "new nested list" );
+	                list = make_list( m );
+	                last_li.push( list );
+	                last_li = list[1] = [ "listitem" ];
+	              }
+	              else {
+	                // We aren't deep enough to be strictly a new level. This is
+	                // where Md.pl goes nuts. If the indent matches a level in the
+	                // stack, put it there, else put it one deeper then the
+	                // wanted_depth deserves.
+	                var found = false;
+	                for ( i = 0; i < stack.length; i++ ) {
+	                  if ( stack[ i ].indent != m[1] ) continue;
+	                  list = stack[ i ].list;
+	                  stack.splice( i+1, stack.length - (i+1) );
+	                  found = true;
+	                  break;
+	                }
+
+	                if (!found) {
+	                  //print("not found. l:", uneval(l));
+	                  wanted_depth++;
+	                  if ( wanted_depth <= stack.length ) {
+	                    stack.splice(wanted_depth, stack.length - wanted_depth);
+	                    //print("Desired depth now", wanted_depth, "stack:", stack.length);
+	                    list = stack[wanted_depth-1].list;
+	                    //print("list:", uneval(list) );
+	                  }
+	                  else {
+	                    //print ("made new stack for messy indent");
+	                    list = make_list(m);
+	                    last_li.push(list);
+	                  }
+	                }
+
+	                //print( uneval(list), "last", list === stack[stack.length-1].list );
+	                last_li = [ "listitem" ];
+	                list.push(last_li);
+	              } // end depth of shenegains
+	              nl = "";
+	            }
+
+	            // Add content
+	            if ( l.length > m[0].length ) {
+	              li_accumulate += nl + l.substr( m[0].length );
+	            }
+	          } // tight_search
+
+	          if ( li_accumulate.length ) {
+	            add( last_li, loose, this.processInline( li_accumulate ), nl );
+	            // Loose mode will have been dealt with. Reset it
+	            loose = false;
+	            li_accumulate = "";
+	          }
+
+	          // Look at the next block - we might have a loose list. Or an extra
+	          // paragraph for the current li
+	          var contained = get_contained_blocks( stack.length, next );
+
+	          // Deal with code blocks or properly nested lists
+	          if ( contained.length > 0 ) {
+	            // Make sure all listitems up the stack are paragraphs
+	            forEach( stack, paragraphify, this);
+
+	            last_li.push.apply( last_li, this.toTree( contained, [] ) );
+	          }
+
+	          var next_block = next[0] && next[0].valueOf() || "";
+
+	          if ( next_block.match(is_list_re) || next_block.match( /^ / ) ) {
+	            block = next.shift();
+
+	            // Check for an HR following a list: features/lists/hr_abutting
+	            var hr = this.dialect.block.horizRule( block, next );
+
+	            if ( hr ) {
+	              ret.push.apply(ret, hr);
+	              break;
+	            }
+
+	            // Make sure all listitems up the stack are paragraphs
+	            forEach( stack, paragraphify, this);
+
+	            loose = true;
+	            continue loose_search;
+	          }
+	          break;
+	        } // loose_search
+
+	        return ret;
+	      };
+	    })(),
+
+	    blockquote: function blockquote( block, next ) {
+	      if ( !block.match( /^>/m ) )
+	        return undefined;
+
+	      var jsonml = [];
+
+	      // separate out the leading abutting block, if any. I.e. in this case:
+	      //
+	      //  a
+	      //  > b
+	      //
+	      if ( block[ 0 ] != ">" ) {
+	        var lines = block.split( /\n/ ),
+	            prev = [],
+	            line_no = block.lineNumber;
+
+	        // keep shifting lines until you find a crotchet
+	        while ( lines.length && lines[ 0 ][ 0 ] != ">" ) {
+	            prev.push( lines.shift() );
+	            line_no++;
+	        }
+
+	        var abutting = mk_block( prev.join( "\n" ), "\n", block.lineNumber );
+	        jsonml.push.apply( jsonml, this.processBlock( abutting, [] ) );
+	        // reassemble new block of just block quotes!
+	        block = mk_block( lines.join( "\n" ), block.trailing, line_no );
+	      }
+
+
+	      // if the next block is also a blockquote merge it in
+	      while ( next.length && next[ 0 ][ 0 ] == ">" ) {
+	        var b = next.shift();
+	        block = mk_block( block + block.trailing + b, b.trailing, block.lineNumber );
+	      }
+
+	      // Strip off the leading "> " and re-process as a block.
+	      var input = block.replace( /^> ?/gm, "" ),
+	          old_tree = this.tree,
+	          processedBlock = this.toTree( input, [ "blockquote" ] ),
+	          attr = extract_attr( processedBlock );
+
+	      // If any link references were found get rid of them
+	      if ( attr && attr.references ) {
+	        delete attr.references;
+	        // And then remove the attribute object if it's empty
+	        if ( isEmpty( attr ) ) {
+	          processedBlock.splice( 1, 1 );
+	        }
+	      }
+
+	      jsonml.push( processedBlock );
+	      return jsonml;
+	    },
+
+	    referenceDefn: function referenceDefn( block, next) {
+	      var re = /^\s*\[(.*?)\]:\s*(\S+)(?:\s+(?:(['"])(.*?)\3|\((.*?)\)))?\n?/;
+	      // interesting matches are [ , ref_id, url, , title, title ]
+
+	      if ( !block.match(re) )
+	        return undefined;
+
+	      // make an attribute node if it doesn't exist
+	      if ( !extract_attr( this.tree ) ) {
+	        this.tree.splice( 1, 0, {} );
+	      }
+
+	      var attrs = extract_attr( this.tree );
+
+	      // make a references hash if it doesn't exist
+	      if ( attrs.references === undefined ) {
+	        attrs.references = {};
+	      }
+
+	      var b = this.loop_re_over_block(re, block, function( m ) {
+
+	        if ( m[2] && m[2][0] == "<" && m[2][m[2].length-1] == ">" )
+	          m[2] = m[2].substring( 1, m[2].length - 1 );
+
+	        var ref = attrs.references[ m[1].toLowerCase() ] = {
+	          href: m[2]
+	        };
+
+	        if ( m[4] !== undefined )
+	          ref.title = m[4];
+	        else if ( m[5] !== undefined )
+	          ref.title = m[5];
+
+	      } );
+
+	      if ( b.length )
+	        next.unshift( mk_block( b, block.trailing ) );
+
+	      return [];
+	    },
+
+	    para: function para( block, next ) {
+	      // everything's a para!
+	      return [ ["para"].concat( this.processInline( block ) ) ];
+	    }
+	  }
+	};
+
+	Markdown.dialects.Gruber.inline = {
+
+	    __oneElement__: function oneElement( text, patterns_or_re, previous_nodes ) {
+	      var m,
+	          res,
+	          lastIndex = 0;
+
+	      patterns_or_re = patterns_or_re || this.dialect.inline.__patterns__;
+	      var re = new RegExp( "([\\s\\S]*?)(" + (patterns_or_re.source || patterns_or_re) + ")" );
+
+	      m = re.exec( text );
+	      if (!m) {
+	        // Just boring text
+	        return [ text.length, text ];
+	      }
+	      else if ( m[1] ) {
+	        // Some un-interesting text matched. Return that first
+	        return [ m[1].length, m[1] ];
+	      }
+
+	      var res;
+	      if ( m[2] in this.dialect.inline ) {
+	        res = this.dialect.inline[ m[2] ].call(
+	                  this,
+	                  text.substr( m.index ), m, previous_nodes || [] );
+	      }
+	      // Default for now to make dev easier. just slurp special and output it.
+	      res = res || [ m[2].length, m[2] ];
+	      return res;
+	    },
+
+	    __call__: function inline( text, patterns ) {
+
+	      var out = [],
+	          res;
+
+	      function add(x) {
+	        //D:self.debug("  adding output", uneval(x));
+	        if ( typeof x == "string" && typeof out[out.length-1] == "string" )
+	          out[ out.length-1 ] += x;
+	        else
+	          out.push(x);
+	      }
+
+	      while ( text.length > 0 ) {
+	        res = this.dialect.inline.__oneElement__.call(this, text, patterns, out );
+	        text = text.substr( res.shift() );
+	        forEach(res, add )
+	      }
+
+	      return out;
+	    },
+
+	    // These characters are intersting elsewhere, so have rules for them so that
+	    // chunks of plain text blocks don't include them
+	    "]": function () {},
+	    "}": function () {},
+
+	    __escape__ : /^\\[\\`\*_{}\[\]()#\+.!\-]/,
+
+	    "\\": function escaped( text ) {
+	      // [ length of input processed, node/children to add... ]
+	      // Only esacape: \ ` * _ { } [ ] ( ) # * + - . !
+	      if ( this.dialect.inline.__escape__.exec( text ) )
+	        return [ 2, text.charAt( 1 ) ];
+	      else
+	        // Not an esacpe
+	        return [ 1, "\\" ];
+	    },
+
+	    "![": function image( text ) {
+
+	      // Unlike images, alt text is plain text only. no other elements are
+	      // allowed in there
+
+	      // ![Alt text](/path/to/img.jpg "Optional title")
+	      //      1          2            3       4         <--- captures
+	      var m = text.match( /^!\[(.*?)\][ \t]*\([ \t]*([^")]*?)(?:[ \t]+(["'])(.*?)\3)?[ \t]*\)/ );
+
+	      if ( m ) {
+	        if ( m[2] && m[2][0] == "<" && m[2][m[2].length-1] == ">" )
+	          m[2] = m[2].substring( 1, m[2].length - 1 );
+
+	        m[2] = this.dialect.inline.__call__.call( this, m[2], /\\/ )[0];
+
+	        var attrs = { alt: m[1], href: m[2] || "" };
+	        if ( m[4] !== undefined)
+	          attrs.title = m[4];
+
+	        return [ m[0].length, [ "img", attrs ] ];
+	      }
+
+	      // ![Alt text][id]
+	      m = text.match( /^!\[(.*?)\][ \t]*\[(.*?)\]/ );
+
+	      if ( m ) {
+	        // We can't check if the reference is known here as it likely wont be
+	        // found till after. Check it in md tree->hmtl tree conversion
+	        return [ m[0].length, [ "img_ref", { alt: m[1], ref: m[2].toLowerCase(), original: m[0] } ] ];
+	      }
+
+	      // Just consume the '!['
+	      return [ 2, "![" ];
+	    },
+
+	    "[": function link( text ) {
+
+	      var orig = String(text);
+	      // Inline content is possible inside `link text`
+	      var res = Markdown.DialectHelpers.inline_until_char.call( this, text.substr(1), "]" );
+
+	      // No closing ']' found. Just consume the [
+	      if ( !res ) return [ 1, "[" ];
+
+	      var consumed = 1 + res[ 0 ],
+	          children = res[ 1 ],
+	          link,
+	          attrs;
+
+	      // At this point the first [...] has been parsed. See what follows to find
+	      // out which kind of link we are (reference or direct url)
+	      text = text.substr( consumed );
+
+	      // [link text](/path/to/img.jpg "Optional title")
+	      //                 1            2       3         <--- captures
+	      // This will capture up to the last paren in the block. We then pull
+	      // back based on if there a matching ones in the url
+	      //    ([here](/url/(test))
+	      // The parens have to be balanced
+	      var m = text.match( /^\s*\([ \t]*([^"']*)(?:[ \t]+(["'])(.*?)\2)?[ \t]*\)/ );
+	      if ( m ) {
+	        var url = m[1];
+	        consumed += m[0].length;
+
+	        if ( url && url[0] == "<" && url[url.length-1] == ">" )
+	          url = url.substring( 1, url.length - 1 );
+
+	        // If there is a title we don't have to worry about parens in the url
+	        if ( !m[3] ) {
+	          var open_parens = 1; // One open that isn't in the capture
+	          for ( var len = 0; len < url.length; len++ ) {
+	            switch ( url[len] ) {
+	            case "(":
+	              open_parens++;
+	              break;
+	            case ")":
+	              if ( --open_parens == 0) {
+	                consumed -= url.length - len;
+	                url = url.substring(0, len);
+	              }
+	              break;
+	            }
+	          }
+	        }
+
+	        // Process escapes only
+	        url = this.dialect.inline.__call__.call( this, url, /\\/ )[0];
+
+	        attrs = { href: url || "" };
+	        if ( m[3] !== undefined)
+	          attrs.title = m[3];
+
+	        link = [ "link", attrs ].concat( children );
+	        return [ consumed, link ];
+	      }
+
+	      // [Alt text][id]
+	      // [Alt text] [id]
+	      m = text.match( /^\s*\[(.*?)\]/ );
+
+	      if ( m ) {
+
+	        consumed += m[ 0 ].length;
+
+	        // [links][] uses links as its reference
+	        attrs = { ref: ( m[ 1 ] || String(children) ).toLowerCase(),  original: orig.substr( 0, consumed ) };
+
+	        link = [ "link_ref", attrs ].concat( children );
+
+	        // We can't check if the reference is known here as it likely wont be
+	        // found till after. Check it in md tree->hmtl tree conversion.
+	        // Store the original so that conversion can revert if the ref isn't found.
+	        return [ consumed, link ];
+	      }
+
+	      // [id]
+	      // Only if id is plain (no formatting.)
+	      if ( children.length == 1 && typeof children[0] == "string" ) {
+
+	        attrs = { ref: children[0].toLowerCase(),  original: orig.substr( 0, consumed ) };
+	        link = [ "link_ref", attrs, children[0] ];
+	        return [ consumed, link ];
+	      }
+
+	      // Just consume the "["
+	      return [ 1, "[" ];
+	    },
+
+
+	    "<": function autoLink( text ) {
+	      var m;
+
+	      if ( ( m = text.match( /^<(?:((https?|ftp|mailto):[^>]+)|(.*?@.*?\.[a-zA-Z]+))>/ ) ) != null ) {
+	        if ( m[3] ) {
+	          return [ m[0].length, [ "link", { href: "mailto:" + m[3] }, m[3] ] ];
+
+	        }
+	        else if ( m[2] == "mailto" ) {
+	          return [ m[0].length, [ "link", { href: m[1] }, m[1].substr("mailto:".length ) ] ];
+	        }
+	        else
+	          return [ m[0].length, [ "link", { href: m[1] }, m[1] ] ];
+	      }
+
+	      return [ 1, "<" ];
+	    },
+
+	    "`": function inlineCode( text ) {
+	      // Inline code block. as many backticks as you like to start it
+	      // Always skip over the opening ticks.
+	      var m = text.match( /(`+)(([\s\S]*?)\1)/ );
+
+	      if ( m && m[2] )
+	        return [ m[1].length + m[2].length, [ "inlinecode", m[3] ] ];
+	      else {
+	        // TODO: No matching end code found - warn!
+	        return [ 1, "`" ];
+	      }
+	    },
+
+	    "  \n": function lineBreak( text ) {
+	      return [ 3, [ "linebreak" ] ];
+	    }
+
+	};
+
+	// Meta Helper/generator method for em and strong handling
+	function strong_em( tag, md ) {
+
+	  var state_slot = tag + "_state",
+	      other_slot = tag == "strong" ? "em_state" : "strong_state";
+
+	  function CloseTag(len) {
+	    this.len_after = len;
+	    this.name = "close_" + md;
+	  }
+
+	  return function ( text, orig_match ) {
+
+	    if ( this[state_slot][0] == md ) {
+	      // Most recent em is of this type
+	      //D:this.debug("closing", md);
+	      this[state_slot].shift();
+
+	      // "Consume" everything to go back to the recrusion in the else-block below
+	      return[ text.length, new CloseTag(text.length-md.length) ];
+	    }
+	    else {
+	      // Store a clone of the em/strong states
+	      var other = this[other_slot].slice(),
+	          state = this[state_slot].slice();
+
+	      this[state_slot].unshift(md);
+
+	      //D:this.debug_indent += "  ";
+
+	      // Recurse
+	      var res = this.processInline( text.substr( md.length ) );
+	      //D:this.debug_indent = this.debug_indent.substr(2);
+
+	      var last = res[res.length - 1];
+
+	      //D:this.debug("processInline from", tag + ": ", uneval( res ) );
+
+	      var check = this[state_slot].shift();
+	      if ( last instanceof CloseTag ) {
+	        res.pop();
+	        // We matched! Huzzah.
+	        var consumed = text.length - last.len_after;
+	        return [ consumed, [ tag ].concat(res) ];
+	      }
+	      else {
+	        // Restore the state of the other kind. We might have mistakenly closed it.
+	        this[other_slot] = other;
+	        this[state_slot] = state;
+
+	        // We can't reuse the processed result as it could have wrong parsing contexts in it.
+	        return [ md.length, md ];
+	      }
+	    }
+	  }; // End returned function
+	}
+
+	Markdown.dialects.Gruber.inline["**"] = strong_em("strong", "**");
+	Markdown.dialects.Gruber.inline["__"] = strong_em("strong", "__");
+	Markdown.dialects.Gruber.inline["*"]  = strong_em("em", "*");
+	Markdown.dialects.Gruber.inline["_"]  = strong_em("em", "_");
+
+
+	// Build default order from insertion order.
+	Markdown.buildBlockOrder = function(d) {
+	  var ord = [];
+	  for ( var i in d ) {
+	    if ( i == "__order__" || i == "__call__" ) continue;
+	    ord.push( i );
+	  }
+	  d.__order__ = ord;
+	};
+
+	// Build patterns for inline matcher
+	Markdown.buildInlinePatterns = function(d) {
+	  var patterns = [];
+
+	  for ( var i in d ) {
+	    // __foo__ is reserved and not a pattern
+	    if ( i.match( /^__.*__$/) ) continue;
+	    var l = i.replace( /([\\.*+?|()\[\]{}])/g, "\\$1" )
+	             .replace( /\n/, "\\n" );
+	    patterns.push( i.length == 1 ? l : "(?:" + l + ")" );
+	  }
+
+	  patterns = patterns.join("|");
+	  d.__patterns__ = patterns;
+	  //print("patterns:", uneval( patterns ) );
+
+	  var fn = d.__call__;
+	  d.__call__ = function(text, pattern) {
+	    if ( pattern != undefined ) {
+	      return fn.call(this, text, pattern);
+	    }
+	    else
+	    {
+	      return fn.call(this, text, patterns);
+	    }
+	  };
+	};
+
+	Markdown.DialectHelpers = {};
+	Markdown.DialectHelpers.inline_until_char = function( text, want ) {
+	  var consumed = 0,
+	      nodes = [];
+
+	  while ( true ) {
+	    if ( text.charAt( consumed ) == want ) {
+	      // Found the character we were looking for
+	      consumed++;
+	      return [ consumed, nodes ];
+	    }
+
+	    if ( consumed >= text.length ) {
+	      // No closing char found. Abort.
+	      return null;
+	    }
+
+	    var res = this.dialect.inline.__oneElement__.call(this, text.substr( consumed ) );
+	    consumed += res[ 0 ];
+	    // Add any returned nodes.
+	    nodes.push.apply( nodes, res.slice( 1 ) );
+	  }
+	}
+
+	// Helper function to make sub-classing a dialect easier
+	Markdown.subclassDialect = function( d ) {
+	  function Block() {}
+	  Block.prototype = d.block;
+	  function Inline() {}
+	  Inline.prototype = d.inline;
+
+	  return { block: new Block(), inline: new Inline() };
+	};
+
+	Markdown.buildBlockOrder ( Markdown.dialects.Gruber.block );
+	Markdown.buildInlinePatterns( Markdown.dialects.Gruber.inline );
+
+	Markdown.dialects.Maruku = Markdown.subclassDialect( Markdown.dialects.Gruber );
+
+	Markdown.dialects.Maruku.processMetaHash = function processMetaHash( meta_string ) {
+	  var meta = split_meta_hash( meta_string ),
+	      attr = {};
+
+	  for ( var i = 0; i < meta.length; ++i ) {
+	    // id: #foo
+	    if ( /^#/.test( meta[ i ] ) ) {
+	      attr.id = meta[ i ].substring( 1 );
+	    }
+	    // class: .foo
+	    else if ( /^\./.test( meta[ i ] ) ) {
+	      // if class already exists, append the new one
+	      if ( attr["class"] ) {
+	        attr["class"] = attr["class"] + meta[ i ].replace( /./, " " );
+	      }
+	      else {
+	        attr["class"] = meta[ i ].substring( 1 );
+	      }
+	    }
+	    // attribute: foo=bar
+	    else if ( /\=/.test( meta[ i ] ) ) {
+	      var s = meta[ i ].split( /\=/ );
+	      attr[ s[ 0 ] ] = s[ 1 ];
+	    }
+	  }
+
+	  return attr;
+	}
+
+	function split_meta_hash( meta_string ) {
+	  var meta = meta_string.split( "" ),
+	      parts = [ "" ],
+	      in_quotes = false;
+
+	  while ( meta.length ) {
+	    var letter = meta.shift();
+	    switch ( letter ) {
+	      case " " :
+	        // if we're in a quoted section, keep it
+	        if ( in_quotes ) {
+	          parts[ parts.length - 1 ] += letter;
+	        }
+	        // otherwise make a new part
+	        else {
+	          parts.push( "" );
+	        }
+	        break;
+	      case "'" :
+	      case '"' :
+	        // reverse the quotes and move straight on
+	        in_quotes = !in_quotes;
+	        break;
+	      case "\\" :
+	        // shift off the next letter to be used straight away.
+	        // it was escaped so we'll keep it whatever it is
+	        letter = meta.shift();
+	      default :
+	        parts[ parts.length - 1 ] += letter;
+	        break;
+	    }
+	  }
+
+	  return parts;
+	}
+
+	Markdown.dialects.Maruku.block.document_meta = function document_meta( block, next ) {
+	  // we're only interested in the first block
+	  if ( block.lineNumber > 1 ) return undefined;
+
+	  // document_meta blocks consist of one or more lines of `Key: Value\n`
+	  if ( ! block.match( /^(?:\w+:.*\n)*\w+:.*$/ ) ) return undefined;
+
+	  // make an attribute node if it doesn't exist
+	  if ( !extract_attr( this.tree ) ) {
+	    this.tree.splice( 1, 0, {} );
+	  }
+
+	  var pairs = block.split( /\n/ );
+	  for ( p in pairs ) {
+	    var m = pairs[ p ].match( /(\w+):\s*(.*)$/ ),
+	        key = m[ 1 ].toLowerCase(),
+	        value = m[ 2 ];
+
+	    this.tree[ 1 ][ key ] = value;
+	  }
+
+	  // document_meta produces no content!
+	  return [];
+	};
+
+	Markdown.dialects.Maruku.block.block_meta = function block_meta( block, next ) {
+	  // check if the last line of the block is an meta hash
+	  var m = block.match( /(^|\n) {0,3}\{:\s*((?:\\\}|[^\}])*)\s*\}$/ );
+	  if ( !m ) return undefined;
+
+	  // process the meta hash
+	  var attr = this.dialect.processMetaHash( m[ 2 ] );
+
+	  var hash;
+
+	  // if we matched ^ then we need to apply meta to the previous block
+	  if ( m[ 1 ] === "" ) {
+	    var node = this.tree[ this.tree.length - 1 ];
+	    hash = extract_attr( node );
+
+	    // if the node is a string (rather than JsonML), bail
+	    if ( typeof node === "string" ) return undefined;
+
+	    // create the attribute hash if it doesn't exist
+	    if ( !hash ) {
+	      hash = {};
+	      node.splice( 1, 0, hash );
+	    }
+
+	    // add the attributes in
+	    for ( a in attr ) {
+	      hash[ a ] = attr[ a ];
+	    }
+
+	    // return nothing so the meta hash is removed
+	    return [];
+	  }
+
+	  // pull the meta hash off the block and process what's left
+	  var b = block.replace( /\n.*$/, "" ),
+	      result = this.processBlock( b, [] );
+
+	  // get or make the attributes hash
+	  hash = extract_attr( result[ 0 ] );
+	  if ( !hash ) {
+	    hash = {};
+	    result[ 0 ].splice( 1, 0, hash );
+	  }
+
+	  // attach the attributes to the block
+	  for ( a in attr ) {
+	    hash[ a ] = attr[ a ];
+	  }
+
+	  return result;
+	};
+
+	Markdown.dialects.Maruku.block.definition_list = function definition_list( block, next ) {
+	  // one or more terms followed by one or more definitions, in a single block
+	  var tight = /^((?:[^\s:].*\n)+):\s+([\s\S]+)$/,
+	      list = [ "dl" ],
+	      i, m;
+
+	  // see if we're dealing with a tight or loose block
+	  if ( ( m = block.match( tight ) ) ) {
+	    // pull subsequent tight DL blocks out of `next`
+	    var blocks = [ block ];
+	    while ( next.length && tight.exec( next[ 0 ] ) ) {
+	      blocks.push( next.shift() );
+	    }
+
+	    for ( var b = 0; b < blocks.length; ++b ) {
+	      var m = blocks[ b ].match( tight ),
+	          terms = m[ 1 ].replace( /\n$/, "" ).split( /\n/ ),
+	          defns = m[ 2 ].split( /\n:\s+/ );
+
+	      // print( uneval( m ) );
+
+	      for ( i = 0; i < terms.length; ++i ) {
+	        list.push( [ "dt", terms[ i ] ] );
+	      }
+
+	      for ( i = 0; i < defns.length; ++i ) {
+	        // run inline processing over the definition
+	        list.push( [ "dd" ].concat( this.processInline( defns[ i ].replace( /(\n)\s+/, "$1" ) ) ) );
+	      }
+	    }
+	  }
+	  else {
+	    return undefined;
+	  }
+
+	  return [ list ];
+	};
+
+	// splits on unescaped instances of @ch. If @ch is not a character the result
+	// can be unpredictable
+
+	Markdown.dialects.Maruku.block.table = function table (block, next) {
+
+	    var _split_on_unescaped = function(s, ch) {
+	        ch = ch || '\\s';
+	        if (ch.match(/^[\\|\[\]{}?*.+^$]$/)) { ch = '\\' + ch; }
+	        var res = [ ],
+	            r = new RegExp('^((?:\\\\.|[^\\\\' + ch + '])*)' + ch + '(.*)'),
+	            m;
+	        while(m = s.match(r)) {
+	            res.push(m[1]);
+	            s = m[2];
+	        }
+	        res.push(s);
+	        return res;
+	    }
+
+	    var leading_pipe = /^ {0,3}\|(.+)\n {0,3}\|\s*([\-:]+[\-| :]*)\n((?:\s*\|.*(?:\n|$))*)(?=\n|$)/,
+	        // find at least an unescaped pipe in each line
+	        no_leading_pipe = /^ {0,3}(\S(?:\\.|[^\\|])*\|.*)\n {0,3}([\-:]+\s*\|[\-| :]*)\n((?:(?:\\.|[^\\|])*\|.*(?:\n|$))*)(?=\n|$)/,
+	        i, m;
+	    if (m = block.match(leading_pipe)) {
+	        // remove leading pipes in contents
+	        // (header and horizontal rule already have the leading pipe left out)
+	        m[3] = m[3].replace(/^\s*\|/gm, '');
+	    } else if (! ( m = block.match(no_leading_pipe))) {
+	        return undefined;
+	    }
+
+	    var table = [ "table", [ "thead", [ "tr" ] ], [ "tbody" ] ];
+
+	    // remove trailing pipes, then split on pipes
+	    // (no escaped pipes are allowed in horizontal rule)
+	    m[2] = m[2].replace(/\|\s*$/, '').split('|');
+
+	    // process alignment
+	    var html_attrs = [ ];
+	    forEach (m[2], function (s) {
+	        if (s.match(/^\s*-+:\s*$/))       html_attrs.push({align: "right"});
+	        else if (s.match(/^\s*:-+\s*$/))  html_attrs.push({align: "left"});
+	        else if (s.match(/^\s*:-+:\s*$/)) html_attrs.push({align: "center"});
+	        else                              html_attrs.push({});
+	    });
+
+	    // now for the header, avoid escaped pipes
+	    m[1] = _split_on_unescaped(m[1].replace(/\|\s*$/, ''), '|');
+	    for (i = 0; i < m[1].length; i++) {
+	        table[1][1].push(['th', html_attrs[i] || {}].concat(
+	            this.processInline(m[1][i].trim())));
+	    }
+
+	    // now for body contents
+	    forEach (m[3].replace(/\|\s*$/mg, '').split('\n'), function (row) {
+	        var html_row = ['tr'];
+	        row = _split_on_unescaped(row, '|');
+	        for (i = 0; i < row.length; i++) {
+	            html_row.push(['td', html_attrs[i] || {}].concat(this.processInline(row[i].trim())));
+	        }
+	        table[2].push(html_row);
+	    }, this);
+
+	    return [table];
+	}
+
+	Markdown.dialects.Maruku.inline[ "{:" ] = function inline_meta( text, matches, out ) {
+	  if ( !out.length ) {
+	    return [ 2, "{:" ];
+	  }
+
+	  // get the preceeding element
+	  var before = out[ out.length - 1 ];
+
+	  if ( typeof before === "string" ) {
+	    return [ 2, "{:" ];
+	  }
+
+	  // match a meta hash
+	  var m = text.match( /^\{:\s*((?:\\\}|[^\}])*)\s*\}/ );
+
+	  // no match, false alarm
+	  if ( !m ) {
+	    return [ 2, "{:" ];
+	  }
+
+	  // attach the attributes to the preceeding element
+	  var meta = this.dialect.processMetaHash( m[ 1 ] ),
+	      attr = extract_attr( before );
+
+	  if ( !attr ) {
+	    attr = {};
+	    before.splice( 1, 0, attr );
+	  }
+
+	  for ( var k in meta ) {
+	    attr[ k ] = meta[ k ];
+	  }
+
+	  // cut out the string and replace it with nothing
+	  return [ m[ 0 ].length, "" ];
+	};
+
+	Markdown.dialects.Maruku.inline.__escape__ = /^\\[\\`\*_{}\[\]()#\+.!\-|:]/;
+
+	Markdown.buildBlockOrder ( Markdown.dialects.Maruku.block );
+	Markdown.buildInlinePatterns( Markdown.dialects.Maruku.inline );
+
+	var isArray = Array.isArray || function(obj) {
+	  return Object.prototype.toString.call(obj) == "[object Array]";
+	};
+
+	var forEach;
+	// Don't mess with Array.prototype. Its not friendly
+	if ( Array.prototype.forEach ) {
+	  forEach = function( arr, cb, thisp ) {
+	    return arr.forEach( cb, thisp );
+	  };
+	}
+	else {
+	  forEach = function(arr, cb, thisp) {
+	    for (var i = 0; i < arr.length; i++) {
+	      cb.call(thisp || arr, arr[i], i, arr);
+	    }
+	  }
+	}
+
+	var isEmpty = function( obj ) {
+	  for ( var key in obj ) {
+	    if ( hasOwnProperty.call( obj, key ) ) {
+	      return false;
+	    }
+	  }
+
+	  return true;
+	}
+
+	function extract_attr( jsonml ) {
+	  return isArray(jsonml)
+	      && jsonml.length > 1
+	      && typeof jsonml[ 1 ] === "object"
+	      && !( isArray(jsonml[ 1 ]) )
+	      ? jsonml[ 1 ]
+	      : undefined;
+	}
+
+
+
+	/**
+	 *  renderJsonML( jsonml[, options] ) -> String
+	 *  - jsonml (Array): JsonML array to render to XML
+	 *  - options (Object): options
+	 *
+	 *  Converts the given JsonML into well-formed XML.
+	 *
+	 *  The options currently understood are:
+	 *
+	 *  - root (Boolean): wether or not the root node should be included in the
+	 *    output, or just its children. The default `false` is to not include the
+	 *    root itself.
+	 */
+	expose.renderJsonML = function( jsonml, options ) {
+	  options = options || {};
+	  // include the root element in the rendered output?
+	  options.root = options.root || false;
+
+	  var content = [];
+
+	  if ( options.root ) {
+	    content.push( render_tree( jsonml ) );
+	  }
+	  else {
+	    jsonml.shift(); // get rid of the tag
+	    if ( jsonml.length && typeof jsonml[ 0 ] === "object" && !( jsonml[ 0 ] instanceof Array ) ) {
+	      jsonml.shift(); // get rid of the attributes
+	    }
+
+	    while ( jsonml.length ) {
+	      content.push( render_tree( jsonml.shift() ) );
+	    }
+	  }
+
+	  return content.join( "\n\n" );
+	};
+
+	function escapeHTML( text ) {
+	  return text.replace( /&/g, "&amp;" )
+	             .replace( /</g, "&lt;" )
+	             .replace( />/g, "&gt;" )
+	             .replace( /"/g, "&quot;" )
+	             .replace( /'/g, "&#39;" );
+	}
+
+	function render_tree( jsonml ) {
+	  // basic case
+	  if ( typeof jsonml === "string" ) {
+	    return escapeHTML( jsonml );
+	  }
+
+	  var tag = jsonml.shift(),
+	      attributes = {},
+	      content = [];
+
+	  if ( jsonml.length && typeof jsonml[ 0 ] === "object" && !( jsonml[ 0 ] instanceof Array ) ) {
+	    attributes = jsonml.shift();
+	  }
+
+	  while ( jsonml.length ) {
+	    content.push( render_tree( jsonml.shift() ) );
+	  }
+
+	  var tag_attrs = "";
+	  for ( var a in attributes ) {
+	    tag_attrs += " " + a + '="' + escapeHTML( attributes[ a ] ) + '"';
+	  }
+
+	  // be careful about adding whitespace here for inline elements
+	  if ( tag == "img" || tag == "br" || tag == "hr" ) {
+	    return "<"+ tag + tag_attrs + "/>";
+	  }
+	  else {
+	    return "<"+ tag + tag_attrs + ">" + content.join( "" ) + "</" + tag + ">";
+	  }
+	}
+
+	function convert_tree_to_html( tree, references, options ) {
+	  var i;
+	  options = options || {};
+
+	  // shallow clone
+	  var jsonml = tree.slice( 0 );
+
+	  if ( typeof options.preprocessTreeNode === "function" ) {
+	      jsonml = options.preprocessTreeNode(jsonml, references);
+	  }
+
+	  // Clone attributes if they exist
+	  var attrs = extract_attr( jsonml );
+	  if ( attrs ) {
+	    jsonml[ 1 ] = {};
+	    for ( i in attrs ) {
+	      jsonml[ 1 ][ i ] = attrs[ i ];
+	    }
+	    attrs = jsonml[ 1 ];
+	  }
+
+	  // basic case
+	  if ( typeof jsonml === "string" ) {
+	    return jsonml;
+	  }
+
+	  // convert this node
+	  switch ( jsonml[ 0 ] ) {
+	    case "header":
+	      jsonml[ 0 ] = "h" + jsonml[ 1 ].level;
+	      delete jsonml[ 1 ].level;
+	      break;
+	    case "bulletlist":
+	      jsonml[ 0 ] = "ul";
+	      break;
+	    case "numberlist":
+	      jsonml[ 0 ] = "ol";
+	      break;
+	    case "listitem":
+	      jsonml[ 0 ] = "li";
+	      break;
+	    case "para":
+	      jsonml[ 0 ] = "p";
+	      break;
+	    case "markdown":
+	      jsonml[ 0 ] = "html";
+	      if ( attrs ) delete attrs.references;
+	      break;
+	    case "code_block":
+	      jsonml[ 0 ] = "pre";
+	      i = attrs ? 2 : 1;
+	      var code = [ "code" ];
+	      code.push.apply( code, jsonml.splice( i, jsonml.length - i ) );
+	      jsonml[ i ] = code;
+	      break;
+	    case "inlinecode":
+	      jsonml[ 0 ] = "code";
+	      break;
+	    case "img":
+	      jsonml[ 1 ].src = jsonml[ 1 ].href;
+	      delete jsonml[ 1 ].href;
+	      break;
+	    case "linebreak":
+	      jsonml[ 0 ] = "br";
+	    break;
+	    case "link":
+	      jsonml[ 0 ] = "a";
+	      break;
+	    case "link_ref":
+	      jsonml[ 0 ] = "a";
+
+	      // grab this ref and clean up the attribute node
+	      var ref = references[ attrs.ref ];
+
+	      // if the reference exists, make the link
+	      if ( ref ) {
+	        delete attrs.ref;
+
+	        // add in the href and title, if present
+	        attrs.href = ref.href;
+	        if ( ref.title ) {
+	          attrs.title = ref.title;
+	        }
+
+	        // get rid of the unneeded original text
+	        delete attrs.original;
+	      }
+	      // the reference doesn't exist, so revert to plain text
+	      else {
+	        return attrs.original;
+	      }
+	      break;
+	    case "img_ref":
+	      jsonml[ 0 ] = "img";
+
+	      // grab this ref and clean up the attribute node
+	      var ref = references[ attrs.ref ];
+
+	      // if the reference exists, make the link
+	      if ( ref ) {
+	        delete attrs.ref;
+
+	        // add in the href and title, if present
+	        attrs.src = ref.href;
+	        if ( ref.title ) {
+	          attrs.title = ref.title;
+	        }
+
+	        // get rid of the unneeded original text
+	        delete attrs.original;
+	      }
+	      // the reference doesn't exist, so revert to plain text
+	      else {
+	        return attrs.original;
+	      }
+	      break;
+	  }
+
+	  // convert all the children
+	  i = 1;
+
+	  // deal with the attribute node, if it exists
+	  if ( attrs ) {
+	    // if there are keys, skip over it
+	    for ( var key in jsonml[ 1 ] ) {
+	        i = 2;
+	        break;
+	    }
+	    // if there aren't, remove it
+	    if ( i === 1 ) {
+	      jsonml.splice( i, 1 );
+	    }
+	  }
+
+	  for ( ; i < jsonml.length; ++i ) {
+	    jsonml[ i ] = convert_tree_to_html( jsonml[ i ], references, options );
+	  }
+
+	  return jsonml;
+	}
+
+
+	// merges adjacent text nodes into a single node
+	function merge_text_nodes( jsonml ) {
+	  // skip the tag name and attribute hash
+	  var i = extract_attr( jsonml ) ? 2 : 1;
+
+	  while ( i < jsonml.length ) {
+	    // if it's a string check the next item too
+	    if ( typeof jsonml[ i ] === "string" ) {
+	      if ( i + 1 < jsonml.length && typeof jsonml[ i + 1 ] === "string" ) {
+	        // merge the second string into the first and remove it
+	        jsonml[ i ] += jsonml.splice( i + 1, 1 )[ 0 ];
+	      }
+	      else {
+	        ++i;
+	      }
+	    }
+	    // if it's not a string recurse
+	    else {
+	      merge_text_nodes( jsonml[ i ] );
+	      ++i;
+	    }
+	  }
+	}
+
+	} )( (function() {
+	  if ( false ) {
+	    window.markdown = {};
+	    return window.markdown;
+	  }
+	  else {
+	    return exports;
+	  }
+	} )() );
+
+
+/***/ },
+/* 514 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(global, process) {// Copyright Joyent, Inc. and other Node contributors.
+	//
+	// Permission is hereby granted, free of charge, to any person obtaining a
+	// copy of this software and associated documentation files (the
+	// "Software"), to deal in the Software without restriction, including
+	// without limitation the rights to use, copy, modify, merge, publish,
+	// distribute, sublicense, and/or sell copies of the Software, and to permit
+	// persons to whom the Software is furnished to do so, subject to the
+	// following conditions:
+	//
+	// The above copyright notice and this permission notice shall be included
+	// in all copies or substantial portions of the Software.
+	//
+	// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+	// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+	// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+	// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+	// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+	// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+	// USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+	var formatRegExp = /%[sdj%]/g;
+	exports.format = function(f) {
+	  if (!isString(f)) {
+	    var objects = [];
+	    for (var i = 0; i < arguments.length; i++) {
+	      objects.push(inspect(arguments[i]));
+	    }
+	    return objects.join(' ');
+	  }
+
+	  var i = 1;
+	  var args = arguments;
+	  var len = args.length;
+	  var str = String(f).replace(formatRegExp, function(x) {
+	    if (x === '%%') return '%';
+	    if (i >= len) return x;
+	    switch (x) {
+	      case '%s': return String(args[i++]);
+	      case '%d': return Number(args[i++]);
+	      case '%j':
+	        try {
+	          return JSON.stringify(args[i++]);
+	        } catch (_) {
+	          return '[Circular]';
+	        }
+	      default:
+	        return x;
+	    }
+	  });
+	  for (var x = args[i]; i < len; x = args[++i]) {
+	    if (isNull(x) || !isObject(x)) {
+	      str += ' ' + x;
+	    } else {
+	      str += ' ' + inspect(x);
+	    }
+	  }
+	  return str;
+	};
+
+
+	// Mark that a method should not be used.
+	// Returns a modified function which warns once by default.
+	// If --no-deprecation is set, then it is a no-op.
+	exports.deprecate = function(fn, msg) {
+	  // Allow for deprecating things in the process of starting up.
+	  if (isUndefined(global.process)) {
+	    return function() {
+	      return exports.deprecate(fn, msg).apply(this, arguments);
+	    };
+	  }
+
+	  if (process.noDeprecation === true) {
+	    return fn;
+	  }
+
+	  var warned = false;
+	  function deprecated() {
+	    if (!warned) {
+	      if (process.throwDeprecation) {
+	        throw new Error(msg);
+	      } else if (process.traceDeprecation) {
+	        console.trace(msg);
+	      } else {
+	        console.error(msg);
+	      }
+	      warned = true;
+	    }
+	    return fn.apply(this, arguments);
+	  }
+
+	  return deprecated;
+	};
+
+
+	var debugs = {};
+	var debugEnviron;
+	exports.debuglog = function(set) {
+	  if (isUndefined(debugEnviron))
+	    debugEnviron = process.env.NODE_DEBUG || '';
+	  set = set.toUpperCase();
+	  if (!debugs[set]) {
+	    if (new RegExp('\\b' + set + '\\b', 'i').test(debugEnviron)) {
+	      var pid = process.pid;
+	      debugs[set] = function() {
+	        var msg = exports.format.apply(exports, arguments);
+	        console.error('%s %d: %s', set, pid, msg);
+	      };
+	    } else {
+	      debugs[set] = function() {};
+	    }
+	  }
+	  return debugs[set];
+	};
+
+
+	/**
+	 * Echos the value of a value. Trys to print the value out
+	 * in the best way possible given the different types.
+	 *
+	 * @param {Object} obj The object to print out.
+	 * @param {Object} opts Optional options object that alters the output.
+	 */
+	/* legacy: obj, showHidden, depth, colors*/
+	function inspect(obj, opts) {
+	  // default options
+	  var ctx = {
+	    seen: [],
+	    stylize: stylizeNoColor
+	  };
+	  // legacy...
+	  if (arguments.length >= 3) ctx.depth = arguments[2];
+	  if (arguments.length >= 4) ctx.colors = arguments[3];
+	  if (isBoolean(opts)) {
+	    // legacy...
+	    ctx.showHidden = opts;
+	  } else if (opts) {
+	    // got an "options" object
+	    exports._extend(ctx, opts);
+	  }
+	  // set default options
+	  if (isUndefined(ctx.showHidden)) ctx.showHidden = false;
+	  if (isUndefined(ctx.depth)) ctx.depth = 2;
+	  if (isUndefined(ctx.colors)) ctx.colors = false;
+	  if (isUndefined(ctx.customInspect)) ctx.customInspect = true;
+	  if (ctx.colors) ctx.stylize = stylizeWithColor;
+	  return formatValue(ctx, obj, ctx.depth);
+	}
+	exports.inspect = inspect;
+
+
+	// http://en.wikipedia.org/wiki/ANSI_escape_code#graphics
+	inspect.colors = {
+	  'bold' : [1, 22],
+	  'italic' : [3, 23],
+	  'underline' : [4, 24],
+	  'inverse' : [7, 27],
+	  'white' : [37, 39],
+	  'grey' : [90, 39],
+	  'black' : [30, 39],
+	  'blue' : [34, 39],
+	  'cyan' : [36, 39],
+	  'green' : [32, 39],
+	  'magenta' : [35, 39],
+	  'red' : [31, 39],
+	  'yellow' : [33, 39]
+	};
+
+	// Don't use 'blue' not visible on cmd.exe
+	inspect.styles = {
+	  'special': 'cyan',
+	  'number': 'yellow',
+	  'boolean': 'yellow',
+	  'undefined': 'grey',
+	  'null': 'bold',
+	  'string': 'green',
+	  'date': 'magenta',
+	  // "name": intentionally not styling
+	  'regexp': 'red'
+	};
+
+
+	function stylizeWithColor(str, styleType) {
+	  var style = inspect.styles[styleType];
+
+	  if (style) {
+	    return '\u001b[' + inspect.colors[style][0] + 'm' + str +
+	           '\u001b[' + inspect.colors[style][1] + 'm';
+	  } else {
+	    return str;
+	  }
+	}
+
+
+	function stylizeNoColor(str, styleType) {
+	  return str;
+	}
+
+
+	function arrayToHash(array) {
+	  var hash = {};
+
+	  array.forEach(function(val, idx) {
+	    hash[val] = true;
+	  });
+
+	  return hash;
+	}
+
+
+	function formatValue(ctx, value, recurseTimes) {
+	  // Provide a hook for user-specified inspect functions.
+	  // Check that value is an object with an inspect function on it
+	  if (ctx.customInspect &&
+	      value &&
+	      isFunction(value.inspect) &&
+	      // Filter out the util module, it's inspect function is special
+	      value.inspect !== exports.inspect &&
+	      // Also filter out any prototype objects using the circular check.
+	      !(value.constructor && value.constructor.prototype === value)) {
+	    var ret = value.inspect(recurseTimes, ctx);
+	    if (!isString(ret)) {
+	      ret = formatValue(ctx, ret, recurseTimes);
+	    }
+	    return ret;
+	  }
+
+	  // Primitive types cannot have properties
+	  var primitive = formatPrimitive(ctx, value);
+	  if (primitive) {
+	    return primitive;
+	  }
+
+	  // Look up the keys of the object.
+	  var keys = Object.keys(value);
+	  var visibleKeys = arrayToHash(keys);
+
+	  if (ctx.showHidden) {
+	    keys = Object.getOwnPropertyNames(value);
+	  }
+
+	  // IE doesn't make error fields non-enumerable
+	  // http://msdn.microsoft.com/en-us/library/ie/dww52sbt(v=vs.94).aspx
+	  if (isError(value)
+	      && (keys.indexOf('message') >= 0 || keys.indexOf('description') >= 0)) {
+	    return formatError(value);
+	  }
+
+	  // Some type of object without properties can be shortcutted.
+	  if (keys.length === 0) {
+	    if (isFunction(value)) {
+	      var name = value.name ? ': ' + value.name : '';
+	      return ctx.stylize('[Function' + name + ']', 'special');
+	    }
+	    if (isRegExp(value)) {
+	      return ctx.stylize(RegExp.prototype.toString.call(value), 'regexp');
+	    }
+	    if (isDate(value)) {
+	      return ctx.stylize(Date.prototype.toString.call(value), 'date');
+	    }
+	    if (isError(value)) {
+	      return formatError(value);
+	    }
+	  }
+
+	  var base = '', array = false, braces = ['{', '}'];
+
+	  // Make Array say that they are Array
+	  if (isArray(value)) {
+	    array = true;
+	    braces = ['[', ']'];
+	  }
+
+	  // Make functions say that they are functions
+	  if (isFunction(value)) {
+	    var n = value.name ? ': ' + value.name : '';
+	    base = ' [Function' + n + ']';
+	  }
+
+	  // Make RegExps say that they are RegExps
+	  if (isRegExp(value)) {
+	    base = ' ' + RegExp.prototype.toString.call(value);
+	  }
+
+	  // Make dates with properties first say the date
+	  if (isDate(value)) {
+	    base = ' ' + Date.prototype.toUTCString.call(value);
+	  }
+
+	  // Make error with message first say the error
+	  if (isError(value)) {
+	    base = ' ' + formatError(value);
+	  }
+
+	  if (keys.length === 0 && (!array || value.length == 0)) {
+	    return braces[0] + base + braces[1];
+	  }
+
+	  if (recurseTimes < 0) {
+	    if (isRegExp(value)) {
+	      return ctx.stylize(RegExp.prototype.toString.call(value), 'regexp');
+	    } else {
+	      return ctx.stylize('[Object]', 'special');
+	    }
+	  }
+
+	  ctx.seen.push(value);
+
+	  var output;
+	  if (array) {
+	    output = formatArray(ctx, value, recurseTimes, visibleKeys, keys);
+	  } else {
+	    output = keys.map(function(key) {
+	      return formatProperty(ctx, value, recurseTimes, visibleKeys, key, array);
+	    });
+	  }
+
+	  ctx.seen.pop();
+
+	  return reduceToSingleString(output, base, braces);
+	}
+
+
+	function formatPrimitive(ctx, value) {
+	  if (isUndefined(value))
+	    return ctx.stylize('undefined', 'undefined');
+	  if (isString(value)) {
+	    var simple = '\'' + JSON.stringify(value).replace(/^"|"$/g, '')
+	                                             .replace(/'/g, "\\'")
+	                                             .replace(/\\"/g, '"') + '\'';
+	    return ctx.stylize(simple, 'string');
+	  }
+	  if (isNumber(value))
+	    return ctx.stylize('' + value, 'number');
+	  if (isBoolean(value))
+	    return ctx.stylize('' + value, 'boolean');
+	  // For some reason typeof null is "object", so special case here.
+	  if (isNull(value))
+	    return ctx.stylize('null', 'null');
+	}
+
+
+	function formatError(value) {
+	  return '[' + Error.prototype.toString.call(value) + ']';
+	}
+
+
+	function formatArray(ctx, value, recurseTimes, visibleKeys, keys) {
+	  var output = [];
+	  for (var i = 0, l = value.length; i < l; ++i) {
+	    if (hasOwnProperty(value, String(i))) {
+	      output.push(formatProperty(ctx, value, recurseTimes, visibleKeys,
+	          String(i), true));
+	    } else {
+	      output.push('');
+	    }
+	  }
+	  keys.forEach(function(key) {
+	    if (!key.match(/^\d+$/)) {
+	      output.push(formatProperty(ctx, value, recurseTimes, visibleKeys,
+	          key, true));
+	    }
+	  });
+	  return output;
+	}
+
+
+	function formatProperty(ctx, value, recurseTimes, visibleKeys, key, array) {
+	  var name, str, desc;
+	  desc = Object.getOwnPropertyDescriptor(value, key) || { value: value[key] };
+	  if (desc.get) {
+	    if (desc.set) {
+	      str = ctx.stylize('[Getter/Setter]', 'special');
+	    } else {
+	      str = ctx.stylize('[Getter]', 'special');
+	    }
+	  } else {
+	    if (desc.set) {
+	      str = ctx.stylize('[Setter]', 'special');
+	    }
+	  }
+	  if (!hasOwnProperty(visibleKeys, key)) {
+	    name = '[' + key + ']';
+	  }
+	  if (!str) {
+	    if (ctx.seen.indexOf(desc.value) < 0) {
+	      if (isNull(recurseTimes)) {
+	        str = formatValue(ctx, desc.value, null);
+	      } else {
+	        str = formatValue(ctx, desc.value, recurseTimes - 1);
+	      }
+	      if (str.indexOf('\n') > -1) {
+	        if (array) {
+	          str = str.split('\n').map(function(line) {
+	            return '  ' + line;
+	          }).join('\n').substr(2);
+	        } else {
+	          str = '\n' + str.split('\n').map(function(line) {
+	            return '   ' + line;
+	          }).join('\n');
+	        }
+	      }
+	    } else {
+	      str = ctx.stylize('[Circular]', 'special');
+	    }
+	  }
+	  if (isUndefined(name)) {
+	    if (array && key.match(/^\d+$/)) {
+	      return str;
+	    }
+	    name = JSON.stringify('' + key);
+	    if (name.match(/^"([a-zA-Z_][a-zA-Z_0-9]*)"$/)) {
+	      name = name.substr(1, name.length - 2);
+	      name = ctx.stylize(name, 'name');
+	    } else {
+	      name = name.replace(/'/g, "\\'")
+	                 .replace(/\\"/g, '"')
+	                 .replace(/(^"|"$)/g, "'");
+	      name = ctx.stylize(name, 'string');
+	    }
+	  }
+
+	  return name + ': ' + str;
+	}
+
+
+	function reduceToSingleString(output, base, braces) {
+	  var numLinesEst = 0;
+	  var length = output.reduce(function(prev, cur) {
+	    numLinesEst++;
+	    if (cur.indexOf('\n') >= 0) numLinesEst++;
+	    return prev + cur.replace(/\u001b\[\d\d?m/g, '').length + 1;
+	  }, 0);
+
+	  if (length > 60) {
+	    return braces[0] +
+	           (base === '' ? '' : base + '\n ') +
+	           ' ' +
+	           output.join(',\n  ') +
+	           ' ' +
+	           braces[1];
+	  }
+
+	  return braces[0] + base + ' ' + output.join(', ') + ' ' + braces[1];
+	}
+
+
+	// NOTE: These type checking functions intentionally don't use `instanceof`
+	// because it is fragile and can be easily faked with `Object.create()`.
+	function isArray(ar) {
+	  return Array.isArray(ar);
+	}
+	exports.isArray = isArray;
+
+	function isBoolean(arg) {
+	  return typeof arg === 'boolean';
+	}
+	exports.isBoolean = isBoolean;
+
+	function isNull(arg) {
+	  return arg === null;
+	}
+	exports.isNull = isNull;
+
+	function isNullOrUndefined(arg) {
+	  return arg == null;
+	}
+	exports.isNullOrUndefined = isNullOrUndefined;
+
+	function isNumber(arg) {
+	  return typeof arg === 'number';
+	}
+	exports.isNumber = isNumber;
+
+	function isString(arg) {
+	  return typeof arg === 'string';
+	}
+	exports.isString = isString;
+
+	function isSymbol(arg) {
+	  return typeof arg === 'symbol';
+	}
+	exports.isSymbol = isSymbol;
+
+	function isUndefined(arg) {
+	  return arg === void 0;
+	}
+	exports.isUndefined = isUndefined;
+
+	function isRegExp(re) {
+	  return isObject(re) && objectToString(re) === '[object RegExp]';
+	}
+	exports.isRegExp = isRegExp;
+
+	function isObject(arg) {
+	  return typeof arg === 'object' && arg !== null;
+	}
+	exports.isObject = isObject;
+
+	function isDate(d) {
+	  return isObject(d) && objectToString(d) === '[object Date]';
+	}
+	exports.isDate = isDate;
+
+	function isError(e) {
+	  return isObject(e) &&
+	      (objectToString(e) === '[object Error]' || e instanceof Error);
+	}
+	exports.isError = isError;
+
+	function isFunction(arg) {
+	  return typeof arg === 'function';
+	}
+	exports.isFunction = isFunction;
+
+	function isPrimitive(arg) {
+	  return arg === null ||
+	         typeof arg === 'boolean' ||
+	         typeof arg === 'number' ||
+	         typeof arg === 'string' ||
+	         typeof arg === 'symbol' ||  // ES6 symbol
+	         typeof arg === 'undefined';
+	}
+	exports.isPrimitive = isPrimitive;
+
+	exports.isBuffer = __webpack_require__(515);
+
+	function objectToString(o) {
+	  return Object.prototype.toString.call(o);
+	}
+
+
+	function pad(n) {
+	  return n < 10 ? '0' + n.toString(10) : n.toString(10);
+	}
+
+
+	var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep',
+	              'Oct', 'Nov', 'Dec'];
+
+	// 26 Feb 16:19:34
+	function timestamp() {
+	  var d = new Date();
+	  var time = [pad(d.getHours()),
+	              pad(d.getMinutes()),
+	              pad(d.getSeconds())].join(':');
+	  return [d.getDate(), months[d.getMonth()], time].join(' ');
+	}
+
+
+	// log is just a thin wrapper to console.log that prepends a timestamp
+	exports.log = function() {
+	  console.log('%s - %s', timestamp(), exports.format.apply(exports, arguments));
+	};
+
+
+	/**
+	 * Inherit the prototype methods from one constructor into another.
+	 *
+	 * The Function.prototype.inherits from lang.js rewritten as a standalone
+	 * function (not on Function.prototype). NOTE: If this file is to be loaded
+	 * during bootstrapping this function needs to be rewritten using some native
+	 * functions as prototype setup using normal JavaScript does not work as
+	 * expected during bootstrapping (see mirror.js in r114903).
+	 *
+	 * @param {function} ctor Constructor function which needs to inherit the
+	 *     prototype.
+	 * @param {function} superCtor Constructor function to inherit prototype from.
+	 */
+	exports.inherits = __webpack_require__(516);
+
+	exports._extend = function(origin, add) {
+	  // Don't do anything if add isn't an object
+	  if (!add || !isObject(add)) return origin;
+
+	  var keys = Object.keys(add);
+	  var i = keys.length;
+	  while (i--) {
+	    origin[keys[i]] = add[keys[i]];
+	  }
+	  return origin;
+	};
+
+	function hasOwnProperty(obj, prop) {
+	  return Object.prototype.hasOwnProperty.call(obj, prop);
+	}
+
+	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(3)))
+
+/***/ },
+/* 515 */
+/***/ function(module, exports) {
+
+	module.exports = function isBuffer(arg) {
+	  return arg && typeof arg === 'object'
+	    && typeof arg.copy === 'function'
+	    && typeof arg.fill === 'function'
+	    && typeof arg.readUInt8 === 'function';
+	}
+
+/***/ },
+/* 516 */
+/***/ function(module, exports) {
+
+	if (typeof Object.create === 'function') {
+	  // implementation from standard node.js 'util' module
+	  module.exports = function inherits(ctor, superCtor) {
+	    ctor.super_ = superCtor
+	    ctor.prototype = Object.create(superCtor.prototype, {
+	      constructor: {
+	        value: ctor,
+	        enumerable: false,
+	        writable: true,
+	        configurable: true
+	      }
+	    });
+	  };
+	} else {
+	  // old school shim for old browsers
+	  module.exports = function inherits(ctor, superCtor) {
+	    ctor.super_ = superCtor
+	    var TempCtor = function () {}
+	    TempCtor.prototype = superCtor.prototype
+	    ctor.prototype = new TempCtor()
+	    ctor.prototype.constructor = ctor
+	  }
+	}
+
+
+/***/ },
+/* 517 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Reflux = __webpack_require__(493);
+
+	var MarkdownEditorActions = Reflux.createActions([
+		'clearSelection',
+		'clickEditorTab',
+		'clickPreviewTab',
+		'makeBold',
+		'makeImage',
+		'makeItalic',
+		'makeLink',
+		'makeList',
+		'makeHeader',
+		'makeSubHeader',
+		'makeUnderline',
+		'setSelection'
+	]);
+
+	module.exports = MarkdownEditorActions;
+
+
+/***/ },
+/* 518 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Reflux = __webpack_require__(493);
+
+	var PublicMarkdownEditorActions = Reflux.createActions([
+		'updateText'
+	]);
+
+	module.exports = PublicMarkdownEditorActions;
+
+
+/***/ },
+/* 519 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Reflux = __webpack_require__(493);
+
+	var MarkdownSelectionActions = Reflux.createActions([
+		'selectionCleared',
+		'selectionSet'
+	]);
+
+	module.exports = MarkdownSelectionActions;
+
+
+/***/ },
+/* 520 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var MarkdownEditorActions = __webpack_require__(517);
+	var Reflux = __webpack_require__(493);
+
+	var _timerClick;
+	var _canClear = true;
+
+	var TextAreaSelectionMixin = {
+	  mixins: [Reflux.ListenerMixin],
+
+	  clearSelection: function() {
+	    if (_canClear) {
+	      MarkdownEditorActions.clearSelection();
+	    }
+	  },
+
+	  bindSelectEvent: function() {
+	    if (this.refs.editor !== null) {
+	      this.textAreaElem = this.refs.editor;
+	      this.textAreaElem.addEventListener('select', this.onSelectHandler);
+	    }
+	  },
+
+	  componentDidMount: function() {
+	    this.bindSelectEvent();
+	  },
+
+	  componentWillUpdate: function() {
+	    this.unbindSelectEvent();
+	  },
+
+	  componentDidUpdate: function() {
+	    this.bindSelectEvent();
+	  },
+
+	  unbindSelectEvent: function() {
+	    this.textAreaElem.removeEventListener('select', this.onSelectHandler);
+	  },
+
+	  componentWillUnmount: function() {
+	    this.unbindSelectEvent();
+	  },
+
+	  onSelectHandler: function(e) {
+	    var _eventSource = this._getEventSource(e);
+	    var _selectionStart = _eventSource.selectionStart;
+	    var _selectionEnd = _eventSource.selectionEnd;
+	    var _selectedText = _eventSource.value.slice(_selectionStart, _selectionEnd);
+
+	    var selection = {
+	      selectionStart: _selectionStart,
+	      selectionEnd: _selectionEnd,
+	      selectedText: _selectedText
+	    };
+
+	    MarkdownEditorActions.setSelection(selection);
+	    this._preventClearSelectionAfterSelectIfNeeded(e);
+	  },
+
+	  _getEventSource: function(e) {
+	    return e.srcElement || e.target;
+	  },
+
+	  _preventClearSelectionAfterSelectIfNeeded: function(e) {
+	    if (e.target !== null) {
+	      _canClear = false;
+	      _timerClick = setTimeout(function() {
+	        _canClear = true;
+	        _timerClick = null;
+	      }, 100);
+	    }
+	  }
+	};
+
+	module.exports = TextAreaSelectionMixin;
+
+
+/***/ },
+/* 521 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(1);
+	var ReactDOM = __webpack_require__(38);
+
+	var ButtonManagerMixin = {
+	  iconsProviderName: null,
+
+	  setIconsProvider: function(name) {
+	    this.iconsProviderName = name;
+	  },
+
+	  isFontAwesome: function() {
+	    return this.iconsProviderName === 'font-awesome';
+	  },
+
+	  getStyleMarkdownBtn: function() {
+	    return {
+	      'flex': '1',
+	      'maxWidth': '50px',
+	      'border': '1px solid #ddd',
+	      'backgroundColor': 'white',
+	      'borderRadius': '4px',
+	      'margin': '0 2px',
+	      'padding': '2px 3px',
+	      'cursor': 'pointer',
+	      'display': 'flex',
+	      'justifyContent': 'center',
+	      'alignItems': 'center'
+	    };
+	  },
+
+	  getBoldButton: function(isDisabled, onClickHandler) {
+	    var _style = this.getStyleMarkdownBtn();
+	    if (this.isFontAwesome()) {
+	      return this.getButtonFontAwesomeIcon(isDisabled, onClickHandler, _style, 'fa-bold', 'bold-btn');
+	    } else {
+	      return this.getButtonMaterializeIcon(isDisabled, onClickHandler, _style, 'format_bold', 'bold-btn');
+	    }
+	  },
+
+	  getButtonMaterializeIcon: function(isDisabled, onClickHandler, styleBtn, iconName, containerClassName) {
+	    return (
+	      React.createElement("div", {role: "button", className: containerClassName, style: styleBtn, disabled: isDisabled, onClick: onClickHandler}, 
+	        React.createElement("i", {className: "material-icons"}, iconName)
+	      )
+	    );
+	  },
+
+	  getButtonFontAwesomeIcon: function(isDisabled, onClickHandler, styleBtn, iconName, containerClassName) {
+	    var _className = 'fa ' + iconName;
+	    return (
+	      React.createElement("div", {role: "button", className: containerClassName, style: styleBtn, disabled: isDisabled, onClick: onClickHandler}, 
+	        React.createElement("i", {className: _className})
+	      )
+	    );
+	  },
+
+	  getButtonWithoutIcon: function(isDisabled, onClickHandler, additionalClassName, textBtn) {
+	    var styleBtn = {
+	      'display': 'flex',
+	      'minWidth': '50px',
+	      'border': '1px solid #ddd',
+	      'color': 'black',
+	      'backgroundColor': 'white',
+	      'borderRadius': '4px',
+	      'margin': '0 2px',
+	      'padding': '2px 3px',
+	      'cursor': 'pointer',
+	      'textAlign': 'center',
+	      'justifyContent': 'flex-end',
+	      'alignItems': 'center'
+	    };
+
+	    return (
+	      React.createElement("div", {role: "button", style: styleBtn, className: additionalClassName, disabled: isDisabled, onClick: onClickHandler}, 
+	        React.createElement("span", null, textBtn)
+	      )
+	    );
+	  },
+
+	  getItalicButton: function(isDisabled, onClickHandler) {
+	    if (this.isFontAwesome()) {
+	      var _style = this.getStyleMarkdownBtn();
+	      return this.getButtonFontAwesomeIcon(isDisabled, onClickHandler, _style, 'fa-italic', 'italic-btn');
+	    } else {
+	      var _style = this.getStyleMarkdownBtn();
+	      return this.getButtonMaterializeIcon(isDisabled, onClickHandler, _style, 'format_italic', 'italic-btn');
+	    }
+	  },
+
+	  getMakeListButton: function(isDisabled, onClickHandler) {
+	    if (this.isFontAwesome()) {
+	      var _style = this.getStyleMarkdownBtn();
+	      return this.getButtonFontAwesomeIcon(isDisabled, onClickHandler, _style, 'fa-list-ul', 'list-btn');
+	    } else {
+	      var _style = this.getStyleMarkdownBtn();
+	      return this.getButtonMaterializeIcon(isDisabled, onClickHandler, _style, 'format_list_bulleted', 'list-btn');
+	    }
+	  },
+
+	  getImageButton: function(isDisabled, onClickHandler) {
+	    if (this.isFontAwesome()) {
+	      var _style = this.getStyleMarkdownBtn();
+	      return this.getButtonFontAwesomeIcon(isDisabled, onClickHandler, _style, 'fa-file-image-o', 'insert-img-btn');
+	    } else {
+	      var _style = this.getStyleMarkdownBtn();
+	      return this.getButtonMaterializeIcon(isDisabled, onClickHandler, _style, 'insert_photo', 'insert-img-btn');
+	    }
+	  },
+
+	  getLinkButton: function(isDisabled, onClickHandler) {
+	    if (this.isFontAwesome()) {
+	      var _style = this.getStyleMarkdownBtn();
+	      return this.getButtonFontAwesomeIcon(isDisabled, onClickHandler, _style, 'fa-link', 'insert-link-btn');
+	    } else {
+	      var _style = this.getStyleMarkdownBtn();
+	      return this.getButtonMaterializeIcon(isDisabled, onClickHandler, _style, 'insert_link', 'insert-link-btn');
+	    }
+	  }
+	};
+
+	module.exports = ButtonManagerMixin;
+
+
+/***/ },
+/* 522 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Reflux = __webpack_require__(493);
+	var MarkdownEditorActions = __webpack_require__(517);
+	var MarkdownSelectionActions = __webpack_require__(519);
+
+	var MarkdownEditorStore = Reflux.createStore({
+	  init: function() {
+	    this.currentSelection = null;
+	    this.listenTo(MarkdownEditorActions.makeBold, this.handleMakeBold);
+	    this.listenTo(MarkdownEditorActions.makeItalic, this.handleMakeItalic);
+	    this.listenTo(MarkdownEditorActions.makeHeader, this.handleMakeHeader);
+	    this.listenTo(MarkdownEditorActions.makeSubHeader, this.handleMakeSubHeader);
+	    this.listenTo(MarkdownEditorActions.makeImage, this.handleMakeImage);
+	    this.listenTo(MarkdownEditorActions.makeLink, this.handleMakeLink);
+	    this.listenTo(MarkdownEditorActions.makeList, this.handleMakeList);
+	    this.listenTo(MarkdownEditorActions.makeUnderline, this.handleMakeUnderline);
+	    this.listenTo(MarkdownEditorActions.clearSelection, this.handleClearSelection);
+	    this.listenTo(MarkdownEditorActions.setSelection, this.handleSetSelection);
+	  },
+
+	  handleMakeBold: function() {
+	    this.trigger({action: 'bold', currentSelection: this.currentSelection});
+	  },
+
+	  handleMakeItalic: function() {
+	    this.trigger({action: 'italic', currentSelection: this.currentSelection});
+	  },
+
+	  handleMakeLink: function() {
+	    this.trigger({action: 'link', currentSelection: this.currentSelection});
+	  },
+
+	  handleMakeUnderline: function() {
+	    this.trigger({action: 'underline', currentSelection: this.currentSelection});
+	  },
+
+	  handleMakeHeader: function() {
+	    this.trigger({action: 'header', currentSelection: this.currentSelection});
+	  },
+
+	  handleMakeSubHeader: function() {
+	    this.trigger({action: 'subheader', currentSelection: this.currentSelection});
+	  },
+
+	  handleMakeList: function() {
+	    this.trigger({action: 'list', currentSelection: this.currentSelection});
+	  },
+
+	  handleMakeImage: function() {
+	    this.trigger({action: 'image', currentSelection: this.currentSelection});
+	  },
+
+	  handleClearSelection: function() {
+	    this.currentSelection = null;
+	    MarkdownSelectionActions.selectionCleared();
+	  },
+
+	  handleSetSelection: function(_selection) {
+	    this.currentSelection = _selection;
+	    MarkdownSelectionActions.selectionSet();
+	  }
+	});
+
+	module.exports = MarkdownEditorStore;
+
+
+/***/ },
+/* 523 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Reflux = __webpack_require__(493);
+	var MarkdownSelectionActions = __webpack_require__(519);
+
+	var MarkdownSelectionStore = Reflux.createStore({
+	  init: function() {
+	    this.listenTo(MarkdownSelectionActions.selectionSet, this.handleSelectionSet);
+	    this.listenTo(MarkdownSelectionActions.selectionCleared, this.handleSelectionCleared);
+	  },
+
+	  handleSelectionCleared: function() {
+	    this.trigger({type: 'clear'});
+	  },
+
+	  handleSelectionSet: function() {
+	    this.trigger({type: 'set'});
+	  }
+	});
+
+	module.exports = MarkdownSelectionStore;
+
+
+/***/ },
+/* 524 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Reflux = __webpack_require__(493);
+	var MarkdownEditorActions = __webpack_require__(517);
+
+	var MarkdownEditorTabsInteractionStore = Reflux.createStore({
+	  init: function() {
+	    this.listenTo(MarkdownEditorActions.clickPreviewTab, this.handleClickPreviewTab);
+	    this.listenTo(MarkdownEditorActions.clickEditorTab, this.handleClickEditorTab);
+	  },
+
+	  handleClickPreviewTab: function() {
+	    this.trigger({activeTab: 1});
+	  },
+
+	  handleClickEditorTab: function() {
+	    this.trigger({activeTab: 0});
+	  }
+	});
+
+	module.exports = MarkdownEditorTabsInteractionStore;
+
+
+/***/ },
+/* 525 */
+/***/ function(module, exports) {
+
+	var RegularMarkdownToken = function(token, isSymetric) {
+	  this.token = token;
+	  this.isSymetric = isSymetric;
+	};
+
+	RegularMarkdownToken.prototype.applyTokenTo = function(_text) {
+	  var res = this.token;
+	  res += _text;
+
+	  if (this.isSymetric) {
+	    res += this.token;
+	  }
+
+	  return res;
+	};
+
+	var NullMarkdownToken = function() {
+	  RegularMarkdownToken.call(this, '', false);
+	};
+
+	NullMarkdownToken.prototype = Object.create(RegularMarkdownToken.prototype);
+
+	NullMarkdownToken.prototype.applyTokenTo = function(_text) {
+	  return _text;
+	};
+
+	var HeaderMarkdownToken = function(_token) {
+	  var t = _token || '##';
+	  RegularMarkdownToken.call(this, t, false);
+	};
+
+	HeaderMarkdownToken.prototype = Object.create(RegularMarkdownToken.prototype);
+
+	HeaderMarkdownToken.prototype.applyTokenTo = function(_text) {
+	  return '\n' + this.token + ' ' + _text + '\n';
+	};
+
+	var SubHeaderMarkdownToken = function() {
+	  HeaderMarkdownToken.call(this, '###', false);
+	};
+
+	SubHeaderMarkdownToken.prototype = Object.create(HeaderMarkdownToken.prototype);
+
+	var UrlMarkdownToken = function() {
+	  RegularMarkdownToken.call(this, null, false);
+	};
+
+	UrlMarkdownToken.prototype = Object.create(RegularMarkdownToken.prototype);
+
+	UrlMarkdownToken.prototype.applyTokenTo = function(_text) {
+	  return '[' + _text + '](' + _text + ')';
+	};
+
+	var ListMarkdownToken = function() {
+	  RegularMarkdownToken.call(this, null, false);
+	};
+
+	ListMarkdownToken.prototype = Object.create(RegularMarkdownToken.prototype);
+
+	ListMarkdownToken.prototype.applyTokenTo = function(_text) {
+	  var items = _text.split('\n');
+	  var t = items.reduce(function(acc, item) {
+	    return acc + '+ ' + item + '\n';
+	  }, '\n');
+
+	  return t + '\n';
+	};
+
+	var ImageMarkdownToken = function() {
+	  RegularMarkdownToken.call(this, null, false);
+	};
+
+	ImageMarkdownToken.prototype = Object.create(RegularMarkdownToken.prototype);
+
+	ImageMarkdownToken.prototype.applyTokenTo = function(_text) {
+	  return '![' + _text + '](' + _text + ')';
+	};
+
+	module.exports = {
+	  RegularMarkdownToken: RegularMarkdownToken,
+	  NullMarkdownToken: NullMarkdownToken,
+	  HeaderMarkdownToken: HeaderMarkdownToken,
+	  SubHeaderMarkdownToken: SubHeaderMarkdownToken,
+	  UrlMarkdownToken: UrlMarkdownToken,
+	  ListMarkdownToken: ListMarkdownToken,
+	  ImageMarkdownToken: ImageMarkdownToken
+	};
+
+
+/***/ },
+/* 526 */
+/***/ function(module, exports) {
+
+	var toMarkdown =  function(text) {
+	  return text.replace(/[\n\r]/g, '  \n');
+	};
+
+	module.exports = {
+	  toMarkdown: toMarkdown
+	};
+
+
+/***/ },
+/* 527 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Reflux = __webpack_require__(493);
+	var PublicMarkdownEditorActions = __webpack_require__(518);
+
+	var MarkdownEditorContentStore = Reflux.createStore({
+	  init: function() {
+	    this.listenTo(PublicMarkdownEditorActions.updateText, this.onUpdateText);
+	  },
+
+	  onUpdateText: function(updatedMarkdown) {
+	    this.trigger({content: updatedMarkdown});
+	  }
+	});
+
+	module.exports = MarkdownEditorContentStore;
+
+
+/***/ },
+/* 528 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _Dialog = __webpack_require__(450);
+
+	var _Dialog2 = _interopRequireDefault(_Dialog);
+
+	var _FlatButton = __webpack_require__(420);
+
+	var _FlatButton2 = _interopRequireDefault(_FlatButton);
+
+	var _Paper = __webpack_require__(391);
+
+	var _Paper2 = _interopRequireDefault(_Paper);
+
+	var _RaisedButton = __webpack_require__(437);
+
+	var _RaisedButton2 = _interopRequireDefault(_RaisedButton);
+
+	var _markdown = __webpack_require__(454);
+
+	var _markdown2 = _interopRequireDefault(_markdown);
+
+	var _Drawer = __webpack_require__(416);
+
+	var _Drawer2 = _interopRequireDefault(_Drawer);
+
+	var _Tabs = __webpack_require__(441);
+
+	var _Divider = __webpack_require__(452);
+
+	var _Divider2 = _interopRequireDefault(_Divider);
+
+	var _reactYoutube = __webpack_require__(529);
+
+	var _reactYoutube2 = _interopRequireDefault(_reactYoutube);
+
+	var _Popover = __webpack_require__(632);
+
+	var _Popover2 = _interopRequireDefault(_Popover);
+
+	var _Menu = __webpack_require__(634);
+
+	var _Menu2 = _interopRequireDefault(_Menu);
+
+	var _MenuItem = __webpack_require__(413);
+
+	var _MenuItem2 = _interopRequireDefault(_MenuItem);
+
+	var _quiz = __webpack_require__(635);
+
+	var _quiz2 = _interopRequireDefault(_quiz);
+
+	var _question = __webpack_require__(700);
+
+	var _question2 = _interopRequireDefault(_question);
+
+	var _user = __webpack_require__(702);
+
+	var _user2 = _interopRequireDefault(_user);
+
+	var _Avatar = __webpack_require__(642);
+
+	var _Avatar2 = _interopRequireDefault(_Avatar);
+
+	var _RadioButton = __webpack_require__(457);
+
+	var _Card = __webpack_require__(636);
+
+	var _reactRedux = __webpack_require__(341);
+
+	var _reducerActions = __webpack_require__(423);
+
+	var actions = _interopRequireWildcard(_reducerActions);
+
+	var _TextField = __webpack_require__(431);
+
+	var _TextField2 = _interopRequireDefault(_TextField);
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var MarkdownEditor = __webpack_require__(491).MarkdownEditor;
+
+
+	var newStyles = {
+	  containerStyle: {
+	    maxWidth: '100%',
+	    display: 'block',
+	    position: 'fixed',
+	    background: 'url(./assets/imgs/metalBackground.jpg)',
+	    top: 0,
+	    bottom: 0,
+	    right: 0,
+	    left: 0,
+	    backgroundSize: 'cover',
+	    zIndex: 100000,
+	    pointerEvents: 'auto',
+	    submitQuestion: false
+	  }
+	};
+
+	var styles = {
+	  containerStyle: {
+	    maxWidth: '100%',
+	    display: 'none',
+	    position: 'fixed',
+	    background: 'url(./assets/imgs/metalBackground.jpg)',
+	    top: 0,
+	    bottom: 0,
+	    right: 0,
+	    left: 0,
+	    backgroundSize: 'cover',
+	    zIndex: 100000,
+
+	    pointerEvents: 'auto'
+
+	  },
+	  launchContainerStyle: {
+	    maxWidth: '100%',
+	    display: 'block ',
+	    position: 'absolute',
+	    background: 'url(./assets/imgs/metalBackground.jpg)',
+	    transitionDuration: '1.5s',
+	    backgroundSize: 'cover'
+
+	  },
+	  launchContainerStylePanel2: {
+	    maxWidth: '50%',
+	    display: 'block ',
+	    position: 'absolute',
+	    background: 'url(http://wallpaper.zone/img/210731.jpg)',
+	    backgroundSize: 'cover',
+	    transitionDuration: '1.5s'
+	  },
+	  launchContainerStylePanel3: {
+	    maxWidth: '100%',
+	    display: 'block ',
+	    position: 'absolute',
+	    background: 'url(http://wallpaper.zone/img/210731.jpg)',
+	    backgroundSize: 'cover',
+	    transitionDelay: '.75s',
+	    transitionDuration: '.25s'
+	  },
+	  launchContainerStylePanel4: {
+	    maxWidth: '100%',
+	    display: 'block ',
+	    position: 'absolute',
+	    background: 'url(http://wallpaper.zone/img/210731.jpg)',
+	    backgroundSize: 'cover',
+	    transitionDelay: '1s',
+	    transitionDuration: '.25s'
+	  },
+	  launchContainerStylePanel5: {
+	    maxWidth: '50%',
+	    display: 'block ',
+	    position: 'absolute',
+	    background: 'url(http://wallpaper.zone/img/210731.jpg)',
+	    backgroundSize: 'cover',
+	    transitionDuration: '1.5s',
+	    transitionDelay: '1.5s',
+	    zIndex: 10001
+	  },
+	  backButton: {
+	    position: 'fixed',
+	    bottom: 0,
+	    right: 0,
+	    margin: 5
+	  },
+	  innerDiv: {
+	    top: 0,
+	    bottom: 0,
+	    right: 0,
+	    left: 0,
+	    backgroundColor: 'black',
+	    position: 'relative',
+	    display: 'block'
+	  },
+	  dialog: {
+	    alignItems: 'center',
+	    justifyContent: 'center',
+	    overflow: 'scroll',
+	    width: '80%',
+	    maxWidth: 'none'
+	  },
+
+	  buttonDiv: {
+	    minWidth: '100%',
+	    marginBottom: 5
+	  },
+	  dialogBody: {
+	    minHeight: 600,
+	    overflow: 'scroll',
+	    background: 'url(./assets/imgs/metalBackground.jpg)',
+	    backgroundSize: 'cover',
+	    borderRadius: 3
+	  },
+	  tabsColor: {
+	    backgroundColor: "#25383C"
+	  },
+	  tabsColor2: {
+	    backgroundColor: "#737CA1"
+	  },
+	  dialogBackground: {
+	    borderRadius: 500,
+	    overflow: "scroll"
+	  },
+	  dialogHuge: {
+	    position: 'fixed',
+	    top: 0,
+	    left: 0,
+	    bottom: 0,
+	    right: 0,
+	    overflow: 'auto',
+	    minHeight: 600,
+	    width: '100%',
+	    maxWidth: 'none'
+	  },
+	  dialogHugePlayer: {
+	    minHeight: 580
+	  },
+	  rocketImg: {
+	    opacity: .2,
+	    maxHeight: '100%',
+	    position: 'fixed',
+	    maxWidth: '100%'
+	  },
+	  floatLeft: {
+	    float: 'left',
+	    width: '49%',
+	    maxWidth: "49%",
+	    marginTop: 10,
+	    marginLeft: 10
+	  },
+	  floatRight: {
+	    float: 'right',
+	    maxWidth: "49%",
+	    width: '49%',
+	    marginTop: 10,
+	    maxHeight: 620,
+	    overflow: 'scroll',
+	    display: 'block',
+	    marginRight: 10,
+	    padding: 10
+
+	  },
+	  topTab: {
+	    height: 35,
+	    textAlign: 'top'
+	  },
+	  markdownMargins: {
+	    margin: 3
+	  },
+	  buttonDecline: {
+	    minWidth: '50%',
+	    color: 'white',
+	    margin: 'auto 0'
+
+	  },
+	  buttonAccept: {
+	    minWidth: '50%',
+	    color: 'white',
+
+	    margin: 'auto 0'
+	  },
+	  subject: {
+	    width: '100%',
+	    height: '100%'
+	  },
+	  description: {
+	    padding: 10,
+	    marginTop: 10
+	  },
+	  headline: {
+	    fontSize: 24,
+	    paddingTop: 16,
+	    marginBottom: 12,
+	    fontWeight: 400,
+	    opacity: 1
+	  },
+	  textStyle: {
+	    marginLeft: 20,
+	    marginRight: 20,
+	    maxWidth: '95%',
+	    width: '95%'
+	  },
+	  launchDiv: {
+	    maxWidth: '60%',
+	    margin: '0 auto',
+	    textColor: "white"
+	  },
+	  descPadding: {
+	    height: 600,
+	    width: 600,
+	    position: 'absolute',
+	    top: 0,
+	    left: 0,
+	    bottom: 0,
+	    right: 0,
+	    margin: "auto"
+	  },
+	  inkBarStyle: {
+	    backgroundColor: "#F88017"
+	  },
+	  radioButton: {
+	    marginBottom: 16
+	  },
+	  topIframeMargin: {
+	    marginTop: 10
+	  },
+	  overlayOpacity: {
+	    opacity: 1,
+	    display: "none"
+	  },
+	  panelDivs: {
+	    position: 'relative',
+	    maxHeight: '33.33%',
+	    height: '33.33%',
+	    width: '100%'
+	  },
+	  question: {
+	    marginTop: 25,
+	    width: '100%',
+	    height: 300,
+	    overflow: 'scroll'
+	  },
+	  avatar: {
+	    marginRight: 30
+	  }
+	};
+
+	var User = function (_Component) {
+	  _inherits(User, _Component);
+
+	  function User(props) {
+	    _classCallCheck(this, User);
+
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(User).call(this, props));
+
+	    _this.handleCloseModule = function () {
+
+	      document.getElementById("cy").style.display = 'block';
+	      _this.props.cy.zoomingEnabled(true);
+	      _this.props.cy.panningEnabled(true);
+	      _this.props.closeModule();
+	    };
+
+	    _this.handleOpenQuestion = function () {
+	      _this.props.openQuestion();
+	    };
+
+	    _this.handleOpenModule = function () {
+	      document.getElementById("cy").style.display = 'none';
+	      _this.props.cy.zoomingEnabled(false);
+	      _this.props.cy.panningEnabled(false);
+	      setTimeout(function () {
+	        _this.props.openModule();
+	      }, 0);
+	      _this.setState({
+	        gates: true
+	      });
+	      setTimeout(function () {
+	        _this.setState({
+	          gates: false
+	        });
+	      }, 750);
+	    };
+
+	    _this.handleToggleNext = function (event) {
+	      _this.setState({
+	        anchorEl: event.currentTarget,
+	        lol: true
+	      });
+	    };
+
+	    _this.handleClosePrompt = function () {
+	      _this.props.closeUserView();
+	    };
+
+	    _this.handleOpenDrawer = function (open, reason) {
+	      console.log(open);
+	      console.log("eh?");
+	    };
+
+	    _this.checkStyle = function () {
+	      if (!_this.props.openModuleView) {
+	        console.log(_this.props.openModuleView);
+	        return styles.containerStyle;
+	      } else {
+
+	        console.log(_this.props.openModuleView);
+	        return newStyles.containerStyle;
+	      }
+	    };
+
+	    _this.state = {
+	      open: false,
+	      navigateNext: false,
+	      gates: false
+	    };
+	    return _this;
+	  }
+
+	  _createClass(User, [{
+	    key: 'render',
+	    value: function render() {
+
+	      var opts = {
+	        height: 390,
+	        width: '100%'
+	      };
+
+	      var cancel = [_react2.default.createElement(_FlatButton2.default, {
+	        label: 'Back to galactic view',
+	        primary: true,
+	        onTouchTap: this.props.closeModule
+	      })];
+
+	      var contentStyle = {
+	        minWidth: 640,
+	        height: '100%',
+	        minHeight: 480,
+	        alignItems: 'center',
+	        justifyContent: 'center'
+	      };
+
+	      console.log("RENDERING USERVIEW");
+
+	      console.log(this.props);
+
+	      return _react2.default.createElement(
+	        'div',
+	        null,
+	        _react2.default.createElement(
+	          _Drawer2.default,
+	          {
+	            docked: false,
+	            containerStyle: styles.launchContainerStyle,
+	            onRequestChange: function onRequestChange(open) {
+	              (function () {
+	                console.log("fuck");
+	              })();
+	            },
+	            width: 1680,
+	            open: this.props.openUserView },
+	          _react2.default.createElement(_Drawer2.default, {
+	            docked: false,
+
+	            zDepth: 5,
+	            containerStyle: styles.launchContainerStylePanel2,
+	            overlayStyle: styles.overlayOpacity,
+	            onRequestChange: function onRequestChange(open) {
+	              (function () {
+	                console.log("fuck");
+	              })();
+	            },
+	            width: 100,
+	            open: this.props.openUserView }),
+	          _react2.default.createElement(_Drawer2.default, {
+	            docked: false,
+
+	            zDepth: 5,
+	            containerStyle: styles.launchContainerStylePanel2,
+	            overlayStyle: styles.overlayOpacity,
+
+	            openSecondary: true,
+	            onRequestChange: function onRequestChange(open) {
+	              (function () {
+	                console.log("fuck");
+	              })();
+	            },
+	            width: 100,
+	            open: this.props.openUserView }),
+	          _react2.default.createElement(_Drawer2.default, {
+	            docked: false,
+
+	            zDepth: 5,
+	            containerStyle: styles.launchContainerStylePanel3,
+	            overlayStyle: styles.overlayOpacity,
+
+	            openSecondary: true,
+	            onRequestChange: function onRequestChange(open) {
+	              (function () {
+	                console.log("fuck");
+	              })();
+	            },
+	            width: 200,
+	            open: this.props.openUserView }),
+	          _react2.default.createElement(_Drawer2.default, {
+	            docked: false,
+
+	            zDepth: 5,
+	            containerStyle: styles.launchContainerStylePanel3,
+	            overlayStyle: styles.overlayOpacity,
+	            onRequestChange: function onRequestChange(open) {
+	              (function () {
+	                console.log("fuck");
+	              })();
+	            },
+	            width: 200,
+	            open: this.props.openUserView }),
+	          _react2.default.createElement(
+	            _Drawer2.default,
+	            {
+	              docked: false,
+
+	              zDepth: 5,
+	              containerStyle: styles.launchContainerStylePanel4,
+	              overlayStyle: styles.overlayOpacity,
+	              onRequestChange: function onRequestChange(open) {
+	                (function () {
+	                  console.log("fuck");
+	                })();
+	              },
+	              width: 300,
+	              open: this.props.openUserView },
+	            _react2.default.createElement('div', { style: styles.panelDivs }),
+	            _react2.default.createElement(
+	              'div',
+	              { style: styles.panelDivs },
+	              _react2.default.createElement(
+	                _RaisedButton2.default,
+	                { onClick: this.handleClosePrompt, backgroundColor: '#ff0000', style: styles.buttonDecline },
+	                'ABORT'
+	              )
+	            ),
+	            _react2.default.createElement('div', { style: styles.panelDivs })
+	          ),
+	          _react2.default.createElement(
+	            _Drawer2.default,
+	            {
+	              docked: false,
+	              zDepth: 5,
+	              containerStyle: styles.launchContainerStylePanel4,
+	              overlayStyle: styles.overlayOpacity,
+	              openSecondary: true,
+	              onRequestChange: function onRequestChange(open) {
+	                (function () {
+	                  console.log("fuck");
+	                })();
+	              },
+	              width: 300,
+	              open: this.props.openUserView },
+	            _react2.default.createElement('div', { style: styles.panelDivs }),
+	            _react2.default.createElement(
+	              'div',
+	              { style: styles.panelDivs },
+	              _react2.default.createElement(
+	                _RaisedButton2.default,
+	                { onClick: this.handleOpenModule, backgroundColor: '#3ed715', style: styles.buttonAccept },
+	                'LAUNCH'
+	              )
+	            ),
+	            _react2.default.createElement('div', { style: styles.panelDivs })
+	          ),
+	          _react2.default.createElement(_Drawer2.default, {
+	            docked: false,
+	            zDepth: 5,
+	            containerStyle: styles.launchContainerStylePanel2,
+	            openSecondary: true,
+	            onRequestChange: function onRequestChange(open) {
+	              (function () {
+	                console.log("fuck");
+	              })();
+	            },
+	            width: 1800,
+	            open: this.state.gates }),
+	          _react2.default.createElement(_Drawer2.default, {
+	            docked: false,
+	            zDepth: 5,
+	            containerStyle: styles.launchContainerStylePanel2,
+	            onRequestChange: function onRequestChange(open) {
+	              (function () {
+	                console.log("fuck");
+	              })();
+	            },
+	            width: 1800,
+	            open: this.state.gates })
+	        ),
+	        _react2.default.createElement(
+	          'div',
+	          { style: this.checkStyle() },
+	          _react2.default.createElement(_Drawer2.default, {
+	            docked: false,
+	            zDepth: 5,
+	            containerStyle: styles.launchContainerStylePanel2,
+	            openSecondary: true,
+	            onRequestChange: function onRequestChange(open) {
+	              (function () {
+	                console.log("fuck");
+	              })();
+	            },
+	            width: 1800,
+	            open: this.state.gates }),
+	          _react2.default.createElement(_Drawer2.default, {
+	            docked: false,
+	            zDepth: 5,
+	            containerStyle: styles.launchContainerStylePanel2,
+	            onRequestChange: function onRequestChange(open) {
+	              (function () {
+	                console.log("fuck");
+	              })();
+	            },
+	            width: 1800,
+	            open: this.state.gates }),
+	          _react2.default.createElement(
+	            _Tabs.Tabs,
+	            { tabItemContainerStyle: styles.tabsColor, inkBarStyle: styles.inkBarStyle },
+	            _react2.default.createElement(
+	              _Tabs.Tab,
+	              { label: 'Content' },
+	              _react2.default.createElement(
+	                _Tabs.Tabs,
+	                { tabItemContainerStyle: styles.tabsColor2, inkBarStyle: styles.inkBarStyle },
+	                this.props.currentVideos.map(function (value) {
+	                  return _react2.default.createElement(
+	                    _Tabs.Tab,
+	                    { label: value.name },
+	                    _react2.default.createElement(
+	                      'div',
+	                      { style: styles.contentDiv },
+	                      _react2.default.createElement(
+	                        'div',
+	                        { style: styles.floatLeft },
+	                        _react2.default.createElement(_reactYoutube2.default, {
+	                          videoId: value.video,
+	                          opts: opts })
+	                      ),
+	                      _react2.default.createElement(
+	                        'div',
+	                        null,
+	                        _react2.default.createElement(
+	                          _Paper2.default,
+	                          { style: styles.floatRight, zDepth: 4 },
+	                          _react2.default.createElement(_markdown2.default, { style: styles.markdownMargins, markdown: value.markdown })
+	                        )
+	                      )
+	                    )
+	                  );
+	                })
+	              )
+	            ),
+	            _react2.default.createElement(
+	              _Tabs.Tab,
+	              { label: 'Documentation' },
+	              _react2.default.createElement(
+	                _Tabs.Tabs,
+	                { tabItemContainerStyle: styles.tabsColor2, inkBarStyle: styles.inkBarStyle },
+	                this.props.currentArticles.map(function (value) {
+	                  return _react2.default.createElement(
+	                    _Tabs.Tab,
+	                    { label: value.name },
+	                    _react2.default.createElement(
+	                      'div',
+	                      { style: styles.topIframeMargin },
+	                      _react2.default.createElement('iframe', { style: styles.dialogHugePlayer, src: value.article, height: '50%', width: '100%' })
+	                    )
+	                  );
+	                })
+	              )
+	            ),
+	            _react2.default.createElement(
+	              _Tabs.Tab,
+	              { label: 'Questions' },
+	              _react2.default.createElement(_user2.default, null),
+	              _react2.default.createElement(
+	                'div',
+	                null,
+	                this.props.currentQuestions.map(function (value) {
+
+	                  return _react2.default.createElement(_question2.default, { question: value });
+	                })
+	              )
+	            ),
+	            _react2.default.createElement(
+	              _Tabs.Tab,
+	              { label: 'Quizzes' },
+	              _react2.default.createElement(
+	                _Card.Card,
+	                null,
+	                _react2.default.createElement(_Card.CardHeader, {
+	                  title: 'Closures',
+	                  subtitle: 'A quiz on closures',
+	                  actAsExpander: true,
+	                  showExpandableButton: true
+	                }),
+	                _react2.default.createElement(
+	                  _Card.CardMedia,
+	                  { expandable: true },
+	                  _react2.default.createElement(_quiz2.default, null)
+	                ),
+	                _react2.default.createElement(
+	                  _Card.CardActions,
+	                  { expandable: true },
+	                  _react2.default.createElement(_FlatButton2.default, { label: 'Cancel' }),
+	                  _react2.default.createElement(_FlatButton2.default, { label: 'Submit' })
+	                )
+	              )
+	            )
+	          ),
+	          _react2.default.createElement(
+	            'div',
+	            { style: styles.backButton },
+	            _react2.default.createElement(
+	              _Paper2.default,
+	              { zDepth: 4 },
+	              _react2.default.createElement(_FlatButton2.default, { onTouchTap: this.handleCloseModule, label: 'Back to Galactic View' }),
+	              _react2.default.createElement(_FlatButton2.default, { onTouchTap: this.handleOpenQuestion, label: 'Ask A Question' }),
+	              _react2.default.createElement(_FlatButton2.default, { onTouchTap: this.handleToggleNext, label: 'Next Nodes' })
+	            )
+	          )
+	        )
+	      );
+	    }
+	  }]);
+
+	  return User;
+	}(_react.Component);
+
+	function mapStateToProps(state) {
+	  console.debug("MAPPING STATE TO PROPS IN USERVIEW");
+	  return {
+	    cy: state.selectNode.cy,
+	    openModuleView: state.selectNode.openModuleView,
+	    moduleDescription: state.selectNode.moduleDescription,
+	    currentArticles: state.selectNode.currentArticles,
+	    currentVideos: state.selectNode.currentVideos,
+	    currentQuestions: state.selectNode.currentQuestions,
+	    previousNode: state.selectNode.previousNode,
+	    currentNode: state.selectNode.currentNode,
+	    openUserView: state.selectNode.openUserView
+	  };
+	}
+
+	exports.default = (0, _reactRedux.connect)(mapStateToProps, actions)(User);
+
+/***/ },
+/* 529 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -59464,11 +65579,11 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _lodash = __webpack_require__(489);
+	var _lodash = __webpack_require__(530);
 
 	var _lodash2 = _interopRequireDefault(_lodash);
 
-	var _youtubePlayer = __webpack_require__(491);
+	var _youtubePlayer = __webpack_require__(532);
 
 	var _youtubePlayer2 = _interopRequireDefault(_youtubePlayer);
 
@@ -59772,7 +65887,7 @@
 	exports.default = YouTube;
 
 /***/ },
-/* 489 */
+/* 530 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -59783,7 +65898,7 @@
 	 * Based on Underscore.js 1.8.3 <http://underscorejs.org/LICENSE>
 	 * Copyright Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
 	 */
-	var keys = __webpack_require__(490),
+	var keys = __webpack_require__(531),
 	    root = __webpack_require__(189);
 
 	/** Used as the size to enable large array optimizations. */
@@ -61144,7 +67259,7 @@
 
 
 /***/ },
-/* 490 */
+/* 531 */
 /***/ function(module, exports) {
 
 	/**
@@ -61618,12 +67733,12 @@
 
 
 /***/ },
-/* 491 */
+/* 532 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var _isString2 = __webpack_require__(492);
+	var _isString2 = __webpack_require__(533);
 
 	var _isString3 = _interopRequireDefault(_isString2);
 
@@ -61631,19 +67746,19 @@
 	    value: true
 	});
 
-	var _sister = __webpack_require__(493);
+	var _sister = __webpack_require__(534);
 
 	var _sister2 = _interopRequireDefault(_sister);
 
-	var _bluebird = __webpack_require__(494);
+	var _bluebird = __webpack_require__(535);
 
 	var _bluebird2 = _interopRequireDefault(_bluebird);
 
-	var _loadYouTubeIframeAPI = __webpack_require__(496);
+	var _loadYouTubeIframeAPI = __webpack_require__(537);
 
 	var _loadYouTubeIframeAPI2 = _interopRequireDefault(_loadYouTubeIframeAPI);
 
-	var _YouTubePlayer = __webpack_require__(498);
+	var _YouTubePlayer = __webpack_require__(539);
 
 	var _YouTubePlayer2 = _interopRequireDefault(_YouTubePlayer);
 
@@ -61714,7 +67829,7 @@
 
 
 /***/ },
-/* 492 */
+/* 533 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var isArray = __webpack_require__(247),
@@ -61760,7 +67875,7 @@
 
 
 /***/ },
-/* 493 */
+/* 534 */
 /***/ function(module, exports) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {/**
@@ -61826,7 +67941,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 494 */
+/* 535 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process, global, setImmediate) {/* @preserve
@@ -67303,10 +73418,10 @@
 
 	},{"./es5":13}]},{},[4])(4)
 	});                    ;if (typeof window !== 'undefined' && window !== null) {                               window.P = window.Promise;                                                     } else if (typeof self !== 'undefined' && self !== null) {                             self.P = self.Promise;                                                         }
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3), (function() { return this; }()), __webpack_require__(495).setImmediate))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3), (function() { return this; }()), __webpack_require__(536).setImmediate))
 
 /***/ },
-/* 495 */
+/* 536 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(setImmediate, clearImmediate) {var nextTick = __webpack_require__(3).nextTick;
@@ -67385,10 +73500,10 @@
 	exports.clearImmediate = typeof clearImmediate === "function" ? clearImmediate : function(id) {
 	  delete immediateIds[id];
 	};
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(495).setImmediate, __webpack_require__(495).clearImmediate))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(536).setImmediate, __webpack_require__(536).clearImmediate))
 
 /***/ },
-/* 496 */
+/* 537 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -67397,11 +73512,11 @@
 	    value: true
 	});
 
-	var _bluebird = __webpack_require__(494);
+	var _bluebird = __webpack_require__(535);
 
 	var _bluebird2 = _interopRequireDefault(_bluebird);
 
-	var _loadScript = __webpack_require__(497);
+	var _loadScript = __webpack_require__(538);
 
 	var _loadScript2 = _interopRequireDefault(_loadScript);
 
@@ -67443,7 +73558,7 @@
 
 
 /***/ },
-/* 497 */
+/* 538 */
 /***/ function(module, exports) {
 
 	
@@ -67514,16 +73629,16 @@
 
 
 /***/ },
-/* 498 */
+/* 539 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var _upperFirst2 = __webpack_require__(499);
+	var _upperFirst2 = __webpack_require__(540);
 
 	var _upperFirst3 = _interopRequireDefault(_upperFirst2);
 
-	var _forEach2 = __webpack_require__(508);
+	var _forEach2 = __webpack_require__(549);
 
 	var _forEach3 = _interopRequireDefault(_forEach2);
 
@@ -67531,11 +73646,11 @@
 	    value: true
 	});
 
-	var _functionNames = __webpack_require__(589);
+	var _functionNames = __webpack_require__(630);
 
 	var _functionNames2 = _interopRequireDefault(_functionNames);
 
-	var _eventNames = __webpack_require__(590);
+	var _eventNames = __webpack_require__(631);
 
 	var _eventNames2 = _interopRequireDefault(_eventNames);
 
@@ -67605,10 +73720,10 @@
 
 
 /***/ },
-/* 499 */
+/* 540 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var createCaseFirst = __webpack_require__(500);
+	var createCaseFirst = __webpack_require__(541);
 
 	/**
 	 * Converts the first character of `string` to upper case.
@@ -67633,13 +73748,13 @@
 
 
 /***/ },
-/* 500 */
+/* 541 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var castSlice = __webpack_require__(501),
-	    reHasComplexSymbol = __webpack_require__(503),
-	    stringToArray = __webpack_require__(504),
-	    toString = __webpack_require__(505);
+	var castSlice = __webpack_require__(542),
+	    reHasComplexSymbol = __webpack_require__(544),
+	    stringToArray = __webpack_require__(545),
+	    toString = __webpack_require__(546);
 
 	/**
 	 * Creates a function like `_.lowerFirst`.
@@ -67672,10 +73787,10 @@
 
 
 /***/ },
-/* 501 */
+/* 542 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseSlice = __webpack_require__(502);
+	var baseSlice = __webpack_require__(543);
 
 	/**
 	 * Casts `array` to a slice if it's needed.
@@ -67696,7 +73811,7 @@
 
 
 /***/ },
-/* 502 */
+/* 543 */
 /***/ function(module, exports) {
 
 	/**
@@ -67733,7 +73848,7 @@
 
 
 /***/ },
-/* 503 */
+/* 544 */
 /***/ function(module, exports) {
 
 	/** Used to compose unicode character classes. */
@@ -67752,7 +73867,7 @@
 
 
 /***/ },
-/* 504 */
+/* 545 */
 /***/ function(module, exports) {
 
 	/** Used to compose unicode character classes. */
@@ -67796,10 +73911,10 @@
 
 
 /***/ },
-/* 505 */
+/* 546 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseToString = __webpack_require__(506);
+	var baseToString = __webpack_require__(547);
 
 	/**
 	 * Converts `value` to a string. An empty string is returned for `null`
@@ -67830,10 +73945,10 @@
 
 
 /***/ },
-/* 506 */
+/* 547 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Symbol = __webpack_require__(507),
+	var Symbol = __webpack_require__(548),
 	    isSymbol = __webpack_require__(272);
 
 	/** Used as references for various `Number` constants. */
@@ -67867,7 +73982,7 @@
 
 
 /***/ },
-/* 507 */
+/* 548 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var root = __webpack_require__(255);
@@ -67879,12 +73994,12 @@
 
 
 /***/ },
-/* 508 */
+/* 549 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var arrayEach = __webpack_require__(509),
-	    baseEach = __webpack_require__(510),
-	    baseIteratee = __webpack_require__(522),
+	var arrayEach = __webpack_require__(550),
+	    baseEach = __webpack_require__(551),
+	    baseIteratee = __webpack_require__(563),
 	    isArray = __webpack_require__(247);
 
 	/**
@@ -67926,7 +74041,7 @@
 
 
 /***/ },
-/* 509 */
+/* 550 */
 /***/ function(module, exports) {
 
 	/**
@@ -67954,11 +74069,11 @@
 
 
 /***/ },
-/* 510 */
+/* 551 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseForOwn = __webpack_require__(511),
-	    createBaseEach = __webpack_require__(521);
+	var baseForOwn = __webpack_require__(552),
+	    createBaseEach = __webpack_require__(562);
 
 	/**
 	 * The base implementation of `_.forEach` without support for iteratee shorthands.
@@ -67974,11 +74089,11 @@
 
 
 /***/ },
-/* 511 */
+/* 552 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseFor = __webpack_require__(512),
-	    keys = __webpack_require__(514);
+	var baseFor = __webpack_require__(553),
+	    keys = __webpack_require__(555);
 
 	/**
 	 * The base implementation of `_.forOwn` without support for iteratee shorthands.
@@ -67996,10 +74111,10 @@
 
 
 /***/ },
-/* 512 */
+/* 553 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var createBaseFor = __webpack_require__(513);
+	var createBaseFor = __webpack_require__(554);
 
 	/**
 	 * The base implementation of `baseForOwn` which iterates over `object`
@@ -68018,7 +74133,7 @@
 
 
 /***/ },
-/* 513 */
+/* 554 */
 /***/ function(module, exports) {
 
 	/**
@@ -68049,15 +74164,15 @@
 
 
 /***/ },
-/* 514 */
+/* 555 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseHas = __webpack_require__(515),
-	    baseKeys = __webpack_require__(516),
-	    indexKeys = __webpack_require__(517),
+	var baseHas = __webpack_require__(556),
+	    baseKeys = __webpack_require__(557),
+	    indexKeys = __webpack_require__(558),
 	    isArrayLike = __webpack_require__(242),
-	    isIndex = __webpack_require__(519),
-	    isPrototype = __webpack_require__(520);
+	    isIndex = __webpack_require__(560),
+	    isPrototype = __webpack_require__(561);
 
 	/**
 	 * Creates an array of the own enumerable property names of `object`.
@@ -68111,7 +74226,7 @@
 
 
 /***/ },
-/* 515 */
+/* 556 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var getPrototype = __webpack_require__(171);
@@ -68143,7 +74258,7 @@
 
 
 /***/ },
-/* 516 */
+/* 557 */
 /***/ function(module, exports) {
 
 	/* Built-in method references for those with the same name as other `lodash` methods. */
@@ -68165,14 +74280,14 @@
 
 
 /***/ },
-/* 517 */
+/* 558 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseTimes = __webpack_require__(518),
+	var baseTimes = __webpack_require__(559),
 	    isArguments = __webpack_require__(240),
 	    isArray = __webpack_require__(247),
 	    isLength = __webpack_require__(246),
-	    isString = __webpack_require__(492);
+	    isString = __webpack_require__(533);
 
 	/**
 	 * Creates an array of index keys for `object` values of arrays,
@@ -68195,7 +74310,7 @@
 
 
 /***/ },
-/* 518 */
+/* 559 */
 /***/ function(module, exports) {
 
 	/**
@@ -68221,7 +74336,7 @@
 
 
 /***/ },
-/* 519 */
+/* 560 */
 /***/ function(module, exports) {
 
 	/** Used as references for various `Number` constants. */
@@ -68249,7 +74364,7 @@
 
 
 /***/ },
-/* 520 */
+/* 561 */
 /***/ function(module, exports) {
 
 	/** Used for built-in method references. */
@@ -68273,7 +74388,7 @@
 
 
 /***/ },
-/* 521 */
+/* 562 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var isArrayLike = __webpack_require__(242);
@@ -68311,14 +74426,14 @@
 
 
 /***/ },
-/* 522 */
+/* 563 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseMatches = __webpack_require__(523),
-	    baseMatchesProperty = __webpack_require__(575),
-	    identity = __webpack_require__(586),
+	var baseMatches = __webpack_require__(564),
+	    baseMatchesProperty = __webpack_require__(616),
+	    identity = __webpack_require__(627),
 	    isArray = __webpack_require__(247),
-	    property = __webpack_require__(587);
+	    property = __webpack_require__(628);
 
 	/**
 	 * The base implementation of `_.iteratee`.
@@ -68348,12 +74463,12 @@
 
 
 /***/ },
-/* 523 */
+/* 564 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseIsMatch = __webpack_require__(524),
-	    getMatchData = __webpack_require__(572),
-	    matchesStrictComparable = __webpack_require__(574);
+	var baseIsMatch = __webpack_require__(565),
+	    getMatchData = __webpack_require__(613),
+	    matchesStrictComparable = __webpack_require__(615);
 
 	/**
 	 * The base implementation of `_.matches` which doesn't clone `source`.
@@ -68376,11 +74491,11 @@
 
 
 /***/ },
-/* 524 */
+/* 565 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Stack = __webpack_require__(525),
-	    baseIsEqual = __webpack_require__(555);
+	var Stack = __webpack_require__(566),
+	    baseIsEqual = __webpack_require__(596);
 
 	/** Used to compose bitmasks for comparison styles. */
 	var UNORDERED_COMPARE_FLAG = 1,
@@ -68444,15 +74559,15 @@
 
 
 /***/ },
-/* 525 */
+/* 566 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var ListCache = __webpack_require__(526),
-	    stackClear = __webpack_require__(534),
-	    stackDelete = __webpack_require__(535),
-	    stackGet = __webpack_require__(536),
-	    stackHas = __webpack_require__(537),
-	    stackSet = __webpack_require__(538);
+	var ListCache = __webpack_require__(567),
+	    stackClear = __webpack_require__(575),
+	    stackDelete = __webpack_require__(576),
+	    stackGet = __webpack_require__(577),
+	    stackHas = __webpack_require__(578),
+	    stackSet = __webpack_require__(579);
 
 	/**
 	 * Creates a stack cache object to store key-value pairs.
@@ -68476,14 +74591,14 @@
 
 
 /***/ },
-/* 526 */
+/* 567 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var listCacheClear = __webpack_require__(527),
-	    listCacheDelete = __webpack_require__(528),
-	    listCacheGet = __webpack_require__(531),
-	    listCacheHas = __webpack_require__(532),
-	    listCacheSet = __webpack_require__(533);
+	var listCacheClear = __webpack_require__(568),
+	    listCacheDelete = __webpack_require__(569),
+	    listCacheGet = __webpack_require__(572),
+	    listCacheHas = __webpack_require__(573),
+	    listCacheSet = __webpack_require__(574);
 
 	/**
 	 * Creates an list cache object.
@@ -68514,7 +74629,7 @@
 
 
 /***/ },
-/* 527 */
+/* 568 */
 /***/ function(module, exports) {
 
 	/**
@@ -68532,10 +74647,10 @@
 
 
 /***/ },
-/* 528 */
+/* 569 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var assocIndexOf = __webpack_require__(529);
+	var assocIndexOf = __webpack_require__(570);
 
 	/** Used for built-in method references. */
 	var arrayProto = Array.prototype;
@@ -68572,10 +74687,10 @@
 
 
 /***/ },
-/* 529 */
+/* 570 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var eq = __webpack_require__(530);
+	var eq = __webpack_require__(571);
 
 	/**
 	 * Gets the index at which the `key` is found in `array` of key-value pairs.
@@ -68599,7 +74714,7 @@
 
 
 /***/ },
-/* 530 */
+/* 571 */
 /***/ function(module, exports) {
 
 	/**
@@ -68642,10 +74757,10 @@
 
 
 /***/ },
-/* 531 */
+/* 572 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var assocIndexOf = __webpack_require__(529);
+	var assocIndexOf = __webpack_require__(570);
 
 	/**
 	 * Gets the list cache value for `key`.
@@ -68667,10 +74782,10 @@
 
 
 /***/ },
-/* 532 */
+/* 573 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var assocIndexOf = __webpack_require__(529);
+	var assocIndexOf = __webpack_require__(570);
 
 	/**
 	 * Checks if a list cache value for `key` exists.
@@ -68689,10 +74804,10 @@
 
 
 /***/ },
-/* 533 */
+/* 574 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var assocIndexOf = __webpack_require__(529);
+	var assocIndexOf = __webpack_require__(570);
 
 	/**
 	 * Sets the list cache `key` to `value`.
@@ -68720,10 +74835,10 @@
 
 
 /***/ },
-/* 534 */
+/* 575 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var ListCache = __webpack_require__(526);
+	var ListCache = __webpack_require__(567);
 
 	/**
 	 * Removes all key-value entries from the stack.
@@ -68740,7 +74855,7 @@
 
 
 /***/ },
-/* 535 */
+/* 576 */
 /***/ function(module, exports) {
 
 	/**
@@ -68760,7 +74875,7 @@
 
 
 /***/ },
-/* 536 */
+/* 577 */
 /***/ function(module, exports) {
 
 	/**
@@ -68780,7 +74895,7 @@
 
 
 /***/ },
-/* 537 */
+/* 578 */
 /***/ function(module, exports) {
 
 	/**
@@ -68800,11 +74915,11 @@
 
 
 /***/ },
-/* 538 */
+/* 579 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var ListCache = __webpack_require__(526),
-	    MapCache = __webpack_require__(539);
+	var ListCache = __webpack_require__(567),
+	    MapCache = __webpack_require__(580);
 
 	/** Used as the size to enable large array optimizations. */
 	var LARGE_ARRAY_SIZE = 200;
@@ -68832,14 +74947,14 @@
 
 
 /***/ },
-/* 539 */
+/* 580 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var mapCacheClear = __webpack_require__(540),
-	    mapCacheDelete = __webpack_require__(549),
-	    mapCacheGet = __webpack_require__(552),
-	    mapCacheHas = __webpack_require__(553),
-	    mapCacheSet = __webpack_require__(554);
+	var mapCacheClear = __webpack_require__(581),
+	    mapCacheDelete = __webpack_require__(590),
+	    mapCacheGet = __webpack_require__(593),
+	    mapCacheHas = __webpack_require__(594),
+	    mapCacheSet = __webpack_require__(595);
 
 	/**
 	 * Creates a map cache object to store key-value pairs.
@@ -68870,12 +74985,12 @@
 
 
 /***/ },
-/* 540 */
+/* 581 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Hash = __webpack_require__(541),
-	    ListCache = __webpack_require__(526),
-	    Map = __webpack_require__(548);
+	var Hash = __webpack_require__(582),
+	    ListCache = __webpack_require__(567),
+	    Map = __webpack_require__(589);
 
 	/**
 	 * Removes all key-value entries from the map.
@@ -68896,14 +75011,14 @@
 
 
 /***/ },
-/* 541 */
+/* 582 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var hashClear = __webpack_require__(542),
-	    hashDelete = __webpack_require__(544),
-	    hashGet = __webpack_require__(545),
-	    hashHas = __webpack_require__(546),
-	    hashSet = __webpack_require__(547);
+	var hashClear = __webpack_require__(583),
+	    hashDelete = __webpack_require__(585),
+	    hashGet = __webpack_require__(586),
+	    hashHas = __webpack_require__(587),
+	    hashSet = __webpack_require__(588);
 
 	/**
 	 * Creates a hash object.
@@ -68934,10 +75049,10 @@
 
 
 /***/ },
-/* 542 */
+/* 583 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var nativeCreate = __webpack_require__(543);
+	var nativeCreate = __webpack_require__(584);
 
 	/**
 	 * Removes all key-value entries from the hash.
@@ -68954,7 +75069,7 @@
 
 
 /***/ },
-/* 543 */
+/* 584 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var getNative = __webpack_require__(251);
@@ -68966,7 +75081,7 @@
 
 
 /***/ },
-/* 544 */
+/* 585 */
 /***/ function(module, exports) {
 
 	/**
@@ -68987,10 +75102,10 @@
 
 
 /***/ },
-/* 545 */
+/* 586 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var nativeCreate = __webpack_require__(543);
+	var nativeCreate = __webpack_require__(584);
 
 	/** Used to stand-in for `undefined` hash values. */
 	var HASH_UNDEFINED = '__lodash_hash_undefined__';
@@ -69023,10 +75138,10 @@
 
 
 /***/ },
-/* 546 */
+/* 587 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var nativeCreate = __webpack_require__(543);
+	var nativeCreate = __webpack_require__(584);
 
 	/** Used for built-in method references. */
 	var objectProto = Object.prototype;
@@ -69052,10 +75167,10 @@
 
 
 /***/ },
-/* 547 */
+/* 588 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var nativeCreate = __webpack_require__(543);
+	var nativeCreate = __webpack_require__(584);
 
 	/** Used to stand-in for `undefined` hash values. */
 	var HASH_UNDEFINED = '__lodash_hash_undefined__';
@@ -69080,7 +75195,7 @@
 
 
 /***/ },
-/* 548 */
+/* 589 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var getNative = __webpack_require__(251),
@@ -69093,10 +75208,10 @@
 
 
 /***/ },
-/* 549 */
+/* 590 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var getMapData = __webpack_require__(550);
+	var getMapData = __webpack_require__(591);
 
 	/**
 	 * Removes `key` and its value from the map.
@@ -69115,10 +75230,10 @@
 
 
 /***/ },
-/* 550 */
+/* 591 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var isKeyable = __webpack_require__(551);
+	var isKeyable = __webpack_require__(592);
 
 	/**
 	 * Gets the data for `map`.
@@ -69139,7 +75254,7 @@
 
 
 /***/ },
-/* 551 */
+/* 592 */
 /***/ function(module, exports) {
 
 	/**
@@ -69160,10 +75275,10 @@
 
 
 /***/ },
-/* 552 */
+/* 593 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var getMapData = __webpack_require__(550);
+	var getMapData = __webpack_require__(591);
 
 	/**
 	 * Gets the map value for `key`.
@@ -69182,10 +75297,10 @@
 
 
 /***/ },
-/* 553 */
+/* 594 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var getMapData = __webpack_require__(550);
+	var getMapData = __webpack_require__(591);
 
 	/**
 	 * Checks if a map value for `key` exists.
@@ -69204,10 +75319,10 @@
 
 
 /***/ },
-/* 554 */
+/* 595 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var getMapData = __webpack_require__(550);
+	var getMapData = __webpack_require__(591);
 
 	/**
 	 * Sets the map `key` to `value`.
@@ -69228,10 +75343,10 @@
 
 
 /***/ },
-/* 555 */
+/* 596 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseIsEqualDeep = __webpack_require__(556),
+	var baseIsEqualDeep = __webpack_require__(597),
 	    isObject = __webpack_require__(235),
 	    isObjectLike = __webpack_require__(173);
 
@@ -69264,17 +75379,17 @@
 
 
 /***/ },
-/* 556 */
+/* 597 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Stack = __webpack_require__(525),
-	    equalArrays = __webpack_require__(557),
-	    equalByTag = __webpack_require__(562),
-	    equalObjects = __webpack_require__(566),
-	    getTag = __webpack_require__(567),
+	var Stack = __webpack_require__(566),
+	    equalArrays = __webpack_require__(598),
+	    equalByTag = __webpack_require__(603),
+	    equalObjects = __webpack_require__(607),
+	    getTag = __webpack_require__(608),
 	    isArray = __webpack_require__(247),
 	    isHostObject = __webpack_require__(172),
-	    isTypedArray = __webpack_require__(571);
+	    isTypedArray = __webpack_require__(612);
 
 	/** Used to compose bitmasks for comparison styles. */
 	var PARTIAL_COMPARE_FLAG = 2;
@@ -69352,11 +75467,11 @@
 
 
 /***/ },
-/* 557 */
+/* 598 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var SetCache = __webpack_require__(558),
-	    arraySome = __webpack_require__(561);
+	var SetCache = __webpack_require__(599),
+	    arraySome = __webpack_require__(602);
 
 	/** Used to compose bitmasks for comparison styles. */
 	var UNORDERED_COMPARE_FLAG = 1,
@@ -69439,12 +75554,12 @@
 
 
 /***/ },
-/* 558 */
+/* 599 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var MapCache = __webpack_require__(539),
-	    setCacheAdd = __webpack_require__(559),
-	    setCacheHas = __webpack_require__(560);
+	var MapCache = __webpack_require__(580),
+	    setCacheAdd = __webpack_require__(600),
+	    setCacheHas = __webpack_require__(601);
 
 	/**
 	 *
@@ -69472,7 +75587,7 @@
 
 
 /***/ },
-/* 559 */
+/* 600 */
 /***/ function(module, exports) {
 
 	/** Used to stand-in for `undefined` hash values. */
@@ -69497,7 +75612,7 @@
 
 
 /***/ },
-/* 560 */
+/* 601 */
 /***/ function(module, exports) {
 
 	/**
@@ -69517,7 +75632,7 @@
 
 
 /***/ },
-/* 561 */
+/* 602 */
 /***/ function(module, exports) {
 
 	/**
@@ -69546,14 +75661,14 @@
 
 
 /***/ },
-/* 562 */
+/* 603 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Symbol = __webpack_require__(507),
-	    Uint8Array = __webpack_require__(563),
-	    equalArrays = __webpack_require__(557),
-	    mapToArray = __webpack_require__(564),
-	    setToArray = __webpack_require__(565);
+	var Symbol = __webpack_require__(548),
+	    Uint8Array = __webpack_require__(604),
+	    equalArrays = __webpack_require__(598),
+	    mapToArray = __webpack_require__(605),
+	    setToArray = __webpack_require__(606);
 
 	/** Used to compose bitmasks for comparison styles. */
 	var UNORDERED_COMPARE_FLAG = 1,
@@ -69666,7 +75781,7 @@
 
 
 /***/ },
-/* 563 */
+/* 604 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var root = __webpack_require__(255);
@@ -69678,7 +75793,7 @@
 
 
 /***/ },
-/* 564 */
+/* 605 */
 /***/ function(module, exports) {
 
 	/**
@@ -69702,7 +75817,7 @@
 
 
 /***/ },
-/* 565 */
+/* 606 */
 /***/ function(module, exports) {
 
 	/**
@@ -69726,11 +75841,11 @@
 
 
 /***/ },
-/* 566 */
+/* 607 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseHas = __webpack_require__(515),
-	    keys = __webpack_require__(514);
+	var baseHas = __webpack_require__(556),
+	    keys = __webpack_require__(555);
 
 	/** Used to compose bitmasks for comparison styles. */
 	var PARTIAL_COMPARE_FLAG = 2;
@@ -69815,13 +75930,13 @@
 
 
 /***/ },
-/* 567 */
+/* 608 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var DataView = __webpack_require__(568),
-	    Map = __webpack_require__(548),
-	    Promise = __webpack_require__(569),
-	    Set = __webpack_require__(570),
+	var DataView = __webpack_require__(609),
+	    Map = __webpack_require__(589),
+	    Promise = __webpack_require__(610),
+	    Set = __webpack_require__(611),
 	    WeakMap = __webpack_require__(250),
 	    toSource = __webpack_require__(257);
 
@@ -69891,7 +76006,7 @@
 
 
 /***/ },
-/* 568 */
+/* 609 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var getNative = __webpack_require__(251),
@@ -69904,7 +76019,7 @@
 
 
 /***/ },
-/* 569 */
+/* 610 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var getNative = __webpack_require__(251),
@@ -69917,7 +76032,7 @@
 
 
 /***/ },
-/* 570 */
+/* 611 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var getNative = __webpack_require__(251),
@@ -69930,7 +76045,7 @@
 
 
 /***/ },
-/* 571 */
+/* 612 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var isLength = __webpack_require__(246),
@@ -70016,11 +76131,11 @@
 
 
 /***/ },
-/* 572 */
+/* 613 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var isStrictComparable = __webpack_require__(573),
-	    keys = __webpack_require__(514);
+	var isStrictComparable = __webpack_require__(614),
+	    keys = __webpack_require__(555);
 
 	/**
 	 * Gets the property names, values, and compare flags of `object`.
@@ -70046,7 +76161,7 @@
 
 
 /***/ },
-/* 573 */
+/* 614 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var isObject = __webpack_require__(235);
@@ -70067,7 +76182,7 @@
 
 
 /***/ },
-/* 574 */
+/* 615 */
 /***/ function(module, exports) {
 
 	/**
@@ -70093,16 +76208,16 @@
 
 
 /***/ },
-/* 575 */
+/* 616 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseIsEqual = __webpack_require__(555),
-	    get = __webpack_require__(576),
-	    hasIn = __webpack_require__(583),
-	    isKey = __webpack_require__(581),
-	    isStrictComparable = __webpack_require__(573),
-	    matchesStrictComparable = __webpack_require__(574),
-	    toKey = __webpack_require__(582);
+	var baseIsEqual = __webpack_require__(596),
+	    get = __webpack_require__(617),
+	    hasIn = __webpack_require__(624),
+	    isKey = __webpack_require__(622),
+	    isStrictComparable = __webpack_require__(614),
+	    matchesStrictComparable = __webpack_require__(615),
+	    toKey = __webpack_require__(623);
 
 	/** Used to compose bitmasks for comparison styles. */
 	var UNORDERED_COMPARE_FLAG = 1,
@@ -70132,10 +76247,10 @@
 
 
 /***/ },
-/* 576 */
+/* 617 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseGet = __webpack_require__(577);
+	var baseGet = __webpack_require__(618);
 
 	/**
 	 * Gets the value at `path` of `object`. If the resolved value is
@@ -70171,12 +76286,12 @@
 
 
 /***/ },
-/* 577 */
+/* 618 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var castPath = __webpack_require__(578),
-	    isKey = __webpack_require__(581),
-	    toKey = __webpack_require__(582);
+	var castPath = __webpack_require__(619),
+	    isKey = __webpack_require__(622),
+	    toKey = __webpack_require__(623);
 
 	/**
 	 * The base implementation of `_.get` without support for default values.
@@ -70202,11 +76317,11 @@
 
 
 /***/ },
-/* 578 */
+/* 619 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var isArray = __webpack_require__(247),
-	    stringToPath = __webpack_require__(579);
+	    stringToPath = __webpack_require__(620);
 
 	/**
 	 * Casts `value` to a path array if it's not one.
@@ -70223,11 +76338,11 @@
 
 
 /***/ },
-/* 579 */
+/* 620 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var memoize = __webpack_require__(580),
-	    toString = __webpack_require__(505);
+	var memoize = __webpack_require__(621),
+	    toString = __webpack_require__(546);
 
 	/** Used to match property names within property paths. */
 	var rePropName = /[^.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(\.|\[\])(?:\4|$))/g;
@@ -70254,10 +76369,10 @@
 
 
 /***/ },
-/* 580 */
+/* 621 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var MapCache = __webpack_require__(539);
+	var MapCache = __webpack_require__(580);
 
 	/** Used as the `TypeError` message for "Functions" methods. */
 	var FUNC_ERROR_TEXT = 'Expected a function';
@@ -70333,7 +76448,7 @@
 
 
 /***/ },
-/* 581 */
+/* 622 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var isArray = __webpack_require__(247),
@@ -70368,7 +76483,7 @@
 
 
 /***/ },
-/* 582 */
+/* 623 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var isSymbol = __webpack_require__(272);
@@ -70395,11 +76510,11 @@
 
 
 /***/ },
-/* 583 */
+/* 624 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseHasIn = __webpack_require__(584),
-	    hasPath = __webpack_require__(585);
+	var baseHasIn = __webpack_require__(625),
+	    hasPath = __webpack_require__(626);
 
 	/**
 	 * Checks if `path` is a direct or inherited property of `object`.
@@ -70435,7 +76550,7 @@
 
 
 /***/ },
-/* 584 */
+/* 625 */
 /***/ function(module, exports) {
 
 	/**
@@ -70454,17 +76569,17 @@
 
 
 /***/ },
-/* 585 */
+/* 626 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var castPath = __webpack_require__(578),
+	var castPath = __webpack_require__(619),
 	    isArguments = __webpack_require__(240),
 	    isArray = __webpack_require__(247),
-	    isIndex = __webpack_require__(519),
-	    isKey = __webpack_require__(581),
+	    isIndex = __webpack_require__(560),
+	    isKey = __webpack_require__(622),
 	    isLength = __webpack_require__(246),
-	    isString = __webpack_require__(492),
-	    toKey = __webpack_require__(582);
+	    isString = __webpack_require__(533),
+	    toKey = __webpack_require__(623);
 
 	/**
 	 * Checks if `path` exists on `object`.
@@ -70501,7 +76616,7 @@
 
 
 /***/ },
-/* 586 */
+/* 627 */
 /***/ function(module, exports) {
 
 	/**
@@ -70528,13 +76643,13 @@
 
 
 /***/ },
-/* 587 */
+/* 628 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var baseProperty = __webpack_require__(244),
-	    basePropertyDeep = __webpack_require__(588),
-	    isKey = __webpack_require__(581),
-	    toKey = __webpack_require__(582);
+	    basePropertyDeep = __webpack_require__(629),
+	    isKey = __webpack_require__(622),
+	    toKey = __webpack_require__(623);
 
 	/**
 	 * Creates a function that returns the value at `path` of a given object.
@@ -70566,10 +76681,10 @@
 
 
 /***/ },
-/* 588 */
+/* 629 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseGet = __webpack_require__(577);
+	var baseGet = __webpack_require__(618);
 
 	/**
 	 * A specialized version of `baseProperty` which supports deep paths.
@@ -70588,7 +76703,7 @@
 
 
 /***/ },
-/* 589 */
+/* 630 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -70605,7 +76720,7 @@
 
 
 /***/ },
-/* 590 */
+/* 631 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -70620,5987 +76735,6 @@
 	module.exports = exports['default'];
 	//# sourceMappingURL=eventNames.js.map
 
-
-/***/ },
-/* 591 */
-/***/ function(module, exports, __webpack_require__) {
-
-	module.exports = {
-		MarkdownEditor: __webpack_require__(592),
-		MarkdownEditorContentStore: __webpack_require__(627)
-	}
-
-/***/ },
-/* 592 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/** @jsx React.DOM */
-
-	var React = __webpack_require__(1);
-	var ReactDOM = __webpack_require__(38);
-	var Reflux = __webpack_require__(593);
-	var Markdown = __webpack_require__(612).markdown;
-	var MarkdownEditorActions = __webpack_require__(617);
-	var PublicMarkdownEditorActions = __webpack_require__(618);
-	var MarkdownSelectionActions = __webpack_require__(619);
-	var TextAreaSelectionMixin = __webpack_require__(620);
-	var ButtonManagerMixin = __webpack_require__(621);
-	var MarkdownEditorStore = __webpack_require__(622);
-	var MarkdownSelectionStore = __webpack_require__(623);
-	var MarkdownEditorTabsInteractionStore = __webpack_require__(624);
-	var MarkdownTokenFactory = __webpack_require__(625);
-	var MarkdownUtils = __webpack_require__(626);
-
-	var NullMarkdownToken = MarkdownTokenFactory.NullMarkdownToken;
-	var RegularMarkdownToken = MarkdownTokenFactory.RegularMarkdownToken;
-	var HeaderMarkdownToken = MarkdownTokenFactory.HeaderMarkdownToken;
-	var SubHeaderMarkdownToken = MarkdownTokenFactory.SubHeaderMarkdownToken;
-	var UrlMarkdownToken = MarkdownTokenFactory.UrlMarkdownToken;
-	var ListMarkdownToken = MarkdownTokenFactory.ListMarkdownToken;
-	var ImageMarkdownToken = MarkdownTokenFactory.ImageMarkdownToken;
-
-	var MarkdownEditorMenu = React.createClass({displayName: "MarkdownEditorMenu",
-	  mixins: [Reflux.ListenerMixin, ButtonManagerMixin],
-
-	  propTypes: {
-	    iconsSet: React.PropTypes.string.isRequired
-	  },
-
-	  getInitialState: function() {
-	    return {
-	      enabled: false
-	    };
-	  },
-
-	  componentWillMount: function() {
-	    this.listenTo(MarkdownSelectionStore, this.handleMarkdownSelectionStore);
-	    this.setIconsProvider(this.props.iconsSet);
-	  },
-
-	  render: function() {
-	    var styleMarkdownMenu = {
-	      'margin': '5px 0',
-	      'flex': '1',
-	      'display': 'flex',
-	      'position': 'absolute',
-	      'right': '20px',
-	      'top': '10px'
-	    };
-
-	    var _disabled = (!this.state.enabled) ? 'disabled' : '';
-	    var boldButton = this.getBoldButton(_disabled, this.handleBoldButtonClick);
-	    var italicButton = this.getItalicButton(_disabled, this.handleItalicButtonClick);
-	    var makeListButton = this.getMakeListButton(_disabled, this.handleListButtonClick);
-	    var imageButton = this.getImageButton(_disabled, this.handleImageButtonClick);
-	    var linkButton = this.getLinkButton(_disabled, this.handleLinkButtonClick);
-	    var headerButton = this.getButtonWithoutIcon(_disabled, this.handleHeaderButtonClick, 'md-editor-menu-header', 'Header');
-	    var subHeaderButton = this.getButtonWithoutIcon(_disabled, this.handleSubHeaderButtonClick, 'md-editor-menu-subheader', 'Subheader');
-
-	    return (
-	      React.createElement("div", {style: styleMarkdownMenu, className: "md-editor-menu"}, 
-	        boldButton, 
-	        italicButton, 
-	        headerButton, 
-	        subHeaderButton, 
-	        makeListButton, 
-	        imageButton, 
-	        linkButton
-	      )
-	    );
-	  },
-
-	  handleMarkdownSelectionStore: function(data) {
-	    if (data.type === 'clear') {
-	      this.setState({enabled: false});
-	    } else if (data.type === 'set') {
-	      this.setState({enabled: true});
-	    }
-	  },
-
-	  handleBoldButtonClick: function() {
-	    MarkdownEditorActions.makeBold();
-	  },
-
-	  handleImageButtonClick: function() {
-	    MarkdownEditorActions.makeImage();
-	  },
-
-	  handleItalicButtonClick: function() {
-	    MarkdownEditorActions.makeItalic();
-	  },
-
-	  handleUnderlineButtonClick: function() {
-	    MarkdownEditorActions.makeUnderline();
-	  },
-
-	  handleHeaderButtonClick: function() {
-	    MarkdownEditorActions.makeHeader();
-	  },
-
-	  handleSubHeaderButtonClick: function() {
-	    MarkdownEditorActions.makeSubHeader();
-	  },
-
-	  handleLinkButtonClick: function() {
-	    MarkdownEditorActions.makeLink();
-	  },
-
-	  handleListButtonClick: function() {
-	    MarkdownEditorActions.makeList();
-	  }
-	});
-
-	var MarkdownEditorTabs = React.createClass({displayName: "MarkdownEditorTabs",
-	  mixins: [Reflux.ListenerMixin],
-
-	  getInitialState: function() {
-	    return {
-	      activeTab: 0
-	    };
-	  },
-
-	  componentWillMount: function() {
-	    this.listenTo(MarkdownEditorTabsInteractionStore, this.handleMDEditorTabsInteractionStoreUpdated);
-	  },
-
-	  handleMDEditorTabsInteractionStoreUpdated: function(storeState) {
-	    if (storeState.activeTab != null) {
-	      this.setState({activeTab: storeState.activeTab});
-	    }
-	  },
-
-	  render: function() {
-	    var styleMarkdownEditorTabs = {
-	      'border': 'none',
-	      'display': 'flex',
-	      'justifyContent': 'flex-start'
-	    };
-
-	    var styleTab = {
-	      'padding': '0px 20px',
-	      'cursor': 'pointer',
-	      'display': 'flex',
-	      'justifyContent': 'center',
-	      'alignItems': 'center',
-	      'height': '50px'
-	    };
-
-	    var styleActiveTab = {
-	      'padding': '0px 20px',
-	      'cursor': 'pointer',
-	      'display': 'flex',
-	      'justifyContent': 'center',
-	      'alignItems': 'center',
-	      'height': '50px',
-	      'borderLeft': '1px solid #ddd',
-	      'borderRight': '1px solid #ddd',
-	      'borderTop': '1px solid #ddd',
-	      'backgroundColor': '#fff',
-	      'borderRadius': '3px'
-	    };
-
-	    var editorTabStyle;
-	    var previewTabStyle;
-	    if (this.state.activeTab === 0) {
-	      editorTabStyle = styleActiveTab;
-	      previewTabStyle = styleTab;
-	    } else if (this.state.activeTab === 1) {
-	      previewTabStyle = styleActiveTab;
-	      editorTabStyle = styleTab;
-	    }
-
-	    return (
-	      React.createElement("div", {style: styleMarkdownEditorTabs, className: "md-editor-tabs"}, 
-	        React.createElement("div", {style: editorTabStyle, 
-	          className: "md-editor-tabs-item", 
-	          onClick: this.handleClick.bind(this, 'clickEditorTab')}, 
-	          React.createElement("span", null, "Editor")
-	        ), 
-	        React.createElement("div", {style: previewTabStyle, 
-	          className: "md-editor-tabs-item", 
-	          onClick: this.handleClick.bind(this, 'clickPreviewTab')}, 
-	          React.createElement("span", null, "Preview")
-	        )
-	      )
-	    );
-	  },
-
-	  handleClick: function(actionName) {
-	    MarkdownEditorActions[actionName]();
-	  }
-	});
-
-	var MarkdownEditorContent = React.createClass({displayName: "MarkdownEditorContent",
-	  propTypes: {
-	    content: React.PropTypes.string.isRequired,
-	    onChangeHandler: React.PropTypes.func.isRequired
-	  },
-
-	  mixins: [TextAreaSelectionMixin],
-
-	  render: function() {
-	    var styleMarkdownTextArea = {
-	      'height': 400,
-	      'width': '100%',
-	      'padding': '30px 10px',
-	      'backgroundColor': '#fff',
-	      'border': 'none'
-	    };
-
-	    return (
-	      React.createElement("textarea", {
-	        ref: "editor", 
-	        className: "md-editor-textarea", 
-	        style: styleMarkdownTextArea, 
-	        onChange: this.onChange, 
-	        onClick: this.clearSelection, 
-	        onKeyUp: this.clearSelection}
-	      )
-	    );
-	  },
-
-	  onChange: function() {
-	    var content = this.refs.editor.value;
-	    var markdownContent = MarkdownUtils.toMarkdown(content);
-	    PublicMarkdownEditorActions.updateText(markdownContent);
-
-	    this.props.onChangeHandler(content.replace(/[\n\r]/g, '\n'));
-	  },
-
-	  componentDidMount: function() {
-	    this.refs.editor.value = this.props.content;
-	  },
-
-	  componentDidUpdate: function() {
-	    this.refs.editor.value = this.props.content;
-	  }
-	});
-
-	var MarkdownEditorPreview = React.createClass({displayName: "MarkdownEditorPreview",
-	  propTypes: {
-	    content: React.PropTypes.string.isRequired
-	  },
-
-	  render: function() {
-	    // Breaklines in markdown are actually when a line is ended with two spaces + carriage-return
-	    var htmlContent = this.props.content.replace(/[\n]/g, '  \n');
-	    htmlContent = Markdown.toHTML(htmlContent);
-
-	    var styleMarkdownPreviewArea = {
-	      'height': 400,
-	      'width': '100%',
-	      'padding': '30px 10px',
-	      'backgroundColor': '#fff',
-	      'border': 'none',
-	      'overflow': 'scroll'
-	    };
-
-	    return (
-	      React.createElement("div", {
-	        style: styleMarkdownPreviewArea, 
-	        dangerouslySetInnerHTML: {__html: htmlContent}}
-	      )
-	    );
-	  }
-	});
-
-	var MarkdownEditor = React.createClass({displayName: "MarkdownEditor",
-	  mixins: [Reflux.ListenerMixin],
-
-	  propTypes: {
-	    initialContent: React.PropTypes.string.isRequired,
-	    iconsSet: React.PropTypes.oneOf(['font-awesome', 'materialize-ui']).isRequired,
-	    onContentChange: React.PropTypes.func
-	  },
-
-	  getInitialState: function() {
-	    return {content: this.props.initialContent, inEditMode: true};
-	  },
-
-	  render: function() {
-	    var divContent;
-	    var editorMenu;
-
-	    if (this.state.inEditMode) {
-	      divContent = React.createElement(MarkdownEditorContent, {content: this.state.content, onChangeHandler: this.onChangeHandler});
-	      editorMenu = React.createElement(MarkdownEditorMenu, {iconsSet: this.props.iconsSet});
-	    } else {
-	      divContent = React.createElement(MarkdownEditorPreview, {content: this.state.content});
-	      editorMenu = null;
-	    }
-
-	    var styleMarkdownEditorHeader = {
-	      'display': 'flex',
-	      'flexDirection': 'column',
-	      'borderBottom': '1px solid #ddd',
-	      'marginLeft': '0px',
-	      'marginRight': '0px',
-	      'minHeight': '50px',
-	      'justifyContent': 'center',
-	      'position': 'relative'
-	    };
-
-	    var styleMarkdownEditorContainer = {
-	      'display': 'flex',
-	      'flexDirection': 'column',
-	      'marginTop': '2px',
-	      'paddingTop': '10px',
-	      'border': '1px solid #ddd',
-	      'backgroundColor': '#f7f7f7'
-	    };
-
-	    return (
-	      React.createElement("div", {
-	        style: styleMarkdownEditorContainer}, 
-	        React.createElement("div", {style: styleMarkdownEditorHeader, className: "md-editor-header"}, 
-	          editorMenu, 
-	          React.createElement(MarkdownEditorTabs, null)
-	        ), 
-	        divContent
-	      )
-	    );
-	  },
-
-	  onChangeHandler: function(newContent) {
-	    if (this.props.onContentChange) {
-	      this.props.onContentChange(newContent);
-	    }
-
-	    this.setState({content: newContent});
-	  },
-
-	  componentDidMount: function() {
-	    this.listenTo(MarkdownEditorStore, this.handleMarkdowEditorStoreUpdated);
-	    this.listenTo(MarkdownEditorTabsInteractionStore, this.handleMDEditorTabsInteractionStoreUpdated);
-	  },
-
-	  handleMarkdowEditorStoreUpdated: function(markdownEditorStoreState) {
-	    var currentSelection = markdownEditorStoreState.currentSelection;
-
-	    if (currentSelection != null) {
-	      this.updateText(this.state.content, currentSelection, markdownEditorStoreState.action);
-	    }
-	  },
-
-	  handleMDEditorTabsInteractionStoreUpdated: function(mdEditorTabsInteractionStoreState) {
-	    if (mdEditorTabsInteractionStoreState.activeTab != null) {
-	      var _inEditMode = mdEditorTabsInteractionStoreState.activeTab === 0;
-	      this.setState({inEditMode: _inEditMode});
-	    }
-	  },
-
-	  updateText: function(text, selection, actionType) {
-	    var token = this.generateMarkdownToken(actionType);
-	    var beforeSelectionContent = text.slice(0, selection.selectionStart);
-	    var afterSelectionContent = text.slice(selection.selectionEnd, text.length);
-	    var updatedText = token.applyTokenTo(selection.selectedText);
-
-	    var _updatedContent = beforeSelectionContent + updatedText + afterSelectionContent;
-	    PublicMarkdownEditorActions.updateText(MarkdownUtils.toMarkdown(_updatedContent));
-	    this.setState({content: _updatedContent});
-	  },
-
-	  generateMarkdownToken: function(actionType) {
-	    switch (actionType) {
-	      case 'bold':
-	        return new RegularMarkdownToken('**', true);
-
-	      case 'italic':
-	        return new RegularMarkdownToken('_', true);
-
-	      case 'header':
-	        return new HeaderMarkdownToken();
-
-	      case 'subheader':
-	        return new SubHeaderMarkdownToken();
-
-	      case 'link':
-	        return new UrlMarkdownToken();
-
-	      case 'list':
-	        return new ListMarkdownToken();
-
-	      case 'image':
-	        return new ImageMarkdownToken();
-
-	      default:
-	        return new NullMarkdownToken();
-	    }
-	  }
-	});
-
-	module.exports = MarkdownEditor;
-
-
-/***/ },
-/* 593 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var Reflux = __webpack_require__(594);
-
-	Reflux.connect = __webpack_require__(607);
-
-	Reflux.connectFilter = __webpack_require__(609);
-
-	Reflux.ListenerMixin = __webpack_require__(608);
-
-	Reflux.listenTo = __webpack_require__(610);
-
-	Reflux.listenToMany = __webpack_require__(611);
-
-	module.exports = Reflux;
-
-
-/***/ },
-/* 594 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-	var Reflux = {
-	    version: {
-	        "reflux-core": "0.3.0"
-	    }
-	};
-
-	Reflux.ActionMethods = __webpack_require__(595);
-
-	Reflux.ListenerMethods = __webpack_require__(596);
-
-	Reflux.PublisherMethods = __webpack_require__(605);
-
-	Reflux.StoreMethods = __webpack_require__(604);
-
-	Reflux.createAction = __webpack_require__(606);
-
-	Reflux.createStore = __webpack_require__(600);
-
-	var maker = __webpack_require__(599).staticJoinCreator;
-
-	Reflux.joinTrailing = Reflux.all = maker("last"); // Reflux.all alias for backward compatibility
-
-	Reflux.joinLeading = maker("first");
-
-	Reflux.joinStrict = maker("strict");
-
-	Reflux.joinConcat = maker("all");
-
-	var _ = Reflux.utils = __webpack_require__(597);
-
-	Reflux.EventEmitter = _.EventEmitter;
-
-	Reflux.Promise = _.Promise;
-
-	/**
-	 * Convenience function for creating a set of actions
-	 *
-	 * @param definitions the definitions for the actions to be created
-	 * @returns an object with actions of corresponding action names
-	 */
-	Reflux.createActions = (function () {
-	    var reducer = function reducer(definitions, actions) {
-	        Object.keys(definitions).forEach(function (actionName) {
-	            var val = definitions[actionName];
-	            actions[actionName] = Reflux.createAction(val);
-	        });
-	    };
-
-	    return function (definitions) {
-	        var actions = {};
-	        if (definitions instanceof Array) {
-	            definitions.forEach(function (val) {
-	                if (_.isObject(val)) {
-	                    reducer(val, actions);
-	                } else {
-	                    actions[val] = Reflux.createAction(val);
-	                }
-	            });
-	        } else {
-	            reducer(definitions, actions);
-	        }
-	        return actions;
-	    };
-	})();
-
-	/**
-	 * Sets the eventmitter that Reflux uses
-	 */
-	Reflux.setEventEmitter = function (ctx) {
-	    Reflux.EventEmitter = _.EventEmitter = ctx;
-	};
-
-	/**
-	 * Sets the method used for deferring actions and stores
-	 */
-	Reflux.nextTick = function (nextTick) {
-	    _.nextTick = nextTick;
-	};
-
-	Reflux.use = function (pluginCb) {
-	    pluginCb(Reflux);
-	};
-
-	/**
-	 * Provides the set of created actions and stores for introspection
-	 */
-	/*eslint-disable no-underscore-dangle*/
-	Reflux.__keep = __webpack_require__(601);
-	/*eslint-enable no-underscore-dangle*/
-
-	/**
-	 * Warn if Function.prototype.bind not available
-	 */
-	if (!Function.prototype.bind) {
-	    console.error("Function.prototype.bind not available. " + "ES5 shim required. " + "https://github.com/spoike/refluxjs#es5");
-	}
-
-	exports["default"] = Reflux;
-	module.exports = exports["default"];
-
-/***/ },
-/* 595 */
-/***/ function(module, exports) {
-
-	/**
-	 * A module of methods that you want to include in all actions.
-	 * This module is consumed by `createAction`.
-	 */
-	"use strict";
-
-	module.exports = {};
-
-/***/ },
-/* 596 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-
-	var _ = __webpack_require__(597),
-	    maker = __webpack_require__(599).instanceJoinCreator;
-
-	/**
-	 * Extract child listenables from a parent from their
-	 * children property and return them in a keyed Object
-	 *
-	 * @param {Object} listenable The parent listenable
-	 */
-	var mapChildListenables = function mapChildListenables(listenable) {
-	    var i = 0,
-	        children = {},
-	        childName;
-	    for (; i < (listenable.children || []).length; ++i) {
-	        childName = listenable.children[i];
-	        if (listenable[childName]) {
-	            children[childName] = listenable[childName];
-	        }
-	    }
-	    return children;
-	};
-
-	/**
-	 * Make a flat dictionary of all listenables including their
-	 * possible children (recursively), concatenating names in camelCase.
-	 *
-	 * @param {Object} listenables The top-level listenables
-	 */
-	var flattenListenables = function flattenListenables(listenables) {
-	    var flattened = {};
-	    for (var key in listenables) {
-	        var listenable = listenables[key];
-	        var childMap = mapChildListenables(listenable);
-
-	        // recursively flatten children
-	        var children = flattenListenables(childMap);
-
-	        // add the primary listenable and chilren
-	        flattened[key] = listenable;
-	        for (var childKey in children) {
-	            var childListenable = children[childKey];
-	            flattened[key + _.capitalize(childKey)] = childListenable;
-	        }
-	    }
-
-	    return flattened;
-	};
-
-	/**
-	 * A module of methods related to listening.
-	 */
-	module.exports = {
-
-	    /**
-	     * An internal utility function used by `validateListening`
-	     *
-	     * @param {Action|Store} listenable The listenable we want to search for
-	     * @returns {Boolean} The result of a recursive search among `this.subscriptions`
-	     */
-	    hasListener: function hasListener(listenable) {
-	        var i = 0,
-	            j,
-	            listener,
-	            listenables;
-	        for (; i < (this.subscriptions || []).length; ++i) {
-	            listenables = [].concat(this.subscriptions[i].listenable);
-	            for (j = 0; j < listenables.length; j++) {
-	                listener = listenables[j];
-	                if (listener === listenable || listener.hasListener && listener.hasListener(listenable)) {
-	                    return true;
-	                }
-	            }
-	        }
-	        return false;
-	    },
-
-	    /**
-	     * A convenience method that listens to all listenables in the given object.
-	     *
-	     * @param {Object} listenables An object of listenables. Keys will be used as callback method names.
-	     */
-	    listenToMany: function listenToMany(listenables) {
-	        var allListenables = flattenListenables(listenables);
-	        for (var key in allListenables) {
-	            var cbname = _.callbackName(key),
-	                localname = this[cbname] ? cbname : this[key] ? key : undefined;
-	            if (localname) {
-	                this.listenTo(allListenables[key], localname, this[cbname + "Default"] || this[localname + "Default"] || localname);
-	            }
-	        }
-	    },
-
-	    /**
-	     * Checks if the current context can listen to the supplied listenable
-	     *
-	     * @param {Action|Store} listenable An Action or Store that should be
-	     *  listened to.
-	     * @returns {String|Undefined} An error message, or undefined if there was no problem.
-	     */
-	    validateListening: function validateListening(listenable) {
-	        if (listenable === this) {
-	            return "Listener is not able to listen to itself";
-	        }
-	        if (!_.isFunction(listenable.listen)) {
-	            return listenable + " is missing a listen method";
-	        }
-	        if (listenable.hasListener && listenable.hasListener(this)) {
-	            return "Listener cannot listen to this listenable because of circular loop";
-	        }
-	    },
-
-	    /**
-	     * Sets up a subscription to the given listenable for the context object
-	     *
-	     * @param {Action|Store} listenable An Action or Store that should be
-	     *  listened to.
-	     * @param {Function|String} callback The callback to register as event handler
-	     * @param {Function|String} defaultCallback The callback to register as default handler
-	     * @returns {Object} A subscription obj where `stop` is an unsub function and `listenable` is the object being listened to
-	     */
-	    listenTo: function listenTo(listenable, callback, defaultCallback) {
-	        var desub,
-	            unsubscriber,
-	            subscriptionobj,
-	            subs = this.subscriptions = this.subscriptions || [];
-	        _.throwIf(this.validateListening(listenable));
-	        this.fetchInitialState(listenable, defaultCallback);
-	        desub = listenable.listen(this[callback] || callback, this);
-	        unsubscriber = function () {
-	            var index = subs.indexOf(subscriptionobj);
-	            _.throwIf(index === -1, "Tried to remove listen already gone from subscriptions list!");
-	            subs.splice(index, 1);
-	            desub();
-	        };
-	        subscriptionobj = {
-	            stop: unsubscriber,
-	            listenable: listenable
-	        };
-	        subs.push(subscriptionobj);
-	        return subscriptionobj;
-	    },
-
-	    /**
-	     * Stops listening to a single listenable
-	     *
-	     * @param {Action|Store} listenable The action or store we no longer want to listen to
-	     * @returns {Boolean} True if a subscription was found and removed, otherwise false.
-	     */
-	    stopListeningTo: function stopListeningTo(listenable) {
-	        var sub,
-	            i = 0,
-	            subs = this.subscriptions || [];
-	        for (; i < subs.length; i++) {
-	            sub = subs[i];
-	            if (sub.listenable === listenable) {
-	                sub.stop();
-	                _.throwIf(subs.indexOf(sub) !== -1, "Failed to remove listen from subscriptions list!");
-	                return true;
-	            }
-	        }
-	        return false;
-	    },
-
-	    /**
-	     * Stops all subscriptions and empties subscriptions array
-	     */
-	    stopListeningToAll: function stopListeningToAll() {
-	        var remaining,
-	            subs = this.subscriptions || [];
-	        while (remaining = subs.length) {
-	            subs[0].stop();
-	            _.throwIf(subs.length !== remaining - 1, "Failed to remove listen from subscriptions list!");
-	        }
-	    },
-
-	    /**
-	     * Used in `listenTo`. Fetches initial data from a publisher if it has a `getInitialState` method.
-	     * @param {Action|Store} listenable The publisher we want to get initial state from
-	     * @param {Function|String} defaultCallback The method to receive the data
-	     */
-	    fetchInitialState: function fetchInitialState(listenable, defaultCallback) {
-	        defaultCallback = defaultCallback && this[defaultCallback] || defaultCallback;
-	        var me = this;
-	        if (_.isFunction(defaultCallback) && _.isFunction(listenable.getInitialState)) {
-	            var data = listenable.getInitialState();
-	            if (data && _.isFunction(data.then)) {
-	                data.then(function () {
-	                    defaultCallback.apply(me, arguments);
-	                });
-	            } else {
-	                defaultCallback.call(this, data);
-	            }
-	        }
-	    },
-
-	    /**
-	     * The callback will be called once all listenables have triggered at least once.
-	     * It will be invoked with the last emission from each listenable.
-	     * @param {...Publishers} publishers Publishers that should be tracked.
-	     * @param {Function|String} callback The method to call when all publishers have emitted
-	     * @returns {Object} A subscription obj where `stop` is an unsub function and `listenable` is an array of listenables
-	     */
-	    joinTrailing: maker("last"),
-
-	    /**
-	     * The callback will be called once all listenables have triggered at least once.
-	     * It will be invoked with the first emission from each listenable.
-	     * @param {...Publishers} publishers Publishers that should be tracked.
-	     * @param {Function|String} callback The method to call when all publishers have emitted
-	     * @returns {Object} A subscription obj where `stop` is an unsub function and `listenable` is an array of listenables
-	     */
-	    joinLeading: maker("first"),
-
-	    /**
-	     * The callback will be called once all listenables have triggered at least once.
-	     * It will be invoked with all emission from each listenable.
-	     * @param {...Publishers} publishers Publishers that should be tracked.
-	     * @param {Function|String} callback The method to call when all publishers have emitted
-	     * @returns {Object} A subscription obj where `stop` is an unsub function and `listenable` is an array of listenables
-	     */
-	    joinConcat: maker("all"),
-
-	    /**
-	     * The callback will be called once all listenables have triggered.
-	     * If a callback triggers twice before that happens, an error is thrown.
-	     * @param {...Publishers} publishers Publishers that should be tracked.
-	     * @param {Function|String} callback The method to call when all publishers have emitted
-	     * @returns {Object} A subscription obj where `stop` is an unsub function and `listenable` is an array of listenables
-	     */
-	    joinStrict: maker("strict")
-	};
-
-/***/ },
-/* 597 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-	exports.capitalize = capitalize;
-	exports.callbackName = callbackName;
-	exports.isObject = isObject;
-	exports.extend = extend;
-	exports.isFunction = isFunction;
-	exports.object = object;
-	exports.isArguments = isArguments;
-	exports.throwIf = throwIf;
-
-	function capitalize(string) {
-	    return string.charAt(0).toUpperCase() + string.slice(1);
-	}
-
-	function callbackName(string, prefix) {
-	    prefix = prefix || "on";
-	    return prefix + exports.capitalize(string);
-	}
-
-	/*
-	 * isObject, extend, isFunction, isArguments are taken from undescore/lodash in
-	 * order to remove the dependency
-	 */
-
-	function isObject(obj) {
-	    var type = typeof obj;
-	    return type === "function" || type === "object" && !!obj;
-	}
-
-	function extend(obj) {
-	    if (!isObject(obj)) {
-	        return obj;
-	    }
-	    var source, prop;
-	    for (var i = 1, length = arguments.length; i < length; i++) {
-	        source = arguments[i];
-	        for (prop in source) {
-	            if (Object.getOwnPropertyDescriptor && Object.defineProperty) {
-	                var propertyDescriptor = Object.getOwnPropertyDescriptor(source, prop);
-	                Object.defineProperty(obj, prop, propertyDescriptor);
-	            } else {
-	                obj[prop] = source[prop];
-	            }
-	        }
-	    }
-	    return obj;
-	}
-
-	function isFunction(value) {
-	    return typeof value === "function";
-	}
-
-	exports.EventEmitter = __webpack_require__(598);
-
-	exports.nextTick = function (callback) {
-	    setTimeout(callback, 0);
-	};
-
-	function object(keys, vals) {
-	    var o = {},
-	        i = 0;
-	    for (; i < keys.length; i++) {
-	        o[keys[i]] = vals[i];
-	    }
-	    return o;
-	}
-
-	function isArguments(value) {
-	    return typeof value === "object" && "callee" in value && typeof value.length === "number";
-	}
-
-	function throwIf(val, msg) {
-	    if (val) {
-	        throw Error(msg || val);
-	    }
-	}
-
-/***/ },
-/* 598 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	var has = Object.prototype.hasOwnProperty;
-
-	//
-	// We store our EE objects in a plain object whose properties are event names.
-	// If `Object.create(null)` is not supported we prefix the event names with a
-	// `~` to make sure that the built-in object properties are not overridden or
-	// used as an attack vector.
-	// We also assume that `Object.create(null)` is available when the event name
-	// is an ES6 Symbol.
-	//
-	var prefix = typeof Object.create !== 'function' ? '~' : false;
-
-	/**
-	 * Representation of a single EventEmitter function.
-	 *
-	 * @param {Function} fn Event handler to be called.
-	 * @param {Mixed} context Context for function execution.
-	 * @param {Boolean} [once=false] Only emit once
-	 * @api private
-	 */
-	function EE(fn, context, once) {
-	  this.fn = fn;
-	  this.context = context;
-	  this.once = once || false;
-	}
-
-	/**
-	 * Minimal EventEmitter interface that is molded against the Node.js
-	 * EventEmitter interface.
-	 *
-	 * @constructor
-	 * @api public
-	 */
-	function EventEmitter() { /* Nothing to set */ }
-
-	/**
-	 * Hold the assigned EventEmitters by name.
-	 *
-	 * @type {Object}
-	 * @private
-	 */
-	EventEmitter.prototype._events = undefined;
-
-	/**
-	 * Return an array listing the events for which the emitter has registered
-	 * listeners.
-	 *
-	 * @returns {Array}
-	 * @api public
-	 */
-	EventEmitter.prototype.eventNames = function eventNames() {
-	  var events = this._events
-	    , names = []
-	    , name;
-
-	  if (!events) return names;
-
-	  for (name in events) {
-	    if (has.call(events, name)) names.push(prefix ? name.slice(1) : name);
-	  }
-
-	  if (Object.getOwnPropertySymbols) {
-	    return names.concat(Object.getOwnPropertySymbols(events));
-	  }
-
-	  return names;
-	};
-
-	/**
-	 * Return a list of assigned event listeners.
-	 *
-	 * @param {String} event The events that should be listed.
-	 * @param {Boolean} exists We only need to know if there are listeners.
-	 * @returns {Array|Boolean}
-	 * @api public
-	 */
-	EventEmitter.prototype.listeners = function listeners(event, exists) {
-	  var evt = prefix ? prefix + event : event
-	    , available = this._events && this._events[evt];
-
-	  if (exists) return !!available;
-	  if (!available) return [];
-	  if (available.fn) return [available.fn];
-
-	  for (var i = 0, l = available.length, ee = new Array(l); i < l; i++) {
-	    ee[i] = available[i].fn;
-	  }
-
-	  return ee;
-	};
-
-	/**
-	 * Emit an event to all registered event listeners.
-	 *
-	 * @param {String} event The name of the event.
-	 * @returns {Boolean} Indication if we've emitted an event.
-	 * @api public
-	 */
-	EventEmitter.prototype.emit = function emit(event, a1, a2, a3, a4, a5) {
-	  var evt = prefix ? prefix + event : event;
-
-	  if (!this._events || !this._events[evt]) return false;
-
-	  var listeners = this._events[evt]
-	    , len = arguments.length
-	    , args
-	    , i;
-
-	  if ('function' === typeof listeners.fn) {
-	    if (listeners.once) this.removeListener(event, listeners.fn, undefined, true);
-
-	    switch (len) {
-	      case 1: return listeners.fn.call(listeners.context), true;
-	      case 2: return listeners.fn.call(listeners.context, a1), true;
-	      case 3: return listeners.fn.call(listeners.context, a1, a2), true;
-	      case 4: return listeners.fn.call(listeners.context, a1, a2, a3), true;
-	      case 5: return listeners.fn.call(listeners.context, a1, a2, a3, a4), true;
-	      case 6: return listeners.fn.call(listeners.context, a1, a2, a3, a4, a5), true;
-	    }
-
-	    for (i = 1, args = new Array(len -1); i < len; i++) {
-	      args[i - 1] = arguments[i];
-	    }
-
-	    listeners.fn.apply(listeners.context, args);
-	  } else {
-	    var length = listeners.length
-	      , j;
-
-	    for (i = 0; i < length; i++) {
-	      if (listeners[i].once) this.removeListener(event, listeners[i].fn, undefined, true);
-
-	      switch (len) {
-	        case 1: listeners[i].fn.call(listeners[i].context); break;
-	        case 2: listeners[i].fn.call(listeners[i].context, a1); break;
-	        case 3: listeners[i].fn.call(listeners[i].context, a1, a2); break;
-	        default:
-	          if (!args) for (j = 1, args = new Array(len -1); j < len; j++) {
-	            args[j - 1] = arguments[j];
-	          }
-
-	          listeners[i].fn.apply(listeners[i].context, args);
-	      }
-	    }
-	  }
-
-	  return true;
-	};
-
-	/**
-	 * Register a new EventListener for the given event.
-	 *
-	 * @param {String} event Name of the event.
-	 * @param {Function} fn Callback function.
-	 * @param {Mixed} [context=this] The context of the function.
-	 * @api public
-	 */
-	EventEmitter.prototype.on = function on(event, fn, context) {
-	  var listener = new EE(fn, context || this)
-	    , evt = prefix ? prefix + event : event;
-
-	  if (!this._events) this._events = prefix ? {} : Object.create(null);
-	  if (!this._events[evt]) this._events[evt] = listener;
-	  else {
-	    if (!this._events[evt].fn) this._events[evt].push(listener);
-	    else this._events[evt] = [
-	      this._events[evt], listener
-	    ];
-	  }
-
-	  return this;
-	};
-
-	/**
-	 * Add an EventListener that's only called once.
-	 *
-	 * @param {String} event Name of the event.
-	 * @param {Function} fn Callback function.
-	 * @param {Mixed} [context=this] The context of the function.
-	 * @api public
-	 */
-	EventEmitter.prototype.once = function once(event, fn, context) {
-	  var listener = new EE(fn, context || this, true)
-	    , evt = prefix ? prefix + event : event;
-
-	  if (!this._events) this._events = prefix ? {} : Object.create(null);
-	  if (!this._events[evt]) this._events[evt] = listener;
-	  else {
-	    if (!this._events[evt].fn) this._events[evt].push(listener);
-	    else this._events[evt] = [
-	      this._events[evt], listener
-	    ];
-	  }
-
-	  return this;
-	};
-
-	/**
-	 * Remove event listeners.
-	 *
-	 * @param {String} event The event we want to remove.
-	 * @param {Function} fn The listener that we need to find.
-	 * @param {Mixed} context Only remove listeners matching this context.
-	 * @param {Boolean} once Only remove once listeners.
-	 * @api public
-	 */
-	EventEmitter.prototype.removeListener = function removeListener(event, fn, context, once) {
-	  var evt = prefix ? prefix + event : event;
-
-	  if (!this._events || !this._events[evt]) return this;
-
-	  var listeners = this._events[evt]
-	    , events = [];
-
-	  if (fn) {
-	    if (listeners.fn) {
-	      if (
-	           listeners.fn !== fn
-	        || (once && !listeners.once)
-	        || (context && listeners.context !== context)
-	      ) {
-	        events.push(listeners);
-	      }
-	    } else {
-	      for (var i = 0, length = listeners.length; i < length; i++) {
-	        if (
-	             listeners[i].fn !== fn
-	          || (once && !listeners[i].once)
-	          || (context && listeners[i].context !== context)
-	        ) {
-	          events.push(listeners[i]);
-	        }
-	      }
-	    }
-	  }
-
-	  //
-	  // Reset the array, or remove it completely if we have no more listeners.
-	  //
-	  if (events.length) {
-	    this._events[evt] = events.length === 1 ? events[0] : events;
-	  } else {
-	    delete this._events[evt];
-	  }
-
-	  return this;
-	};
-
-	/**
-	 * Remove all listeners or only the listeners for the specified event.
-	 *
-	 * @param {String} event The event want to remove all listeners for.
-	 * @api public
-	 */
-	EventEmitter.prototype.removeAllListeners = function removeAllListeners(event) {
-	  if (!this._events) return this;
-
-	  if (event) delete this._events[prefix ? prefix + event : event];
-	  else this._events = prefix ? {} : Object.create(null);
-
-	  return this;
-	};
-
-	//
-	// Alias methods names because people roll like that.
-	//
-	EventEmitter.prototype.off = EventEmitter.prototype.removeListener;
-	EventEmitter.prototype.addListener = EventEmitter.prototype.on;
-
-	//
-	// This function doesn't apply anymore.
-	//
-	EventEmitter.prototype.setMaxListeners = function setMaxListeners() {
-	  return this;
-	};
-
-	//
-	// Expose the prefix.
-	//
-	EventEmitter.prefixed = prefix;
-
-	//
-	// Expose the module.
-	//
-	if (true) {
-	  module.exports = EventEmitter;
-	}
-
-
-/***/ },
-/* 599 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * Internal module used to create static and instance join methods
-	 */
-
-	"use strict";
-
-	var createStore = __webpack_require__(600),
-	    _ = __webpack_require__(597);
-
-	var slice = Array.prototype.slice,
-	    strategyMethodNames = {
-	    strict: "joinStrict",
-	    first: "joinLeading",
-	    last: "joinTrailing",
-	    all: "joinConcat"
-	};
-
-	/**
-	 * Used in `index.js` to create the static join methods
-	 * @param {String} strategy Which strategy to use when tracking listenable trigger arguments
-	 * @returns {Function} A static function which returns a store with a join listen on the given listenables using the given strategy
-	 */
-	exports.staticJoinCreator = function (strategy) {
-	    return function () /* listenables... */{
-	        var listenables = slice.call(arguments);
-	        return createStore({
-	            init: function init() {
-	                this[strategyMethodNames[strategy]].apply(this, listenables.concat("triggerAsync"));
-	            }
-	        });
-	    };
-	};
-
-	/**
-	 * Used in `ListenerMethods.js` to create the instance join methods
-	 * @param {String} strategy Which strategy to use when tracking listenable trigger arguments
-	 * @returns {Function} An instance method which sets up a join listen on the given listenables using the given strategy
-	 */
-	exports.instanceJoinCreator = function (strategy) {
-	    return function () /* listenables..., callback*/{
-	        _.throwIf(arguments.length < 2, "Cannot create a join with less than 2 listenables!");
-	        var listenables = slice.call(arguments),
-	            callback = listenables.pop(),
-	            numberOfListenables = listenables.length,
-	            join = {
-	            numberOfListenables: numberOfListenables,
-	            callback: this[callback] || callback,
-	            listener: this,
-	            strategy: strategy
-	        },
-	            i,
-	            cancels = [],
-	            subobj;
-	        for (i = 0; i < numberOfListenables; i++) {
-	            _.throwIf(this.validateListening(listenables[i]));
-	        }
-	        for (i = 0; i < numberOfListenables; i++) {
-	            cancels.push(listenables[i].listen(newListener(i, join), this));
-	        }
-	        reset(join);
-	        subobj = { listenable: listenables };
-	        subobj.stop = makeStopper(subobj, cancels, this);
-	        this.subscriptions = (this.subscriptions || []).concat(subobj);
-	        return subobj;
-	    };
-	};
-
-	// ---- internal join functions ----
-
-	function makeStopper(subobj, cancels, context) {
-	    return function () {
-	        var i,
-	            subs = context.subscriptions,
-	            index = subs ? subs.indexOf(subobj) : -1;
-	        _.throwIf(index === -1, "Tried to remove join already gone from subscriptions list!");
-	        for (i = 0; i < cancels.length; i++) {
-	            cancels[i]();
-	        }
-	        subs.splice(index, 1);
-	    };
-	}
-
-	function reset(join) {
-	    join.listenablesEmitted = new Array(join.numberOfListenables);
-	    join.args = new Array(join.numberOfListenables);
-	}
-
-	function newListener(i, join) {
-	    return function () {
-	        var callargs = slice.call(arguments);
-	        if (join.listenablesEmitted[i]) {
-	            switch (join.strategy) {
-	                case "strict":
-	                    throw new Error("Strict join failed because listener triggered twice.");
-	                case "last":
-	                    join.args[i] = callargs;break;
-	                case "all":
-	                    join.args[i].push(callargs);
-	            }
-	        } else {
-	            join.listenablesEmitted[i] = true;
-	            join.args[i] = join.strategy === "all" ? [callargs] : callargs;
-	        }
-	        emitIfAllListenablesEmitted(join);
-	    };
-	}
-
-	function emitIfAllListenablesEmitted(join) {
-	    for (var i = 0; i < join.numberOfListenables; i++) {
-	        if (!join.listenablesEmitted[i]) {
-	            return;
-	        }
-	    }
-	    join.callback.apply(join.listener, join.args);
-	    reset(join);
-	}
-
-/***/ },
-/* 600 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-
-	var _ = __webpack_require__(597),
-	    Keep = __webpack_require__(601),
-	    mixer = __webpack_require__(602),
-	    bindMethods = __webpack_require__(603);
-
-	var allowed = { preEmit: 1, shouldEmit: 1 };
-
-	/**
-	 * Creates an event emitting Data Store. It is mixed in with functions
-	 * from the `ListenerMethods` and `PublisherMethods` mixins. `preEmit`
-	 * and `shouldEmit` may be overridden in the definition object.
-	 *
-	 * @param {Object} definition The data store object definition
-	 * @returns {Store} A data store instance
-	 */
-	module.exports = function (definition) {
-
-	    var StoreMethods = __webpack_require__(604),
-	        PublisherMethods = __webpack_require__(605),
-	        ListenerMethods = __webpack_require__(596);
-
-	    definition = definition || {};
-
-	    for (var a in StoreMethods) {
-	        if (!allowed[a] && (PublisherMethods[a] || ListenerMethods[a])) {
-	            throw new Error("Cannot override API method " + a + " in Reflux.StoreMethods. Use another method name or override it on Reflux.PublisherMethods / Reflux.ListenerMethods instead.");
-	        }
-	    }
-
-	    for (var d in definition) {
-	        if (!allowed[d] && (PublisherMethods[d] || ListenerMethods[d])) {
-	            throw new Error("Cannot override API method " + d + " in store creation. Use another method name or override it on Reflux.PublisherMethods / Reflux.ListenerMethods instead.");
-	        }
-	    }
-
-	    definition = mixer(definition);
-
-	    function Store() {
-	        var i = 0,
-	            arr;
-	        this.subscriptions = [];
-	        this.emitter = new _.EventEmitter();
-	        this.eventLabel = "change";
-	        bindMethods(this, definition);
-	        if (this.init && _.isFunction(this.init)) {
-	            this.init();
-	        }
-	        if (this.listenables) {
-	            arr = [].concat(this.listenables);
-	            for (; i < arr.length; i++) {
-	                this.listenToMany(arr[i]);
-	            }
-	        }
-	    }
-
-	    _.extend(Store.prototype, ListenerMethods, PublisherMethods, StoreMethods, definition);
-
-	    var store = new Store();
-	    Keep.createdStores.push(store);
-
-	    return store;
-	};
-
-/***/ },
-/* 601 */
-/***/ function(module, exports) {
-
-	"use strict";
-
-	exports.createdStores = [];
-
-	exports.createdActions = [];
-
-	exports.reset = function () {
-	    while (exports.createdStores.length) {
-	        exports.createdStores.pop();
-	    }
-	    while (exports.createdActions.length) {
-	        exports.createdActions.pop();
-	    }
-	};
-
-/***/ },
-/* 602 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-
-	var _ = __webpack_require__(597);
-
-	module.exports = function mix(def) {
-	    var composed = {
-	        init: [],
-	        preEmit: [],
-	        shouldEmit: []
-	    };
-
-	    var updated = (function mixDef(mixin) {
-	        var mixed = {};
-	        if (mixin.mixins) {
-	            mixin.mixins.forEach(function (subMixin) {
-	                _.extend(mixed, mixDef(subMixin));
-	            });
-	        }
-	        _.extend(mixed, mixin);
-	        Object.keys(composed).forEach(function (composable) {
-	            if (mixin.hasOwnProperty(composable)) {
-	                composed[composable].push(mixin[composable]);
-	            }
-	        });
-	        return mixed;
-	    })(def);
-
-	    if (composed.init.length > 1) {
-	        updated.init = function () {
-	            var args = arguments;
-	            composed.init.forEach(function (init) {
-	                init.apply(this, args);
-	            }, this);
-	        };
-	    }
-	    if (composed.preEmit.length > 1) {
-	        updated.preEmit = function () {
-	            return composed.preEmit.reduce((function (args, preEmit) {
-	                var newValue = preEmit.apply(this, args);
-	                return newValue === undefined ? args : [newValue];
-	            }).bind(this), arguments);
-	        };
-	    }
-	    if (composed.shouldEmit.length > 1) {
-	        updated.shouldEmit = function () {
-	            var args = arguments;
-	            return !composed.shouldEmit.some(function (shouldEmit) {
-	                return !shouldEmit.apply(this, args);
-	            }, this);
-	        };
-	    }
-	    Object.keys(composed).forEach(function (composable) {
-	        if (composed[composable].length === 1) {
-	            updated[composable] = composed[composable][0];
-	        }
-	    });
-
-	    return updated;
-	};
-
-/***/ },
-/* 603 */
-/***/ function(module, exports) {
-
-	"use strict";
-
-	module.exports = function (store, definition) {
-	    for (var name in definition) {
-	        if (Object.getOwnPropertyDescriptor && Object.defineProperty) {
-	            var propertyDescriptor = Object.getOwnPropertyDescriptor(definition, name);
-
-	            if (!propertyDescriptor.value || typeof propertyDescriptor.value !== "function" || !definition.hasOwnProperty(name)) {
-	                continue;
-	            }
-
-	            store[name] = definition[name].bind(store);
-	        } else {
-	            var property = definition[name];
-
-	            if (typeof property !== "function" || !definition.hasOwnProperty(name)) {
-	                continue;
-	            }
-
-	            store[name] = property.bind(store);
-	        }
-	    }
-
-	    return store;
-	};
-
-/***/ },
-/* 604 */
-/***/ function(module, exports) {
-
-	/**
-	 * A module of methods that you want to include in all stores.
-	 * This module is consumed by `createStore`.
-	 */
-	"use strict";
-
-	module.exports = {};
-
-/***/ },
-/* 605 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-
-	var _ = __webpack_require__(597);
-
-	/**
-	 * A module of methods for object that you want to be able to listen to.
-	 * This module is consumed by `createStore` and `createAction`
-	 */
-	module.exports = {
-
-	    /**
-	     * Hook used by the publisher that is invoked before emitting
-	     * and before `shouldEmit`. The arguments are the ones that the action
-	     * is invoked with. If this function returns something other than
-	     * undefined, that will be passed on as arguments for shouldEmit and
-	     * emission.
-	     */
-	    preEmit: function preEmit() {},
-
-	    /**
-	     * Hook used by the publisher after `preEmit` to determine if the
-	     * event should be emitted with given arguments. This may be overridden
-	     * in your application, default implementation always returns true.
-	     *
-	     * @returns {Boolean} true if event should be emitted
-	     */
-	    shouldEmit: function shouldEmit() {
-	        return true;
-	    },
-
-	    /**
-	     * Subscribes the given callback for action triggered
-	     *
-	     * @param {Function} callback The callback to register as event handler
-	     * @param {Mixed} [optional] bindContext The context to bind the callback with
-	     * @returns {Function} Callback that unsubscribes the registered event handler
-	     */
-	    listen: function listen(callback, bindContext) {
-	        bindContext = bindContext || this;
-	        var eventHandler = function eventHandler(args) {
-	            if (aborted) {
-	                return;
-	            }
-	            callback.apply(bindContext, args);
-	        },
-	            me = this,
-	            aborted = false;
-	        this.emitter.addListener(this.eventLabel, eventHandler);
-	        return function () {
-	            aborted = true;
-	            me.emitter.removeListener(me.eventLabel, eventHandler);
-	        };
-	    },
-
-	    /**
-	     * Publishes an event using `this.emitter` (if `shouldEmit` agrees)
-	     */
-	    trigger: function trigger() {
-	        var args = arguments,
-	            pre = this.preEmit.apply(this, args);
-	        args = pre === undefined ? args : _.isArguments(pre) ? pre : [].concat(pre);
-	        if (this.shouldEmit.apply(this, args)) {
-	            this.emitter.emit(this.eventLabel, args);
-	        }
-	    },
-
-	    /**
-	     * Tries to publish the event on the next tick
-	     */
-	    triggerAsync: function triggerAsync() {
-	        var args = arguments,
-	            me = this;
-	        _.nextTick(function () {
-	            me.trigger.apply(me, args);
-	        });
-	    },
-
-	    /**
-	     * Wraps the trigger mechanism with a deferral function.
-	     *
-	     * @param {Function} callback the deferral function,
-	     *        first argument is the resolving function and the
-	     *        rest are the arguments provided from the previous
-	     *        trigger invocation
-	     */
-	    deferWith: function deferWith(callback) {
-	        var oldTrigger = this.trigger,
-	            ctx = this,
-	            resolver = function resolver() {
-	            oldTrigger.apply(ctx, arguments);
-	        };
-	        this.trigger = function () {
-	            callback.apply(ctx, [resolver].concat([].splice.call(arguments, 0)));
-	        };
-	    }
-
-	};
-
-/***/ },
-/* 606 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-
-	var _ = __webpack_require__(597),
-	    ActionMethods = __webpack_require__(595),
-	    PublisherMethods = __webpack_require__(605),
-	    Keep = __webpack_require__(601);
-
-	var allowed = { preEmit: 1, shouldEmit: 1 };
-
-	/**
-	 * Creates an action functor object. It is mixed in with functions
-	 * from the `PublisherMethods` mixin. `preEmit` and `shouldEmit` may
-	 * be overridden in the definition object.
-	 *
-	 * @param {Object} definition The action object definition
-	 */
-	var createAction = function createAction(definition) {
-
-	    definition = definition || {};
-	    if (!_.isObject(definition)) {
-	        definition = { actionName: definition };
-	    }
-
-	    for (var a in ActionMethods) {
-	        if (!allowed[a] && PublisherMethods[a]) {
-	            throw new Error("Cannot override API method " + a + " in Reflux.ActionMethods. Use another method name or override it on Reflux.PublisherMethods instead.");
-	        }
-	    }
-
-	    for (var d in definition) {
-	        if (!allowed[d] && PublisherMethods[d]) {
-	            throw new Error("Cannot override API method " + d + " in action creation. Use another method name or override it on Reflux.PublisherMethods instead.");
-	        }
-	    }
-
-	    definition.children = definition.children || [];
-	    if (definition.asyncResult) {
-	        definition.children = definition.children.concat(["completed", "failed"]);
-	    }
-
-	    var i = 0,
-	        childActions = {};
-	    for (; i < definition.children.length; i++) {
-	        var name = definition.children[i];
-	        childActions[name] = createAction(name);
-	    }
-
-	    var context = _.extend({
-	        eventLabel: "action",
-	        emitter: new _.EventEmitter(),
-	        _isAction: true
-	    }, PublisherMethods, ActionMethods, definition);
-
-	    var functor = function functor() {
-	        var triggerType = functor.sync ? "trigger" : "triggerAsync";
-	        return functor[triggerType].apply(functor, arguments);
-	    };
-
-	    _.extend(functor, childActions, context);
-
-	    Keep.createdActions.push(functor);
-
-	    return functor;
-	};
-
-	module.exports = createAction;
-
-/***/ },
-/* 607 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var ListenerMethods = __webpack_require__(596),
-	    ListenerMixin = __webpack_require__(608),
-	    _ = __webpack_require__(597);
-
-	module.exports = function(listenable,key){
-	    return {
-	        getInitialState: function(){
-	            if (!_.isFunction(listenable.getInitialState)) {
-	                return {};
-	            } else if (key === undefined) {
-	                return listenable.getInitialState();
-	            } else {
-	                return _.object([key],[listenable.getInitialState()]);
-	            }
-	        },
-	        componentDidMount: function(){
-	            _.extend(this,ListenerMethods);
-	            var me = this, cb = (key === undefined ? this.setState : function(v){
-	                if (typeof me.isMounted === "undefined" || me.isMounted() === true) {
-	                    me.setState(_.object([key],[v]));
-	                }
-	            });
-	            this.listenTo(listenable,cb);
-	        },
-	        componentWillUnmount: ListenerMixin.componentWillUnmount
-	    };
-	};
-
-
-/***/ },
-/* 608 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var _ = __webpack_require__(597),
-	    ListenerMethods = __webpack_require__(596);
-
-	/**
-	 * A module meant to be consumed as a mixin by a React component. Supplies the methods from
-	 * `ListenerMethods` mixin and takes care of teardown of subscriptions.
-	 * Note that if you're using the `connect` mixin you don't need this mixin, as connect will
-	 * import everything this mixin contains!
-	 */
-	module.exports = _.extend({
-
-	    /**
-	     * Cleans up all listener previously registered.
-	     */
-	    componentWillUnmount: ListenerMethods.stopListeningToAll
-
-	}, ListenerMethods);
-
-
-/***/ },
-/* 609 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var ListenerMethods = __webpack_require__(596),
-	    ListenerMixin = __webpack_require__(608),
-	    _ = __webpack_require__(597);
-
-	module.exports = function(listenable, key, filterFunc) {
-	    filterFunc = _.isFunction(key) ? key : filterFunc;
-	    return {
-	        getInitialState: function() {
-	            if (!_.isFunction(listenable.getInitialState)) {
-	                return {};
-	            } else if (_.isFunction(key)) {
-	                return filterFunc.call(this, listenable.getInitialState());
-	            } else {
-	                // Filter initial payload from store.
-	                var result = filterFunc.call(this, listenable.getInitialState());
-	                if (typeof(result) !== "undefined") {
-	                    return _.object([key], [result]);
-	                } else {
-	                    return {};
-	                }
-	            }
-	        },
-	        componentDidMount: function() {
-	            _.extend(this, ListenerMethods);
-	            var me = this;
-	            var cb = function(value) {
-	                if (_.isFunction(key)) {
-	                    me.setState(filterFunc.call(me, value));
-	                } else {
-	                    var result = filterFunc.call(me, value);
-	                    me.setState(_.object([key], [result]));
-	                }
-	            };
-
-	            this.listenTo(listenable, cb);
-	        },
-	        componentWillUnmount: ListenerMixin.componentWillUnmount
-	    };
-	};
-
-
-
-/***/ },
-/* 610 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var ListenerMethods = __webpack_require__(596);
-
-	/**
-	 * A mixin factory for a React component. Meant as a more convenient way of using the `ListenerMixin`,
-	 * without having to manually set listeners in the `componentDidMount` method.
-	 *
-	 * @param {Action|Store} listenable An Action or Store that should be
-	 *  listened to.
-	 * @param {Function|String} callback The callback to register as event handler
-	 * @param {Function|String} defaultCallback The callback to register as default handler
-	 * @returns {Object} An object to be used as a mixin, which sets up the listener for the given listenable.
-	 */
-	module.exports = function(listenable,callback,initial){
-	    return {
-	        /**
-	         * Set up the mixin before the initial rendering occurs. Import methods from `ListenerMethods`
-	         * and then make the call to `listenTo` with the arguments provided to the factory function
-	         */
-	        componentDidMount: function() {
-	            for(var m in ListenerMethods){
-	                if (this[m] !== ListenerMethods[m]){
-	                    if (this[m]){
-	                        throw "Can't have other property '"+m+"' when using Reflux.listenTo!";
-	                    }
-	                    this[m] = ListenerMethods[m];
-	                }
-	            }
-	            this.listenTo(listenable,callback,initial);
-	        },
-	        /**
-	         * Cleans up all listener previously registered.
-	         */
-	        componentWillUnmount: ListenerMethods.stopListeningToAll
-	    };
-	};
-
-
-/***/ },
-/* 611 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var ListenerMethods = __webpack_require__(596);
-
-	/**
-	 * A mixin factory for a React component. Meant as a more convenient way of using the `listenerMixin`,
-	 * without having to manually set listeners in the `componentDidMount` method. This version is used
-	 * to automatically set up a `listenToMany` call.
-	 *
-	 * @param {Object} listenables An object of listenables
-	 * @returns {Object} An object to be used as a mixin, which sets up the listeners for the given listenables.
-	 */
-	module.exports = function(listenables){
-	    return {
-	        /**
-	         * Set up the mixin before the initial rendering occurs. Import methods from `ListenerMethods`
-	         * and then make the call to `listenTo` with the arguments provided to the factory function
-	         */
-	        componentDidMount: function() {
-	            for(var m in ListenerMethods){
-	                if (this[m] !== ListenerMethods[m]){
-	                    if (this[m]){
-	                        throw "Can't have other property '"+m+"' when using Reflux.listenToMany!";
-	                    }
-	                    this[m] = ListenerMethods[m];
-	                }
-	            }
-	            this.listenToMany(listenables);
-	        },
-	        /**
-	         * Cleans up all listener previously registered.
-	         */
-	        componentWillUnmount: ListenerMethods.stopListeningToAll
-	    };
-	};
-
-
-/***/ },
-/* 612 */
-/***/ function(module, exports, __webpack_require__) {
-
-	// super simple module for the most common nodejs use case.
-	exports.markdown = __webpack_require__(613);
-	exports.parse = exports.markdown.toHTML;
-
-
-/***/ },
-/* 613 */
-/***/ function(module, exports, __webpack_require__) {
-
-	// Released under MIT license
-	// Copyright (c) 2009-2010 Dominic Baggott
-	// Copyright (c) 2009-2010 Ash Berlin
-	// Copyright (c) 2011 Christoph Dorn <christoph@christophdorn.com> (http://www.christophdorn.com)
-
-	/*jshint browser:true, devel:true */
-
-	(function( expose ) {
-
-	/**
-	 *  class Markdown
-	 *
-	 *  Markdown processing in Javascript done right. We have very particular views
-	 *  on what constitutes 'right' which include:
-	 *
-	 *  - produces well-formed HTML (this means that em and strong nesting is
-	 *    important)
-	 *
-	 *  - has an intermediate representation to allow processing of parsed data (We
-	 *    in fact have two, both as [JsonML]: a markdown tree and an HTML tree).
-	 *
-	 *  - is easily extensible to add new dialects without having to rewrite the
-	 *    entire parsing mechanics
-	 *
-	 *  - has a good test suite
-	 *
-	 *  This implementation fulfills all of these (except that the test suite could
-	 *  do with expanding to automatically run all the fixtures from other Markdown
-	 *  implementations.)
-	 *
-	 *  ##### Intermediate Representation
-	 *
-	 *  *TODO* Talk about this :) Its JsonML, but document the node names we use.
-	 *
-	 *  [JsonML]: http://jsonml.org/ "JSON Markup Language"
-	 **/
-	var Markdown = expose.Markdown = function(dialect) {
-	  switch (typeof dialect) {
-	    case "undefined":
-	      this.dialect = Markdown.dialects.Gruber;
-	      break;
-	    case "object":
-	      this.dialect = dialect;
-	      break;
-	    default:
-	      if ( dialect in Markdown.dialects ) {
-	        this.dialect = Markdown.dialects[dialect];
-	      }
-	      else {
-	        throw new Error("Unknown Markdown dialect '" + String(dialect) + "'");
-	      }
-	      break;
-	  }
-	  this.em_state = [];
-	  this.strong_state = [];
-	  this.debug_indent = "";
-	};
-
-	/**
-	 *  parse( markdown, [dialect] ) -> JsonML
-	 *  - markdown (String): markdown string to parse
-	 *  - dialect (String | Dialect): the dialect to use, defaults to gruber
-	 *
-	 *  Parse `markdown` and return a markdown document as a Markdown.JsonML tree.
-	 **/
-	expose.parse = function( source, dialect ) {
-	  // dialect will default if undefined
-	  var md = new Markdown( dialect );
-	  return md.toTree( source );
-	};
-
-	/**
-	 *  toHTML( markdown, [dialect]  ) -> String
-	 *  toHTML( md_tree ) -> String
-	 *  - markdown (String): markdown string to parse
-	 *  - md_tree (Markdown.JsonML): parsed markdown tree
-	 *
-	 *  Take markdown (either as a string or as a JsonML tree) and run it through
-	 *  [[toHTMLTree]] then turn it into a well-formated HTML fragment.
-	 **/
-	expose.toHTML = function toHTML( source , dialect , options ) {
-	  var input = expose.toHTMLTree( source , dialect , options );
-
-	  return expose.renderJsonML( input );
-	};
-
-	/**
-	 *  toHTMLTree( markdown, [dialect] ) -> JsonML
-	 *  toHTMLTree( md_tree ) -> JsonML
-	 *  - markdown (String): markdown string to parse
-	 *  - dialect (String | Dialect): the dialect to use, defaults to gruber
-	 *  - md_tree (Markdown.JsonML): parsed markdown tree
-	 *
-	 *  Turn markdown into HTML, represented as a JsonML tree. If a string is given
-	 *  to this function, it is first parsed into a markdown tree by calling
-	 *  [[parse]].
-	 **/
-	expose.toHTMLTree = function toHTMLTree( input, dialect , options ) {
-	  // convert string input to an MD tree
-	  if ( typeof input ==="string" ) input = this.parse( input, dialect );
-
-	  // Now convert the MD tree to an HTML tree
-
-	  // remove references from the tree
-	  var attrs = extract_attr( input ),
-	      refs = {};
-
-	  if ( attrs && attrs.references ) {
-	    refs = attrs.references;
-	  }
-
-	  var html = convert_tree_to_html( input, refs , options );
-	  merge_text_nodes( html );
-	  return html;
-	};
-
-	// For Spidermonkey based engines
-	function mk_block_toSource() {
-	  return "Markdown.mk_block( " +
-	          uneval(this.toString()) +
-	          ", " +
-	          uneval(this.trailing) +
-	          ", " +
-	          uneval(this.lineNumber) +
-	          " )";
-	}
-
-	// node
-	function mk_block_inspect() {
-	  var util = __webpack_require__(614);
-	  return "Markdown.mk_block( " +
-	          util.inspect(this.toString()) +
-	          ", " +
-	          util.inspect(this.trailing) +
-	          ", " +
-	          util.inspect(this.lineNumber) +
-	          " )";
-
-	}
-
-	var mk_block = Markdown.mk_block = function(block, trail, line) {
-	  // Be helpful for default case in tests.
-	  if ( arguments.length == 1 ) trail = "\n\n";
-
-	  var s = new String(block);
-	  s.trailing = trail;
-	  // To make it clear its not just a string
-	  s.inspect = mk_block_inspect;
-	  s.toSource = mk_block_toSource;
-
-	  if ( line != undefined )
-	    s.lineNumber = line;
-
-	  return s;
-	};
-
-	function count_lines( str ) {
-	  var n = 0, i = -1;
-	  while ( ( i = str.indexOf("\n", i + 1) ) !== -1 ) n++;
-	  return n;
-	}
-
-	// Internal - split source into rough blocks
-	Markdown.prototype.split_blocks = function splitBlocks( input, startLine ) {
-	  input = input.replace(/(\r\n|\n|\r)/g, "\n");
-	  // [\s\S] matches _anything_ (newline or space)
-	  // [^] is equivalent but doesn't work in IEs.
-	  var re = /([\s\S]+?)($|\n#|\n(?:\s*\n|$)+)/g,
-	      blocks = [],
-	      m;
-
-	  var line_no = 1;
-
-	  if ( ( m = /^(\s*\n)/.exec(input) ) != null ) {
-	    // skip (but count) leading blank lines
-	    line_no += count_lines( m[0] );
-	    re.lastIndex = m[0].length;
-	  }
-
-	  while ( ( m = re.exec(input) ) !== null ) {
-	    if (m[2] == "\n#") {
-	      m[2] = "\n";
-	      re.lastIndex--;
-	    }
-	    blocks.push( mk_block( m[1], m[2], line_no ) );
-	    line_no += count_lines( m[0] );
-	  }
-
-	  return blocks;
-	};
-
-	/**
-	 *  Markdown#processBlock( block, next ) -> undefined | [ JsonML, ... ]
-	 *  - block (String): the block to process
-	 *  - next (Array): the following blocks
-	 *
-	 * Process `block` and return an array of JsonML nodes representing `block`.
-	 *
-	 * It does this by asking each block level function in the dialect to process
-	 * the block until one can. Succesful handling is indicated by returning an
-	 * array (with zero or more JsonML nodes), failure by a false value.
-	 *
-	 * Blocks handlers are responsible for calling [[Markdown#processInline]]
-	 * themselves as appropriate.
-	 *
-	 * If the blocks were split incorrectly or adjacent blocks need collapsing you
-	 * can adjust `next` in place using shift/splice etc.
-	 *
-	 * If any of this default behaviour is not right for the dialect, you can
-	 * define a `__call__` method on the dialect that will get invoked to handle
-	 * the block processing.
-	 */
-	Markdown.prototype.processBlock = function processBlock( block, next ) {
-	  var cbs = this.dialect.block,
-	      ord = cbs.__order__;
-
-	  if ( "__call__" in cbs ) {
-	    return cbs.__call__.call(this, block, next);
-	  }
-
-	  for ( var i = 0; i < ord.length; i++ ) {
-	    //D:this.debug( "Testing", ord[i] );
-	    var res = cbs[ ord[i] ].call( this, block, next );
-	    if ( res ) {
-	      //D:this.debug("  matched");
-	      if ( !isArray(res) || ( res.length > 0 && !( isArray(res[0]) ) ) )
-	        this.debug(ord[i], "didn't return a proper array");
-	      //D:this.debug( "" );
-	      return res;
-	    }
-	  }
-
-	  // Uhoh! no match! Should we throw an error?
-	  return [];
-	};
-
-	Markdown.prototype.processInline = function processInline( block ) {
-	  return this.dialect.inline.__call__.call( this, String( block ) );
-	};
-
-	/**
-	 *  Markdown#toTree( source ) -> JsonML
-	 *  - source (String): markdown source to parse
-	 *
-	 *  Parse `source` into a JsonML tree representing the markdown document.
-	 **/
-	// custom_tree means set this.tree to `custom_tree` and restore old value on return
-	Markdown.prototype.toTree = function toTree( source, custom_root ) {
-	  var blocks = source instanceof Array ? source : this.split_blocks( source );
-
-	  // Make tree a member variable so its easier to mess with in extensions
-	  var old_tree = this.tree;
-	  try {
-	    this.tree = custom_root || this.tree || [ "markdown" ];
-
-	    blocks:
-	    while ( blocks.length ) {
-	      var b = this.processBlock( blocks.shift(), blocks );
-
-	      // Reference blocks and the like won't return any content
-	      if ( !b.length ) continue blocks;
-
-	      this.tree.push.apply( this.tree, b );
-	    }
-	    return this.tree;
-	  }
-	  finally {
-	    if ( custom_root ) {
-	      this.tree = old_tree;
-	    }
-	  }
-	};
-
-	// Noop by default
-	Markdown.prototype.debug = function () {
-	  var args = Array.prototype.slice.call( arguments);
-	  args.unshift(this.debug_indent);
-	  if ( typeof print !== "undefined" )
-	      print.apply( print, args );
-	  if ( typeof console !== "undefined" && typeof console.log !== "undefined" )
-	      console.log.apply( null, args );
-	}
-
-	Markdown.prototype.loop_re_over_block = function( re, block, cb ) {
-	  // Dont use /g regexps with this
-	  var m,
-	      b = block.valueOf();
-
-	  while ( b.length && (m = re.exec(b) ) != null ) {
-	    b = b.substr( m[0].length );
-	    cb.call(this, m);
-	  }
-	  return b;
-	};
-
-	/**
-	 * Markdown.dialects
-	 *
-	 * Namespace of built-in dialects.
-	 **/
-	Markdown.dialects = {};
-
-	/**
-	 * Markdown.dialects.Gruber
-	 *
-	 * The default dialect that follows the rules set out by John Gruber's
-	 * markdown.pl as closely as possible. Well actually we follow the behaviour of
-	 * that script which in some places is not exactly what the syntax web page
-	 * says.
-	 **/
-	Markdown.dialects.Gruber = {
-	  block: {
-	    atxHeader: function atxHeader( block, next ) {
-	      var m = block.match( /^(#{1,6})\s*(.*?)\s*#*\s*(?:\n|$)/ );
-
-	      if ( !m ) return undefined;
-
-	      var header = [ "header", { level: m[ 1 ].length } ];
-	      Array.prototype.push.apply(header, this.processInline(m[ 2 ]));
-
-	      if ( m[0].length < block.length )
-	        next.unshift( mk_block( block.substr( m[0].length ), block.trailing, block.lineNumber + 2 ) );
-
-	      return [ header ];
-	    },
-
-	    setextHeader: function setextHeader( block, next ) {
-	      var m = block.match( /^(.*)\n([-=])\2\2+(?:\n|$)/ );
-
-	      if ( !m ) return undefined;
-
-	      var level = ( m[ 2 ] === "=" ) ? 1 : 2;
-	      var header = [ "header", { level : level }, m[ 1 ] ];
-
-	      if ( m[0].length < block.length )
-	        next.unshift( mk_block( block.substr( m[0].length ), block.trailing, block.lineNumber + 2 ) );
-
-	      return [ header ];
-	    },
-
-	    code: function code( block, next ) {
-	      // |    Foo
-	      // |bar
-	      // should be a code block followed by a paragraph. Fun
-	      //
-	      // There might also be adjacent code block to merge.
-
-	      var ret = [],
-	          re = /^(?: {0,3}\t| {4})(.*)\n?/,
-	          lines;
-
-	      // 4 spaces + content
-	      if ( !block.match( re ) ) return undefined;
-
-	      block_search:
-	      do {
-	        // Now pull out the rest of the lines
-	        var b = this.loop_re_over_block(
-	                  re, block.valueOf(), function( m ) { ret.push( m[1] ); } );
-
-	        if ( b.length ) {
-	          // Case alluded to in first comment. push it back on as a new block
-	          next.unshift( mk_block(b, block.trailing) );
-	          break block_search;
-	        }
-	        else if ( next.length ) {
-	          // Check the next block - it might be code too
-	          if ( !next[0].match( re ) ) break block_search;
-
-	          // Pull how how many blanks lines follow - minus two to account for .join
-	          ret.push ( block.trailing.replace(/[^\n]/g, "").substring(2) );
-
-	          block = next.shift();
-	        }
-	        else {
-	          break block_search;
-	        }
-	      } while ( true );
-
-	      return [ [ "code_block", ret.join("\n") ] ];
-	    },
-
-	    horizRule: function horizRule( block, next ) {
-	      // this needs to find any hr in the block to handle abutting blocks
-	      var m = block.match( /^(?:([\s\S]*?)\n)?[ \t]*([-_*])(?:[ \t]*\2){2,}[ \t]*(?:\n([\s\S]*))?$/ );
-
-	      if ( !m ) {
-	        return undefined;
-	      }
-
-	      var jsonml = [ [ "hr" ] ];
-
-	      // if there's a leading abutting block, process it
-	      if ( m[ 1 ] ) {
-	        jsonml.unshift.apply( jsonml, this.processBlock( m[ 1 ], [] ) );
-	      }
-
-	      // if there's a trailing abutting block, stick it into next
-	      if ( m[ 3 ] ) {
-	        next.unshift( mk_block( m[ 3 ] ) );
-	      }
-
-	      return jsonml;
-	    },
-
-	    // There are two types of lists. Tight and loose. Tight lists have no whitespace
-	    // between the items (and result in text just in the <li>) and loose lists,
-	    // which have an empty line between list items, resulting in (one or more)
-	    // paragraphs inside the <li>.
-	    //
-	    // There are all sorts weird edge cases about the original markdown.pl's
-	    // handling of lists:
-	    //
-	    // * Nested lists are supposed to be indented by four chars per level. But
-	    //   if they aren't, you can get a nested list by indenting by less than
-	    //   four so long as the indent doesn't match an indent of an existing list
-	    //   item in the 'nest stack'.
-	    //
-	    // * The type of the list (bullet or number) is controlled just by the
-	    //    first item at the indent. Subsequent changes are ignored unless they
-	    //    are for nested lists
-	    //
-	    lists: (function( ) {
-	      // Use a closure to hide a few variables.
-	      var any_list = "[*+-]|\\d+\\.",
-	          bullet_list = /[*+-]/,
-	          number_list = /\d+\./,
-	          // Capture leading indent as it matters for determining nested lists.
-	          is_list_re = new RegExp( "^( {0,3})(" + any_list + ")[ \t]+" ),
-	          indent_re = "(?: {0,3}\\t| {4})";
-
-	      // TODO: Cache this regexp for certain depths.
-	      // Create a regexp suitable for matching an li for a given stack depth
-	      function regex_for_depth( depth ) {
-
-	        return new RegExp(
-	          // m[1] = indent, m[2] = list_type
-	          "(?:^(" + indent_re + "{0," + depth + "} {0,3})(" + any_list + ")\\s+)|" +
-	          // m[3] = cont
-	          "(^" + indent_re + "{0," + (depth-1) + "}[ ]{0,4})"
-	        );
-	      }
-	      function expand_tab( input ) {
-	        return input.replace( / {0,3}\t/g, "    " );
-	      }
-
-	      // Add inline content `inline` to `li`. inline comes from processInline
-	      // so is an array of content
-	      function add(li, loose, inline, nl) {
-	        if ( loose ) {
-	          li.push( [ "para" ].concat(inline) );
-	          return;
-	        }
-	        // Hmmm, should this be any block level element or just paras?
-	        var add_to = li[li.length -1] instanceof Array && li[li.length - 1][0] == "para"
-	                   ? li[li.length -1]
-	                   : li;
-
-	        // If there is already some content in this list, add the new line in
-	        if ( nl && li.length > 1 ) inline.unshift(nl);
-
-	        for ( var i = 0; i < inline.length; i++ ) {
-	          var what = inline[i],
-	              is_str = typeof what == "string";
-	          if ( is_str && add_to.length > 1 && typeof add_to[add_to.length-1] == "string" ) {
-	            add_to[ add_to.length-1 ] += what;
-	          }
-	          else {
-	            add_to.push( what );
-	          }
-	        }
-	      }
-
-	      // contained means have an indent greater than the current one. On
-	      // *every* line in the block
-	      function get_contained_blocks( depth, blocks ) {
-
-	        var re = new RegExp( "^(" + indent_re + "{" + depth + "}.*?\\n?)*$" ),
-	            replace = new RegExp("^" + indent_re + "{" + depth + "}", "gm"),
-	            ret = [];
-
-	        while ( blocks.length > 0 ) {
-	          if ( re.exec( blocks[0] ) ) {
-	            var b = blocks.shift(),
-	                // Now remove that indent
-	                x = b.replace( replace, "");
-
-	            ret.push( mk_block( x, b.trailing, b.lineNumber ) );
-	          }
-	          else {
-	            break;
-	          }
-	        }
-	        return ret;
-	      }
-
-	      // passed to stack.forEach to turn list items up the stack into paras
-	      function paragraphify(s, i, stack) {
-	        var list = s.list;
-	        var last_li = list[list.length-1];
-
-	        if ( last_li[1] instanceof Array && last_li[1][0] == "para" ) {
-	          return;
-	        }
-	        if ( i + 1 == stack.length ) {
-	          // Last stack frame
-	          // Keep the same array, but replace the contents
-	          last_li.push( ["para"].concat( last_li.splice(1, last_li.length - 1) ) );
-	        }
-	        else {
-	          var sublist = last_li.pop();
-	          last_li.push( ["para"].concat( last_li.splice(1, last_li.length - 1) ), sublist );
-	        }
-	      }
-
-	      // The matcher function
-	      return function( block, next ) {
-	        var m = block.match( is_list_re );
-	        if ( !m ) return undefined;
-
-	        function make_list( m ) {
-	          var list = bullet_list.exec( m[2] )
-	                   ? ["bulletlist"]
-	                   : ["numberlist"];
-
-	          stack.push( { list: list, indent: m[1] } );
-	          return list;
-	        }
-
-
-	        var stack = [], // Stack of lists for nesting.
-	            list = make_list( m ),
-	            last_li,
-	            loose = false,
-	            ret = [ stack[0].list ],
-	            i;
-
-	        // Loop to search over block looking for inner block elements and loose lists
-	        loose_search:
-	        while ( true ) {
-	          // Split into lines preserving new lines at end of line
-	          var lines = block.split( /(?=\n)/ );
-
-	          // We have to grab all lines for a li and call processInline on them
-	          // once as there are some inline things that can span lines.
-	          var li_accumulate = "";
-
-	          // Loop over the lines in this block looking for tight lists.
-	          tight_search:
-	          for ( var line_no = 0; line_no < lines.length; line_no++ ) {
-	            var nl = "",
-	                l = lines[line_no].replace(/^\n/, function(n) { nl = n; return ""; });
-
-	            // TODO: really should cache this
-	            var line_re = regex_for_depth( stack.length );
-
-	            m = l.match( line_re );
-	            //print( "line:", uneval(l), "\nline match:", uneval(m) );
-
-	            // We have a list item
-	            if ( m[1] !== undefined ) {
-	              // Process the previous list item, if any
-	              if ( li_accumulate.length ) {
-	                add( last_li, loose, this.processInline( li_accumulate ), nl );
-	                // Loose mode will have been dealt with. Reset it
-	                loose = false;
-	                li_accumulate = "";
-	              }
-
-	              m[1] = expand_tab( m[1] );
-	              var wanted_depth = Math.floor(m[1].length/4)+1;
-	              //print( "want:", wanted_depth, "stack:", stack.length);
-	              if ( wanted_depth > stack.length ) {
-	                // Deep enough for a nested list outright
-	                //print ( "new nested list" );
-	                list = make_list( m );
-	                last_li.push( list );
-	                last_li = list[1] = [ "listitem" ];
-	              }
-	              else {
-	                // We aren't deep enough to be strictly a new level. This is
-	                // where Md.pl goes nuts. If the indent matches a level in the
-	                // stack, put it there, else put it one deeper then the
-	                // wanted_depth deserves.
-	                var found = false;
-	                for ( i = 0; i < stack.length; i++ ) {
-	                  if ( stack[ i ].indent != m[1] ) continue;
-	                  list = stack[ i ].list;
-	                  stack.splice( i+1, stack.length - (i+1) );
-	                  found = true;
-	                  break;
-	                }
-
-	                if (!found) {
-	                  //print("not found. l:", uneval(l));
-	                  wanted_depth++;
-	                  if ( wanted_depth <= stack.length ) {
-	                    stack.splice(wanted_depth, stack.length - wanted_depth);
-	                    //print("Desired depth now", wanted_depth, "stack:", stack.length);
-	                    list = stack[wanted_depth-1].list;
-	                    //print("list:", uneval(list) );
-	                  }
-	                  else {
-	                    //print ("made new stack for messy indent");
-	                    list = make_list(m);
-	                    last_li.push(list);
-	                  }
-	                }
-
-	                //print( uneval(list), "last", list === stack[stack.length-1].list );
-	                last_li = [ "listitem" ];
-	                list.push(last_li);
-	              } // end depth of shenegains
-	              nl = "";
-	            }
-
-	            // Add content
-	            if ( l.length > m[0].length ) {
-	              li_accumulate += nl + l.substr( m[0].length );
-	            }
-	          } // tight_search
-
-	          if ( li_accumulate.length ) {
-	            add( last_li, loose, this.processInline( li_accumulate ), nl );
-	            // Loose mode will have been dealt with. Reset it
-	            loose = false;
-	            li_accumulate = "";
-	          }
-
-	          // Look at the next block - we might have a loose list. Or an extra
-	          // paragraph for the current li
-	          var contained = get_contained_blocks( stack.length, next );
-
-	          // Deal with code blocks or properly nested lists
-	          if ( contained.length > 0 ) {
-	            // Make sure all listitems up the stack are paragraphs
-	            forEach( stack, paragraphify, this);
-
-	            last_li.push.apply( last_li, this.toTree( contained, [] ) );
-	          }
-
-	          var next_block = next[0] && next[0].valueOf() || "";
-
-	          if ( next_block.match(is_list_re) || next_block.match( /^ / ) ) {
-	            block = next.shift();
-
-	            // Check for an HR following a list: features/lists/hr_abutting
-	            var hr = this.dialect.block.horizRule( block, next );
-
-	            if ( hr ) {
-	              ret.push.apply(ret, hr);
-	              break;
-	            }
-
-	            // Make sure all listitems up the stack are paragraphs
-	            forEach( stack, paragraphify, this);
-
-	            loose = true;
-	            continue loose_search;
-	          }
-	          break;
-	        } // loose_search
-
-	        return ret;
-	      };
-	    })(),
-
-	    blockquote: function blockquote( block, next ) {
-	      if ( !block.match( /^>/m ) )
-	        return undefined;
-
-	      var jsonml = [];
-
-	      // separate out the leading abutting block, if any. I.e. in this case:
-	      //
-	      //  a
-	      //  > b
-	      //
-	      if ( block[ 0 ] != ">" ) {
-	        var lines = block.split( /\n/ ),
-	            prev = [],
-	            line_no = block.lineNumber;
-
-	        // keep shifting lines until you find a crotchet
-	        while ( lines.length && lines[ 0 ][ 0 ] != ">" ) {
-	            prev.push( lines.shift() );
-	            line_no++;
-	        }
-
-	        var abutting = mk_block( prev.join( "\n" ), "\n", block.lineNumber );
-	        jsonml.push.apply( jsonml, this.processBlock( abutting, [] ) );
-	        // reassemble new block of just block quotes!
-	        block = mk_block( lines.join( "\n" ), block.trailing, line_no );
-	      }
-
-
-	      // if the next block is also a blockquote merge it in
-	      while ( next.length && next[ 0 ][ 0 ] == ">" ) {
-	        var b = next.shift();
-	        block = mk_block( block + block.trailing + b, b.trailing, block.lineNumber );
-	      }
-
-	      // Strip off the leading "> " and re-process as a block.
-	      var input = block.replace( /^> ?/gm, "" ),
-	          old_tree = this.tree,
-	          processedBlock = this.toTree( input, [ "blockquote" ] ),
-	          attr = extract_attr( processedBlock );
-
-	      // If any link references were found get rid of them
-	      if ( attr && attr.references ) {
-	        delete attr.references;
-	        // And then remove the attribute object if it's empty
-	        if ( isEmpty( attr ) ) {
-	          processedBlock.splice( 1, 1 );
-	        }
-	      }
-
-	      jsonml.push( processedBlock );
-	      return jsonml;
-	    },
-
-	    referenceDefn: function referenceDefn( block, next) {
-	      var re = /^\s*\[(.*?)\]:\s*(\S+)(?:\s+(?:(['"])(.*?)\3|\((.*?)\)))?\n?/;
-	      // interesting matches are [ , ref_id, url, , title, title ]
-
-	      if ( !block.match(re) )
-	        return undefined;
-
-	      // make an attribute node if it doesn't exist
-	      if ( !extract_attr( this.tree ) ) {
-	        this.tree.splice( 1, 0, {} );
-	      }
-
-	      var attrs = extract_attr( this.tree );
-
-	      // make a references hash if it doesn't exist
-	      if ( attrs.references === undefined ) {
-	        attrs.references = {};
-	      }
-
-	      var b = this.loop_re_over_block(re, block, function( m ) {
-
-	        if ( m[2] && m[2][0] == "<" && m[2][m[2].length-1] == ">" )
-	          m[2] = m[2].substring( 1, m[2].length - 1 );
-
-	        var ref = attrs.references[ m[1].toLowerCase() ] = {
-	          href: m[2]
-	        };
-
-	        if ( m[4] !== undefined )
-	          ref.title = m[4];
-	        else if ( m[5] !== undefined )
-	          ref.title = m[5];
-
-	      } );
-
-	      if ( b.length )
-	        next.unshift( mk_block( b, block.trailing ) );
-
-	      return [];
-	    },
-
-	    para: function para( block, next ) {
-	      // everything's a para!
-	      return [ ["para"].concat( this.processInline( block ) ) ];
-	    }
-	  }
-	};
-
-	Markdown.dialects.Gruber.inline = {
-
-	    __oneElement__: function oneElement( text, patterns_or_re, previous_nodes ) {
-	      var m,
-	          res,
-	          lastIndex = 0;
-
-	      patterns_or_re = patterns_or_re || this.dialect.inline.__patterns__;
-	      var re = new RegExp( "([\\s\\S]*?)(" + (patterns_or_re.source || patterns_or_re) + ")" );
-
-	      m = re.exec( text );
-	      if (!m) {
-	        // Just boring text
-	        return [ text.length, text ];
-	      }
-	      else if ( m[1] ) {
-	        // Some un-interesting text matched. Return that first
-	        return [ m[1].length, m[1] ];
-	      }
-
-	      var res;
-	      if ( m[2] in this.dialect.inline ) {
-	        res = this.dialect.inline[ m[2] ].call(
-	                  this,
-	                  text.substr( m.index ), m, previous_nodes || [] );
-	      }
-	      // Default for now to make dev easier. just slurp special and output it.
-	      res = res || [ m[2].length, m[2] ];
-	      return res;
-	    },
-
-	    __call__: function inline( text, patterns ) {
-
-	      var out = [],
-	          res;
-
-	      function add(x) {
-	        //D:self.debug("  adding output", uneval(x));
-	        if ( typeof x == "string" && typeof out[out.length-1] == "string" )
-	          out[ out.length-1 ] += x;
-	        else
-	          out.push(x);
-	      }
-
-	      while ( text.length > 0 ) {
-	        res = this.dialect.inline.__oneElement__.call(this, text, patterns, out );
-	        text = text.substr( res.shift() );
-	        forEach(res, add )
-	      }
-
-	      return out;
-	    },
-
-	    // These characters are intersting elsewhere, so have rules for them so that
-	    // chunks of plain text blocks don't include them
-	    "]": function () {},
-	    "}": function () {},
-
-	    __escape__ : /^\\[\\`\*_{}\[\]()#\+.!\-]/,
-
-	    "\\": function escaped( text ) {
-	      // [ length of input processed, node/children to add... ]
-	      // Only esacape: \ ` * _ { } [ ] ( ) # * + - . !
-	      if ( this.dialect.inline.__escape__.exec( text ) )
-	        return [ 2, text.charAt( 1 ) ];
-	      else
-	        // Not an esacpe
-	        return [ 1, "\\" ];
-	    },
-
-	    "![": function image( text ) {
-
-	      // Unlike images, alt text is plain text only. no other elements are
-	      // allowed in there
-
-	      // ![Alt text](/path/to/img.jpg "Optional title")
-	      //      1          2            3       4         <--- captures
-	      var m = text.match( /^!\[(.*?)\][ \t]*\([ \t]*([^")]*?)(?:[ \t]+(["'])(.*?)\3)?[ \t]*\)/ );
-
-	      if ( m ) {
-	        if ( m[2] && m[2][0] == "<" && m[2][m[2].length-1] == ">" )
-	          m[2] = m[2].substring( 1, m[2].length - 1 );
-
-	        m[2] = this.dialect.inline.__call__.call( this, m[2], /\\/ )[0];
-
-	        var attrs = { alt: m[1], href: m[2] || "" };
-	        if ( m[4] !== undefined)
-	          attrs.title = m[4];
-
-	        return [ m[0].length, [ "img", attrs ] ];
-	      }
-
-	      // ![Alt text][id]
-	      m = text.match( /^!\[(.*?)\][ \t]*\[(.*?)\]/ );
-
-	      if ( m ) {
-	        // We can't check if the reference is known here as it likely wont be
-	        // found till after. Check it in md tree->hmtl tree conversion
-	        return [ m[0].length, [ "img_ref", { alt: m[1], ref: m[2].toLowerCase(), original: m[0] } ] ];
-	      }
-
-	      // Just consume the '!['
-	      return [ 2, "![" ];
-	    },
-
-	    "[": function link( text ) {
-
-	      var orig = String(text);
-	      // Inline content is possible inside `link text`
-	      var res = Markdown.DialectHelpers.inline_until_char.call( this, text.substr(1), "]" );
-
-	      // No closing ']' found. Just consume the [
-	      if ( !res ) return [ 1, "[" ];
-
-	      var consumed = 1 + res[ 0 ],
-	          children = res[ 1 ],
-	          link,
-	          attrs;
-
-	      // At this point the first [...] has been parsed. See what follows to find
-	      // out which kind of link we are (reference or direct url)
-	      text = text.substr( consumed );
-
-	      // [link text](/path/to/img.jpg "Optional title")
-	      //                 1            2       3         <--- captures
-	      // This will capture up to the last paren in the block. We then pull
-	      // back based on if there a matching ones in the url
-	      //    ([here](/url/(test))
-	      // The parens have to be balanced
-	      var m = text.match( /^\s*\([ \t]*([^"']*)(?:[ \t]+(["'])(.*?)\2)?[ \t]*\)/ );
-	      if ( m ) {
-	        var url = m[1];
-	        consumed += m[0].length;
-
-	        if ( url && url[0] == "<" && url[url.length-1] == ">" )
-	          url = url.substring( 1, url.length - 1 );
-
-	        // If there is a title we don't have to worry about parens in the url
-	        if ( !m[3] ) {
-	          var open_parens = 1; // One open that isn't in the capture
-	          for ( var len = 0; len < url.length; len++ ) {
-	            switch ( url[len] ) {
-	            case "(":
-	              open_parens++;
-	              break;
-	            case ")":
-	              if ( --open_parens == 0) {
-	                consumed -= url.length - len;
-	                url = url.substring(0, len);
-	              }
-	              break;
-	            }
-	          }
-	        }
-
-	        // Process escapes only
-	        url = this.dialect.inline.__call__.call( this, url, /\\/ )[0];
-
-	        attrs = { href: url || "" };
-	        if ( m[3] !== undefined)
-	          attrs.title = m[3];
-
-	        link = [ "link", attrs ].concat( children );
-	        return [ consumed, link ];
-	      }
-
-	      // [Alt text][id]
-	      // [Alt text] [id]
-	      m = text.match( /^\s*\[(.*?)\]/ );
-
-	      if ( m ) {
-
-	        consumed += m[ 0 ].length;
-
-	        // [links][] uses links as its reference
-	        attrs = { ref: ( m[ 1 ] || String(children) ).toLowerCase(),  original: orig.substr( 0, consumed ) };
-
-	        link = [ "link_ref", attrs ].concat( children );
-
-	        // We can't check if the reference is known here as it likely wont be
-	        // found till after. Check it in md tree->hmtl tree conversion.
-	        // Store the original so that conversion can revert if the ref isn't found.
-	        return [ consumed, link ];
-	      }
-
-	      // [id]
-	      // Only if id is plain (no formatting.)
-	      if ( children.length == 1 && typeof children[0] == "string" ) {
-
-	        attrs = { ref: children[0].toLowerCase(),  original: orig.substr( 0, consumed ) };
-	        link = [ "link_ref", attrs, children[0] ];
-	        return [ consumed, link ];
-	      }
-
-	      // Just consume the "["
-	      return [ 1, "[" ];
-	    },
-
-
-	    "<": function autoLink( text ) {
-	      var m;
-
-	      if ( ( m = text.match( /^<(?:((https?|ftp|mailto):[^>]+)|(.*?@.*?\.[a-zA-Z]+))>/ ) ) != null ) {
-	        if ( m[3] ) {
-	          return [ m[0].length, [ "link", { href: "mailto:" + m[3] }, m[3] ] ];
-
-	        }
-	        else if ( m[2] == "mailto" ) {
-	          return [ m[0].length, [ "link", { href: m[1] }, m[1].substr("mailto:".length ) ] ];
-	        }
-	        else
-	          return [ m[0].length, [ "link", { href: m[1] }, m[1] ] ];
-	      }
-
-	      return [ 1, "<" ];
-	    },
-
-	    "`": function inlineCode( text ) {
-	      // Inline code block. as many backticks as you like to start it
-	      // Always skip over the opening ticks.
-	      var m = text.match( /(`+)(([\s\S]*?)\1)/ );
-
-	      if ( m && m[2] )
-	        return [ m[1].length + m[2].length, [ "inlinecode", m[3] ] ];
-	      else {
-	        // TODO: No matching end code found - warn!
-	        return [ 1, "`" ];
-	      }
-	    },
-
-	    "  \n": function lineBreak( text ) {
-	      return [ 3, [ "linebreak" ] ];
-	    }
-
-	};
-
-	// Meta Helper/generator method for em and strong handling
-	function strong_em( tag, md ) {
-
-	  var state_slot = tag + "_state",
-	      other_slot = tag == "strong" ? "em_state" : "strong_state";
-
-	  function CloseTag(len) {
-	    this.len_after = len;
-	    this.name = "close_" + md;
-	  }
-
-	  return function ( text, orig_match ) {
-
-	    if ( this[state_slot][0] == md ) {
-	      // Most recent em is of this type
-	      //D:this.debug("closing", md);
-	      this[state_slot].shift();
-
-	      // "Consume" everything to go back to the recrusion in the else-block below
-	      return[ text.length, new CloseTag(text.length-md.length) ];
-	    }
-	    else {
-	      // Store a clone of the em/strong states
-	      var other = this[other_slot].slice(),
-	          state = this[state_slot].slice();
-
-	      this[state_slot].unshift(md);
-
-	      //D:this.debug_indent += "  ";
-
-	      // Recurse
-	      var res = this.processInline( text.substr( md.length ) );
-	      //D:this.debug_indent = this.debug_indent.substr(2);
-
-	      var last = res[res.length - 1];
-
-	      //D:this.debug("processInline from", tag + ": ", uneval( res ) );
-
-	      var check = this[state_slot].shift();
-	      if ( last instanceof CloseTag ) {
-	        res.pop();
-	        // We matched! Huzzah.
-	        var consumed = text.length - last.len_after;
-	        return [ consumed, [ tag ].concat(res) ];
-	      }
-	      else {
-	        // Restore the state of the other kind. We might have mistakenly closed it.
-	        this[other_slot] = other;
-	        this[state_slot] = state;
-
-	        // We can't reuse the processed result as it could have wrong parsing contexts in it.
-	        return [ md.length, md ];
-	      }
-	    }
-	  }; // End returned function
-	}
-
-	Markdown.dialects.Gruber.inline["**"] = strong_em("strong", "**");
-	Markdown.dialects.Gruber.inline["__"] = strong_em("strong", "__");
-	Markdown.dialects.Gruber.inline["*"]  = strong_em("em", "*");
-	Markdown.dialects.Gruber.inline["_"]  = strong_em("em", "_");
-
-
-	// Build default order from insertion order.
-	Markdown.buildBlockOrder = function(d) {
-	  var ord = [];
-	  for ( var i in d ) {
-	    if ( i == "__order__" || i == "__call__" ) continue;
-	    ord.push( i );
-	  }
-	  d.__order__ = ord;
-	};
-
-	// Build patterns for inline matcher
-	Markdown.buildInlinePatterns = function(d) {
-	  var patterns = [];
-
-	  for ( var i in d ) {
-	    // __foo__ is reserved and not a pattern
-	    if ( i.match( /^__.*__$/) ) continue;
-	    var l = i.replace( /([\\.*+?|()\[\]{}])/g, "\\$1" )
-	             .replace( /\n/, "\\n" );
-	    patterns.push( i.length == 1 ? l : "(?:" + l + ")" );
-	  }
-
-	  patterns = patterns.join("|");
-	  d.__patterns__ = patterns;
-	  //print("patterns:", uneval( patterns ) );
-
-	  var fn = d.__call__;
-	  d.__call__ = function(text, pattern) {
-	    if ( pattern != undefined ) {
-	      return fn.call(this, text, pattern);
-	    }
-	    else
-	    {
-	      return fn.call(this, text, patterns);
-	    }
-	  };
-	};
-
-	Markdown.DialectHelpers = {};
-	Markdown.DialectHelpers.inline_until_char = function( text, want ) {
-	  var consumed = 0,
-	      nodes = [];
-
-	  while ( true ) {
-	    if ( text.charAt( consumed ) == want ) {
-	      // Found the character we were looking for
-	      consumed++;
-	      return [ consumed, nodes ];
-	    }
-
-	    if ( consumed >= text.length ) {
-	      // No closing char found. Abort.
-	      return null;
-	    }
-
-	    var res = this.dialect.inline.__oneElement__.call(this, text.substr( consumed ) );
-	    consumed += res[ 0 ];
-	    // Add any returned nodes.
-	    nodes.push.apply( nodes, res.slice( 1 ) );
-	  }
-	}
-
-	// Helper function to make sub-classing a dialect easier
-	Markdown.subclassDialect = function( d ) {
-	  function Block() {}
-	  Block.prototype = d.block;
-	  function Inline() {}
-	  Inline.prototype = d.inline;
-
-	  return { block: new Block(), inline: new Inline() };
-	};
-
-	Markdown.buildBlockOrder ( Markdown.dialects.Gruber.block );
-	Markdown.buildInlinePatterns( Markdown.dialects.Gruber.inline );
-
-	Markdown.dialects.Maruku = Markdown.subclassDialect( Markdown.dialects.Gruber );
-
-	Markdown.dialects.Maruku.processMetaHash = function processMetaHash( meta_string ) {
-	  var meta = split_meta_hash( meta_string ),
-	      attr = {};
-
-	  for ( var i = 0; i < meta.length; ++i ) {
-	    // id: #foo
-	    if ( /^#/.test( meta[ i ] ) ) {
-	      attr.id = meta[ i ].substring( 1 );
-	    }
-	    // class: .foo
-	    else if ( /^\./.test( meta[ i ] ) ) {
-	      // if class already exists, append the new one
-	      if ( attr["class"] ) {
-	        attr["class"] = attr["class"] + meta[ i ].replace( /./, " " );
-	      }
-	      else {
-	        attr["class"] = meta[ i ].substring( 1 );
-	      }
-	    }
-	    // attribute: foo=bar
-	    else if ( /\=/.test( meta[ i ] ) ) {
-	      var s = meta[ i ].split( /\=/ );
-	      attr[ s[ 0 ] ] = s[ 1 ];
-	    }
-	  }
-
-	  return attr;
-	}
-
-	function split_meta_hash( meta_string ) {
-	  var meta = meta_string.split( "" ),
-	      parts = [ "" ],
-	      in_quotes = false;
-
-	  while ( meta.length ) {
-	    var letter = meta.shift();
-	    switch ( letter ) {
-	      case " " :
-	        // if we're in a quoted section, keep it
-	        if ( in_quotes ) {
-	          parts[ parts.length - 1 ] += letter;
-	        }
-	        // otherwise make a new part
-	        else {
-	          parts.push( "" );
-	        }
-	        break;
-	      case "'" :
-	      case '"' :
-	        // reverse the quotes and move straight on
-	        in_quotes = !in_quotes;
-	        break;
-	      case "\\" :
-	        // shift off the next letter to be used straight away.
-	        // it was escaped so we'll keep it whatever it is
-	        letter = meta.shift();
-	      default :
-	        parts[ parts.length - 1 ] += letter;
-	        break;
-	    }
-	  }
-
-	  return parts;
-	}
-
-	Markdown.dialects.Maruku.block.document_meta = function document_meta( block, next ) {
-	  // we're only interested in the first block
-	  if ( block.lineNumber > 1 ) return undefined;
-
-	  // document_meta blocks consist of one or more lines of `Key: Value\n`
-	  if ( ! block.match( /^(?:\w+:.*\n)*\w+:.*$/ ) ) return undefined;
-
-	  // make an attribute node if it doesn't exist
-	  if ( !extract_attr( this.tree ) ) {
-	    this.tree.splice( 1, 0, {} );
-	  }
-
-	  var pairs = block.split( /\n/ );
-	  for ( p in pairs ) {
-	    var m = pairs[ p ].match( /(\w+):\s*(.*)$/ ),
-	        key = m[ 1 ].toLowerCase(),
-	        value = m[ 2 ];
-
-	    this.tree[ 1 ][ key ] = value;
-	  }
-
-	  // document_meta produces no content!
-	  return [];
-	};
-
-	Markdown.dialects.Maruku.block.block_meta = function block_meta( block, next ) {
-	  // check if the last line of the block is an meta hash
-	  var m = block.match( /(^|\n) {0,3}\{:\s*((?:\\\}|[^\}])*)\s*\}$/ );
-	  if ( !m ) return undefined;
-
-	  // process the meta hash
-	  var attr = this.dialect.processMetaHash( m[ 2 ] );
-
-	  var hash;
-
-	  // if we matched ^ then we need to apply meta to the previous block
-	  if ( m[ 1 ] === "" ) {
-	    var node = this.tree[ this.tree.length - 1 ];
-	    hash = extract_attr( node );
-
-	    // if the node is a string (rather than JsonML), bail
-	    if ( typeof node === "string" ) return undefined;
-
-	    // create the attribute hash if it doesn't exist
-	    if ( !hash ) {
-	      hash = {};
-	      node.splice( 1, 0, hash );
-	    }
-
-	    // add the attributes in
-	    for ( a in attr ) {
-	      hash[ a ] = attr[ a ];
-	    }
-
-	    // return nothing so the meta hash is removed
-	    return [];
-	  }
-
-	  // pull the meta hash off the block and process what's left
-	  var b = block.replace( /\n.*$/, "" ),
-	      result = this.processBlock( b, [] );
-
-	  // get or make the attributes hash
-	  hash = extract_attr( result[ 0 ] );
-	  if ( !hash ) {
-	    hash = {};
-	    result[ 0 ].splice( 1, 0, hash );
-	  }
-
-	  // attach the attributes to the block
-	  for ( a in attr ) {
-	    hash[ a ] = attr[ a ];
-	  }
-
-	  return result;
-	};
-
-	Markdown.dialects.Maruku.block.definition_list = function definition_list( block, next ) {
-	  // one or more terms followed by one or more definitions, in a single block
-	  var tight = /^((?:[^\s:].*\n)+):\s+([\s\S]+)$/,
-	      list = [ "dl" ],
-	      i, m;
-
-	  // see if we're dealing with a tight or loose block
-	  if ( ( m = block.match( tight ) ) ) {
-	    // pull subsequent tight DL blocks out of `next`
-	    var blocks = [ block ];
-	    while ( next.length && tight.exec( next[ 0 ] ) ) {
-	      blocks.push( next.shift() );
-	    }
-
-	    for ( var b = 0; b < blocks.length; ++b ) {
-	      var m = blocks[ b ].match( tight ),
-	          terms = m[ 1 ].replace( /\n$/, "" ).split( /\n/ ),
-	          defns = m[ 2 ].split( /\n:\s+/ );
-
-	      // print( uneval( m ) );
-
-	      for ( i = 0; i < terms.length; ++i ) {
-	        list.push( [ "dt", terms[ i ] ] );
-	      }
-
-	      for ( i = 0; i < defns.length; ++i ) {
-	        // run inline processing over the definition
-	        list.push( [ "dd" ].concat( this.processInline( defns[ i ].replace( /(\n)\s+/, "$1" ) ) ) );
-	      }
-	    }
-	  }
-	  else {
-	    return undefined;
-	  }
-
-	  return [ list ];
-	};
-
-	// splits on unescaped instances of @ch. If @ch is not a character the result
-	// can be unpredictable
-
-	Markdown.dialects.Maruku.block.table = function table (block, next) {
-
-	    var _split_on_unescaped = function(s, ch) {
-	        ch = ch || '\\s';
-	        if (ch.match(/^[\\|\[\]{}?*.+^$]$/)) { ch = '\\' + ch; }
-	        var res = [ ],
-	            r = new RegExp('^((?:\\\\.|[^\\\\' + ch + '])*)' + ch + '(.*)'),
-	            m;
-	        while(m = s.match(r)) {
-	            res.push(m[1]);
-	            s = m[2];
-	        }
-	        res.push(s);
-	        return res;
-	    }
-
-	    var leading_pipe = /^ {0,3}\|(.+)\n {0,3}\|\s*([\-:]+[\-| :]*)\n((?:\s*\|.*(?:\n|$))*)(?=\n|$)/,
-	        // find at least an unescaped pipe in each line
-	        no_leading_pipe = /^ {0,3}(\S(?:\\.|[^\\|])*\|.*)\n {0,3}([\-:]+\s*\|[\-| :]*)\n((?:(?:\\.|[^\\|])*\|.*(?:\n|$))*)(?=\n|$)/,
-	        i, m;
-	    if (m = block.match(leading_pipe)) {
-	        // remove leading pipes in contents
-	        // (header and horizontal rule already have the leading pipe left out)
-	        m[3] = m[3].replace(/^\s*\|/gm, '');
-	    } else if (! ( m = block.match(no_leading_pipe))) {
-	        return undefined;
-	    }
-
-	    var table = [ "table", [ "thead", [ "tr" ] ], [ "tbody" ] ];
-
-	    // remove trailing pipes, then split on pipes
-	    // (no escaped pipes are allowed in horizontal rule)
-	    m[2] = m[2].replace(/\|\s*$/, '').split('|');
-
-	    // process alignment
-	    var html_attrs = [ ];
-	    forEach (m[2], function (s) {
-	        if (s.match(/^\s*-+:\s*$/))       html_attrs.push({align: "right"});
-	        else if (s.match(/^\s*:-+\s*$/))  html_attrs.push({align: "left"});
-	        else if (s.match(/^\s*:-+:\s*$/)) html_attrs.push({align: "center"});
-	        else                              html_attrs.push({});
-	    });
-
-	    // now for the header, avoid escaped pipes
-	    m[1] = _split_on_unescaped(m[1].replace(/\|\s*$/, ''), '|');
-	    for (i = 0; i < m[1].length; i++) {
-	        table[1][1].push(['th', html_attrs[i] || {}].concat(
-	            this.processInline(m[1][i].trim())));
-	    }
-
-	    // now for body contents
-	    forEach (m[3].replace(/\|\s*$/mg, '').split('\n'), function (row) {
-	        var html_row = ['tr'];
-	        row = _split_on_unescaped(row, '|');
-	        for (i = 0; i < row.length; i++) {
-	            html_row.push(['td', html_attrs[i] || {}].concat(this.processInline(row[i].trim())));
-	        }
-	        table[2].push(html_row);
-	    }, this);
-
-	    return [table];
-	}
-
-	Markdown.dialects.Maruku.inline[ "{:" ] = function inline_meta( text, matches, out ) {
-	  if ( !out.length ) {
-	    return [ 2, "{:" ];
-	  }
-
-	  // get the preceeding element
-	  var before = out[ out.length - 1 ];
-
-	  if ( typeof before === "string" ) {
-	    return [ 2, "{:" ];
-	  }
-
-	  // match a meta hash
-	  var m = text.match( /^\{:\s*((?:\\\}|[^\}])*)\s*\}/ );
-
-	  // no match, false alarm
-	  if ( !m ) {
-	    return [ 2, "{:" ];
-	  }
-
-	  // attach the attributes to the preceeding element
-	  var meta = this.dialect.processMetaHash( m[ 1 ] ),
-	      attr = extract_attr( before );
-
-	  if ( !attr ) {
-	    attr = {};
-	    before.splice( 1, 0, attr );
-	  }
-
-	  for ( var k in meta ) {
-	    attr[ k ] = meta[ k ];
-	  }
-
-	  // cut out the string and replace it with nothing
-	  return [ m[ 0 ].length, "" ];
-	};
-
-	Markdown.dialects.Maruku.inline.__escape__ = /^\\[\\`\*_{}\[\]()#\+.!\-|:]/;
-
-	Markdown.buildBlockOrder ( Markdown.dialects.Maruku.block );
-	Markdown.buildInlinePatterns( Markdown.dialects.Maruku.inline );
-
-	var isArray = Array.isArray || function(obj) {
-	  return Object.prototype.toString.call(obj) == "[object Array]";
-	};
-
-	var forEach;
-	// Don't mess with Array.prototype. Its not friendly
-	if ( Array.prototype.forEach ) {
-	  forEach = function( arr, cb, thisp ) {
-	    return arr.forEach( cb, thisp );
-	  };
-	}
-	else {
-	  forEach = function(arr, cb, thisp) {
-	    for (var i = 0; i < arr.length; i++) {
-	      cb.call(thisp || arr, arr[i], i, arr);
-	    }
-	  }
-	}
-
-	var isEmpty = function( obj ) {
-	  for ( var key in obj ) {
-	    if ( hasOwnProperty.call( obj, key ) ) {
-	      return false;
-	    }
-	  }
-
-	  return true;
-	}
-
-	function extract_attr( jsonml ) {
-	  return isArray(jsonml)
-	      && jsonml.length > 1
-	      && typeof jsonml[ 1 ] === "object"
-	      && !( isArray(jsonml[ 1 ]) )
-	      ? jsonml[ 1 ]
-	      : undefined;
-	}
-
-
-
-	/**
-	 *  renderJsonML( jsonml[, options] ) -> String
-	 *  - jsonml (Array): JsonML array to render to XML
-	 *  - options (Object): options
-	 *
-	 *  Converts the given JsonML into well-formed XML.
-	 *
-	 *  The options currently understood are:
-	 *
-	 *  - root (Boolean): wether or not the root node should be included in the
-	 *    output, or just its children. The default `false` is to not include the
-	 *    root itself.
-	 */
-	expose.renderJsonML = function( jsonml, options ) {
-	  options = options || {};
-	  // include the root element in the rendered output?
-	  options.root = options.root || false;
-
-	  var content = [];
-
-	  if ( options.root ) {
-	    content.push( render_tree( jsonml ) );
-	  }
-	  else {
-	    jsonml.shift(); // get rid of the tag
-	    if ( jsonml.length && typeof jsonml[ 0 ] === "object" && !( jsonml[ 0 ] instanceof Array ) ) {
-	      jsonml.shift(); // get rid of the attributes
-	    }
-
-	    while ( jsonml.length ) {
-	      content.push( render_tree( jsonml.shift() ) );
-	    }
-	  }
-
-	  return content.join( "\n\n" );
-	};
-
-	function escapeHTML( text ) {
-	  return text.replace( /&/g, "&amp;" )
-	             .replace( /</g, "&lt;" )
-	             .replace( />/g, "&gt;" )
-	             .replace( /"/g, "&quot;" )
-	             .replace( /'/g, "&#39;" );
-	}
-
-	function render_tree( jsonml ) {
-	  // basic case
-	  if ( typeof jsonml === "string" ) {
-	    return escapeHTML( jsonml );
-	  }
-
-	  var tag = jsonml.shift(),
-	      attributes = {},
-	      content = [];
-
-	  if ( jsonml.length && typeof jsonml[ 0 ] === "object" && !( jsonml[ 0 ] instanceof Array ) ) {
-	    attributes = jsonml.shift();
-	  }
-
-	  while ( jsonml.length ) {
-	    content.push( render_tree( jsonml.shift() ) );
-	  }
-
-	  var tag_attrs = "";
-	  for ( var a in attributes ) {
-	    tag_attrs += " " + a + '="' + escapeHTML( attributes[ a ] ) + '"';
-	  }
-
-	  // be careful about adding whitespace here for inline elements
-	  if ( tag == "img" || tag == "br" || tag == "hr" ) {
-	    return "<"+ tag + tag_attrs + "/>";
-	  }
-	  else {
-	    return "<"+ tag + tag_attrs + ">" + content.join( "" ) + "</" + tag + ">";
-	  }
-	}
-
-	function convert_tree_to_html( tree, references, options ) {
-	  var i;
-	  options = options || {};
-
-	  // shallow clone
-	  var jsonml = tree.slice( 0 );
-
-	  if ( typeof options.preprocessTreeNode === "function" ) {
-	      jsonml = options.preprocessTreeNode(jsonml, references);
-	  }
-
-	  // Clone attributes if they exist
-	  var attrs = extract_attr( jsonml );
-	  if ( attrs ) {
-	    jsonml[ 1 ] = {};
-	    for ( i in attrs ) {
-	      jsonml[ 1 ][ i ] = attrs[ i ];
-	    }
-	    attrs = jsonml[ 1 ];
-	  }
-
-	  // basic case
-	  if ( typeof jsonml === "string" ) {
-	    return jsonml;
-	  }
-
-	  // convert this node
-	  switch ( jsonml[ 0 ] ) {
-	    case "header":
-	      jsonml[ 0 ] = "h" + jsonml[ 1 ].level;
-	      delete jsonml[ 1 ].level;
-	      break;
-	    case "bulletlist":
-	      jsonml[ 0 ] = "ul";
-	      break;
-	    case "numberlist":
-	      jsonml[ 0 ] = "ol";
-	      break;
-	    case "listitem":
-	      jsonml[ 0 ] = "li";
-	      break;
-	    case "para":
-	      jsonml[ 0 ] = "p";
-	      break;
-	    case "markdown":
-	      jsonml[ 0 ] = "html";
-	      if ( attrs ) delete attrs.references;
-	      break;
-	    case "code_block":
-	      jsonml[ 0 ] = "pre";
-	      i = attrs ? 2 : 1;
-	      var code = [ "code" ];
-	      code.push.apply( code, jsonml.splice( i, jsonml.length - i ) );
-	      jsonml[ i ] = code;
-	      break;
-	    case "inlinecode":
-	      jsonml[ 0 ] = "code";
-	      break;
-	    case "img":
-	      jsonml[ 1 ].src = jsonml[ 1 ].href;
-	      delete jsonml[ 1 ].href;
-	      break;
-	    case "linebreak":
-	      jsonml[ 0 ] = "br";
-	    break;
-	    case "link":
-	      jsonml[ 0 ] = "a";
-	      break;
-	    case "link_ref":
-	      jsonml[ 0 ] = "a";
-
-	      // grab this ref and clean up the attribute node
-	      var ref = references[ attrs.ref ];
-
-	      // if the reference exists, make the link
-	      if ( ref ) {
-	        delete attrs.ref;
-
-	        // add in the href and title, if present
-	        attrs.href = ref.href;
-	        if ( ref.title ) {
-	          attrs.title = ref.title;
-	        }
-
-	        // get rid of the unneeded original text
-	        delete attrs.original;
-	      }
-	      // the reference doesn't exist, so revert to plain text
-	      else {
-	        return attrs.original;
-	      }
-	      break;
-	    case "img_ref":
-	      jsonml[ 0 ] = "img";
-
-	      // grab this ref and clean up the attribute node
-	      var ref = references[ attrs.ref ];
-
-	      // if the reference exists, make the link
-	      if ( ref ) {
-	        delete attrs.ref;
-
-	        // add in the href and title, if present
-	        attrs.src = ref.href;
-	        if ( ref.title ) {
-	          attrs.title = ref.title;
-	        }
-
-	        // get rid of the unneeded original text
-	        delete attrs.original;
-	      }
-	      // the reference doesn't exist, so revert to plain text
-	      else {
-	        return attrs.original;
-	      }
-	      break;
-	  }
-
-	  // convert all the children
-	  i = 1;
-
-	  // deal with the attribute node, if it exists
-	  if ( attrs ) {
-	    // if there are keys, skip over it
-	    for ( var key in jsonml[ 1 ] ) {
-	        i = 2;
-	        break;
-	    }
-	    // if there aren't, remove it
-	    if ( i === 1 ) {
-	      jsonml.splice( i, 1 );
-	    }
-	  }
-
-	  for ( ; i < jsonml.length; ++i ) {
-	    jsonml[ i ] = convert_tree_to_html( jsonml[ i ], references, options );
-	  }
-
-	  return jsonml;
-	}
-
-
-	// merges adjacent text nodes into a single node
-	function merge_text_nodes( jsonml ) {
-	  // skip the tag name and attribute hash
-	  var i = extract_attr( jsonml ) ? 2 : 1;
-
-	  while ( i < jsonml.length ) {
-	    // if it's a string check the next item too
-	    if ( typeof jsonml[ i ] === "string" ) {
-	      if ( i + 1 < jsonml.length && typeof jsonml[ i + 1 ] === "string" ) {
-	        // merge the second string into the first and remove it
-	        jsonml[ i ] += jsonml.splice( i + 1, 1 )[ 0 ];
-	      }
-	      else {
-	        ++i;
-	      }
-	    }
-	    // if it's not a string recurse
-	    else {
-	      merge_text_nodes( jsonml[ i ] );
-	      ++i;
-	    }
-	  }
-	}
-
-	} )( (function() {
-	  if ( false ) {
-	    window.markdown = {};
-	    return window.markdown;
-	  }
-	  else {
-	    return exports;
-	  }
-	} )() );
-
-
-/***/ },
-/* 614 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/* WEBPACK VAR INJECTION */(function(global, process) {// Copyright Joyent, Inc. and other Node contributors.
-	//
-	// Permission is hereby granted, free of charge, to any person obtaining a
-	// copy of this software and associated documentation files (the
-	// "Software"), to deal in the Software without restriction, including
-	// without limitation the rights to use, copy, modify, merge, publish,
-	// distribute, sublicense, and/or sell copies of the Software, and to permit
-	// persons to whom the Software is furnished to do so, subject to the
-	// following conditions:
-	//
-	// The above copyright notice and this permission notice shall be included
-	// in all copies or substantial portions of the Software.
-	//
-	// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-	// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-	// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
-	// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-	// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-	// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
-	// USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-	var formatRegExp = /%[sdj%]/g;
-	exports.format = function(f) {
-	  if (!isString(f)) {
-	    var objects = [];
-	    for (var i = 0; i < arguments.length; i++) {
-	      objects.push(inspect(arguments[i]));
-	    }
-	    return objects.join(' ');
-	  }
-
-	  var i = 1;
-	  var args = arguments;
-	  var len = args.length;
-	  var str = String(f).replace(formatRegExp, function(x) {
-	    if (x === '%%') return '%';
-	    if (i >= len) return x;
-	    switch (x) {
-	      case '%s': return String(args[i++]);
-	      case '%d': return Number(args[i++]);
-	      case '%j':
-	        try {
-	          return JSON.stringify(args[i++]);
-	        } catch (_) {
-	          return '[Circular]';
-	        }
-	      default:
-	        return x;
-	    }
-	  });
-	  for (var x = args[i]; i < len; x = args[++i]) {
-	    if (isNull(x) || !isObject(x)) {
-	      str += ' ' + x;
-	    } else {
-	      str += ' ' + inspect(x);
-	    }
-	  }
-	  return str;
-	};
-
-
-	// Mark that a method should not be used.
-	// Returns a modified function which warns once by default.
-	// If --no-deprecation is set, then it is a no-op.
-	exports.deprecate = function(fn, msg) {
-	  // Allow for deprecating things in the process of starting up.
-	  if (isUndefined(global.process)) {
-	    return function() {
-	      return exports.deprecate(fn, msg).apply(this, arguments);
-	    };
-	  }
-
-	  if (process.noDeprecation === true) {
-	    return fn;
-	  }
-
-	  var warned = false;
-	  function deprecated() {
-	    if (!warned) {
-	      if (process.throwDeprecation) {
-	        throw new Error(msg);
-	      } else if (process.traceDeprecation) {
-	        console.trace(msg);
-	      } else {
-	        console.error(msg);
-	      }
-	      warned = true;
-	    }
-	    return fn.apply(this, arguments);
-	  }
-
-	  return deprecated;
-	};
-
-
-	var debugs = {};
-	var debugEnviron;
-	exports.debuglog = function(set) {
-	  if (isUndefined(debugEnviron))
-	    debugEnviron = process.env.NODE_DEBUG || '';
-	  set = set.toUpperCase();
-	  if (!debugs[set]) {
-	    if (new RegExp('\\b' + set + '\\b', 'i').test(debugEnviron)) {
-	      var pid = process.pid;
-	      debugs[set] = function() {
-	        var msg = exports.format.apply(exports, arguments);
-	        console.error('%s %d: %s', set, pid, msg);
-	      };
-	    } else {
-	      debugs[set] = function() {};
-	    }
-	  }
-	  return debugs[set];
-	};
-
-
-	/**
-	 * Echos the value of a value. Trys to print the value out
-	 * in the best way possible given the different types.
-	 *
-	 * @param {Object} obj The object to print out.
-	 * @param {Object} opts Optional options object that alters the output.
-	 */
-	/* legacy: obj, showHidden, depth, colors*/
-	function inspect(obj, opts) {
-	  // default options
-	  var ctx = {
-	    seen: [],
-	    stylize: stylizeNoColor
-	  };
-	  // legacy...
-	  if (arguments.length >= 3) ctx.depth = arguments[2];
-	  if (arguments.length >= 4) ctx.colors = arguments[3];
-	  if (isBoolean(opts)) {
-	    // legacy...
-	    ctx.showHidden = opts;
-	  } else if (opts) {
-	    // got an "options" object
-	    exports._extend(ctx, opts);
-	  }
-	  // set default options
-	  if (isUndefined(ctx.showHidden)) ctx.showHidden = false;
-	  if (isUndefined(ctx.depth)) ctx.depth = 2;
-	  if (isUndefined(ctx.colors)) ctx.colors = false;
-	  if (isUndefined(ctx.customInspect)) ctx.customInspect = true;
-	  if (ctx.colors) ctx.stylize = stylizeWithColor;
-	  return formatValue(ctx, obj, ctx.depth);
-	}
-	exports.inspect = inspect;
-
-
-	// http://en.wikipedia.org/wiki/ANSI_escape_code#graphics
-	inspect.colors = {
-	  'bold' : [1, 22],
-	  'italic' : [3, 23],
-	  'underline' : [4, 24],
-	  'inverse' : [7, 27],
-	  'white' : [37, 39],
-	  'grey' : [90, 39],
-	  'black' : [30, 39],
-	  'blue' : [34, 39],
-	  'cyan' : [36, 39],
-	  'green' : [32, 39],
-	  'magenta' : [35, 39],
-	  'red' : [31, 39],
-	  'yellow' : [33, 39]
-	};
-
-	// Don't use 'blue' not visible on cmd.exe
-	inspect.styles = {
-	  'special': 'cyan',
-	  'number': 'yellow',
-	  'boolean': 'yellow',
-	  'undefined': 'grey',
-	  'null': 'bold',
-	  'string': 'green',
-	  'date': 'magenta',
-	  // "name": intentionally not styling
-	  'regexp': 'red'
-	};
-
-
-	function stylizeWithColor(str, styleType) {
-	  var style = inspect.styles[styleType];
-
-	  if (style) {
-	    return '\u001b[' + inspect.colors[style][0] + 'm' + str +
-	           '\u001b[' + inspect.colors[style][1] + 'm';
-	  } else {
-	    return str;
-	  }
-	}
-
-
-	function stylizeNoColor(str, styleType) {
-	  return str;
-	}
-
-
-	function arrayToHash(array) {
-	  var hash = {};
-
-	  array.forEach(function(val, idx) {
-	    hash[val] = true;
-	  });
-
-	  return hash;
-	}
-
-
-	function formatValue(ctx, value, recurseTimes) {
-	  // Provide a hook for user-specified inspect functions.
-	  // Check that value is an object with an inspect function on it
-	  if (ctx.customInspect &&
-	      value &&
-	      isFunction(value.inspect) &&
-	      // Filter out the util module, it's inspect function is special
-	      value.inspect !== exports.inspect &&
-	      // Also filter out any prototype objects using the circular check.
-	      !(value.constructor && value.constructor.prototype === value)) {
-	    var ret = value.inspect(recurseTimes, ctx);
-	    if (!isString(ret)) {
-	      ret = formatValue(ctx, ret, recurseTimes);
-	    }
-	    return ret;
-	  }
-
-	  // Primitive types cannot have properties
-	  var primitive = formatPrimitive(ctx, value);
-	  if (primitive) {
-	    return primitive;
-	  }
-
-	  // Look up the keys of the object.
-	  var keys = Object.keys(value);
-	  var visibleKeys = arrayToHash(keys);
-
-	  if (ctx.showHidden) {
-	    keys = Object.getOwnPropertyNames(value);
-	  }
-
-	  // IE doesn't make error fields non-enumerable
-	  // http://msdn.microsoft.com/en-us/library/ie/dww52sbt(v=vs.94).aspx
-	  if (isError(value)
-	      && (keys.indexOf('message') >= 0 || keys.indexOf('description') >= 0)) {
-	    return formatError(value);
-	  }
-
-	  // Some type of object without properties can be shortcutted.
-	  if (keys.length === 0) {
-	    if (isFunction(value)) {
-	      var name = value.name ? ': ' + value.name : '';
-	      return ctx.stylize('[Function' + name + ']', 'special');
-	    }
-	    if (isRegExp(value)) {
-	      return ctx.stylize(RegExp.prototype.toString.call(value), 'regexp');
-	    }
-	    if (isDate(value)) {
-	      return ctx.stylize(Date.prototype.toString.call(value), 'date');
-	    }
-	    if (isError(value)) {
-	      return formatError(value);
-	    }
-	  }
-
-	  var base = '', array = false, braces = ['{', '}'];
-
-	  // Make Array say that they are Array
-	  if (isArray(value)) {
-	    array = true;
-	    braces = ['[', ']'];
-	  }
-
-	  // Make functions say that they are functions
-	  if (isFunction(value)) {
-	    var n = value.name ? ': ' + value.name : '';
-	    base = ' [Function' + n + ']';
-	  }
-
-	  // Make RegExps say that they are RegExps
-	  if (isRegExp(value)) {
-	    base = ' ' + RegExp.prototype.toString.call(value);
-	  }
-
-	  // Make dates with properties first say the date
-	  if (isDate(value)) {
-	    base = ' ' + Date.prototype.toUTCString.call(value);
-	  }
-
-	  // Make error with message first say the error
-	  if (isError(value)) {
-	    base = ' ' + formatError(value);
-	  }
-
-	  if (keys.length === 0 && (!array || value.length == 0)) {
-	    return braces[0] + base + braces[1];
-	  }
-
-	  if (recurseTimes < 0) {
-	    if (isRegExp(value)) {
-	      return ctx.stylize(RegExp.prototype.toString.call(value), 'regexp');
-	    } else {
-	      return ctx.stylize('[Object]', 'special');
-	    }
-	  }
-
-	  ctx.seen.push(value);
-
-	  var output;
-	  if (array) {
-	    output = formatArray(ctx, value, recurseTimes, visibleKeys, keys);
-	  } else {
-	    output = keys.map(function(key) {
-	      return formatProperty(ctx, value, recurseTimes, visibleKeys, key, array);
-	    });
-	  }
-
-	  ctx.seen.pop();
-
-	  return reduceToSingleString(output, base, braces);
-	}
-
-
-	function formatPrimitive(ctx, value) {
-	  if (isUndefined(value))
-	    return ctx.stylize('undefined', 'undefined');
-	  if (isString(value)) {
-	    var simple = '\'' + JSON.stringify(value).replace(/^"|"$/g, '')
-	                                             .replace(/'/g, "\\'")
-	                                             .replace(/\\"/g, '"') + '\'';
-	    return ctx.stylize(simple, 'string');
-	  }
-	  if (isNumber(value))
-	    return ctx.stylize('' + value, 'number');
-	  if (isBoolean(value))
-	    return ctx.stylize('' + value, 'boolean');
-	  // For some reason typeof null is "object", so special case here.
-	  if (isNull(value))
-	    return ctx.stylize('null', 'null');
-	}
-
-
-	function formatError(value) {
-	  return '[' + Error.prototype.toString.call(value) + ']';
-	}
-
-
-	function formatArray(ctx, value, recurseTimes, visibleKeys, keys) {
-	  var output = [];
-	  for (var i = 0, l = value.length; i < l; ++i) {
-	    if (hasOwnProperty(value, String(i))) {
-	      output.push(formatProperty(ctx, value, recurseTimes, visibleKeys,
-	          String(i), true));
-	    } else {
-	      output.push('');
-	    }
-	  }
-	  keys.forEach(function(key) {
-	    if (!key.match(/^\d+$/)) {
-	      output.push(formatProperty(ctx, value, recurseTimes, visibleKeys,
-	          key, true));
-	    }
-	  });
-	  return output;
-	}
-
-
-	function formatProperty(ctx, value, recurseTimes, visibleKeys, key, array) {
-	  var name, str, desc;
-	  desc = Object.getOwnPropertyDescriptor(value, key) || { value: value[key] };
-	  if (desc.get) {
-	    if (desc.set) {
-	      str = ctx.stylize('[Getter/Setter]', 'special');
-	    } else {
-	      str = ctx.stylize('[Getter]', 'special');
-	    }
-	  } else {
-	    if (desc.set) {
-	      str = ctx.stylize('[Setter]', 'special');
-	    }
-	  }
-	  if (!hasOwnProperty(visibleKeys, key)) {
-	    name = '[' + key + ']';
-	  }
-	  if (!str) {
-	    if (ctx.seen.indexOf(desc.value) < 0) {
-	      if (isNull(recurseTimes)) {
-	        str = formatValue(ctx, desc.value, null);
-	      } else {
-	        str = formatValue(ctx, desc.value, recurseTimes - 1);
-	      }
-	      if (str.indexOf('\n') > -1) {
-	        if (array) {
-	          str = str.split('\n').map(function(line) {
-	            return '  ' + line;
-	          }).join('\n').substr(2);
-	        } else {
-	          str = '\n' + str.split('\n').map(function(line) {
-	            return '   ' + line;
-	          }).join('\n');
-	        }
-	      }
-	    } else {
-	      str = ctx.stylize('[Circular]', 'special');
-	    }
-	  }
-	  if (isUndefined(name)) {
-	    if (array && key.match(/^\d+$/)) {
-	      return str;
-	    }
-	    name = JSON.stringify('' + key);
-	    if (name.match(/^"([a-zA-Z_][a-zA-Z_0-9]*)"$/)) {
-	      name = name.substr(1, name.length - 2);
-	      name = ctx.stylize(name, 'name');
-	    } else {
-	      name = name.replace(/'/g, "\\'")
-	                 .replace(/\\"/g, '"')
-	                 .replace(/(^"|"$)/g, "'");
-	      name = ctx.stylize(name, 'string');
-	    }
-	  }
-
-	  return name + ': ' + str;
-	}
-
-
-	function reduceToSingleString(output, base, braces) {
-	  var numLinesEst = 0;
-	  var length = output.reduce(function(prev, cur) {
-	    numLinesEst++;
-	    if (cur.indexOf('\n') >= 0) numLinesEst++;
-	    return prev + cur.replace(/\u001b\[\d\d?m/g, '').length + 1;
-	  }, 0);
-
-	  if (length > 60) {
-	    return braces[0] +
-	           (base === '' ? '' : base + '\n ') +
-	           ' ' +
-	           output.join(',\n  ') +
-	           ' ' +
-	           braces[1];
-	  }
-
-	  return braces[0] + base + ' ' + output.join(', ') + ' ' + braces[1];
-	}
-
-
-	// NOTE: These type checking functions intentionally don't use `instanceof`
-	// because it is fragile and can be easily faked with `Object.create()`.
-	function isArray(ar) {
-	  return Array.isArray(ar);
-	}
-	exports.isArray = isArray;
-
-	function isBoolean(arg) {
-	  return typeof arg === 'boolean';
-	}
-	exports.isBoolean = isBoolean;
-
-	function isNull(arg) {
-	  return arg === null;
-	}
-	exports.isNull = isNull;
-
-	function isNullOrUndefined(arg) {
-	  return arg == null;
-	}
-	exports.isNullOrUndefined = isNullOrUndefined;
-
-	function isNumber(arg) {
-	  return typeof arg === 'number';
-	}
-	exports.isNumber = isNumber;
-
-	function isString(arg) {
-	  return typeof arg === 'string';
-	}
-	exports.isString = isString;
-
-	function isSymbol(arg) {
-	  return typeof arg === 'symbol';
-	}
-	exports.isSymbol = isSymbol;
-
-	function isUndefined(arg) {
-	  return arg === void 0;
-	}
-	exports.isUndefined = isUndefined;
-
-	function isRegExp(re) {
-	  return isObject(re) && objectToString(re) === '[object RegExp]';
-	}
-	exports.isRegExp = isRegExp;
-
-	function isObject(arg) {
-	  return typeof arg === 'object' && arg !== null;
-	}
-	exports.isObject = isObject;
-
-	function isDate(d) {
-	  return isObject(d) && objectToString(d) === '[object Date]';
-	}
-	exports.isDate = isDate;
-
-	function isError(e) {
-	  return isObject(e) &&
-	      (objectToString(e) === '[object Error]' || e instanceof Error);
-	}
-	exports.isError = isError;
-
-	function isFunction(arg) {
-	  return typeof arg === 'function';
-	}
-	exports.isFunction = isFunction;
-
-	function isPrimitive(arg) {
-	  return arg === null ||
-	         typeof arg === 'boolean' ||
-	         typeof arg === 'number' ||
-	         typeof arg === 'string' ||
-	         typeof arg === 'symbol' ||  // ES6 symbol
-	         typeof arg === 'undefined';
-	}
-	exports.isPrimitive = isPrimitive;
-
-	exports.isBuffer = __webpack_require__(615);
-
-	function objectToString(o) {
-	  return Object.prototype.toString.call(o);
-	}
-
-
-	function pad(n) {
-	  return n < 10 ? '0' + n.toString(10) : n.toString(10);
-	}
-
-
-	var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep',
-	              'Oct', 'Nov', 'Dec'];
-
-	// 26 Feb 16:19:34
-	function timestamp() {
-	  var d = new Date();
-	  var time = [pad(d.getHours()),
-	              pad(d.getMinutes()),
-	              pad(d.getSeconds())].join(':');
-	  return [d.getDate(), months[d.getMonth()], time].join(' ');
-	}
-
-
-	// log is just a thin wrapper to console.log that prepends a timestamp
-	exports.log = function() {
-	  console.log('%s - %s', timestamp(), exports.format.apply(exports, arguments));
-	};
-
-
-	/**
-	 * Inherit the prototype methods from one constructor into another.
-	 *
-	 * The Function.prototype.inherits from lang.js rewritten as a standalone
-	 * function (not on Function.prototype). NOTE: If this file is to be loaded
-	 * during bootstrapping this function needs to be rewritten using some native
-	 * functions as prototype setup using normal JavaScript does not work as
-	 * expected during bootstrapping (see mirror.js in r114903).
-	 *
-	 * @param {function} ctor Constructor function which needs to inherit the
-	 *     prototype.
-	 * @param {function} superCtor Constructor function to inherit prototype from.
-	 */
-	exports.inherits = __webpack_require__(616);
-
-	exports._extend = function(origin, add) {
-	  // Don't do anything if add isn't an object
-	  if (!add || !isObject(add)) return origin;
-
-	  var keys = Object.keys(add);
-	  var i = keys.length;
-	  while (i--) {
-	    origin[keys[i]] = add[keys[i]];
-	  }
-	  return origin;
-	};
-
-	function hasOwnProperty(obj, prop) {
-	  return Object.prototype.hasOwnProperty.call(obj, prop);
-	}
-
-	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(3)))
-
-/***/ },
-/* 615 */
-/***/ function(module, exports) {
-
-	module.exports = function isBuffer(arg) {
-	  return arg && typeof arg === 'object'
-	    && typeof arg.copy === 'function'
-	    && typeof arg.fill === 'function'
-	    && typeof arg.readUInt8 === 'function';
-	}
-
-/***/ },
-/* 616 */
-/***/ function(module, exports) {
-
-	if (typeof Object.create === 'function') {
-	  // implementation from standard node.js 'util' module
-	  module.exports = function inherits(ctor, superCtor) {
-	    ctor.super_ = superCtor
-	    ctor.prototype = Object.create(superCtor.prototype, {
-	      constructor: {
-	        value: ctor,
-	        enumerable: false,
-	        writable: true,
-	        configurable: true
-	      }
-	    });
-	  };
-	} else {
-	  // old school shim for old browsers
-	  module.exports = function inherits(ctor, superCtor) {
-	    ctor.super_ = superCtor
-	    var TempCtor = function () {}
-	    TempCtor.prototype = superCtor.prototype
-	    ctor.prototype = new TempCtor()
-	    ctor.prototype.constructor = ctor
-	  }
-	}
-
-
-/***/ },
-/* 617 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var Reflux = __webpack_require__(593);
-
-	var MarkdownEditorActions = Reflux.createActions([
-		'clearSelection',
-		'clickEditorTab',
-		'clickPreviewTab',
-		'makeBold',
-		'makeImage',
-		'makeItalic',
-		'makeLink',
-		'makeList',
-		'makeHeader',
-		'makeSubHeader',
-		'makeUnderline',
-		'setSelection'
-	]);
-
-	module.exports = MarkdownEditorActions;
-
-
-/***/ },
-/* 618 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var Reflux = __webpack_require__(593);
-
-	var PublicMarkdownEditorActions = Reflux.createActions([
-		'updateText'
-	]);
-
-	module.exports = PublicMarkdownEditorActions;
-
-
-/***/ },
-/* 619 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var Reflux = __webpack_require__(593);
-
-	var MarkdownSelectionActions = Reflux.createActions([
-		'selectionCleared',
-		'selectionSet'
-	]);
-
-	module.exports = MarkdownSelectionActions;
-
-
-/***/ },
-/* 620 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var MarkdownEditorActions = __webpack_require__(617);
-	var Reflux = __webpack_require__(593);
-
-	var _timerClick;
-	var _canClear = true;
-
-	var TextAreaSelectionMixin = {
-	  mixins: [Reflux.ListenerMixin],
-
-	  clearSelection: function() {
-	    if (_canClear) {
-	      MarkdownEditorActions.clearSelection();
-	    }
-	  },
-
-	  bindSelectEvent: function() {
-	    if (this.refs.editor !== null) {
-	      this.textAreaElem = this.refs.editor;
-	      this.textAreaElem.addEventListener('select', this.onSelectHandler);
-	    }
-	  },
-
-	  componentDidMount: function() {
-	    this.bindSelectEvent();
-	  },
-
-	  componentWillUpdate: function() {
-	    this.unbindSelectEvent();
-	  },
-
-	  componentDidUpdate: function() {
-	    this.bindSelectEvent();
-	  },
-
-	  unbindSelectEvent: function() {
-	    this.textAreaElem.removeEventListener('select', this.onSelectHandler);
-	  },
-
-	  componentWillUnmount: function() {
-	    this.unbindSelectEvent();
-	  },
-
-	  onSelectHandler: function(e) {
-	    var _eventSource = this._getEventSource(e);
-	    var _selectionStart = _eventSource.selectionStart;
-	    var _selectionEnd = _eventSource.selectionEnd;
-	    var _selectedText = _eventSource.value.slice(_selectionStart, _selectionEnd);
-
-	    var selection = {
-	      selectionStart: _selectionStart,
-	      selectionEnd: _selectionEnd,
-	      selectedText: _selectedText
-	    };
-
-	    MarkdownEditorActions.setSelection(selection);
-	    this._preventClearSelectionAfterSelectIfNeeded(e);
-	  },
-
-	  _getEventSource: function(e) {
-	    return e.srcElement || e.target;
-	  },
-
-	  _preventClearSelectionAfterSelectIfNeeded: function(e) {
-	    if (e.target !== null) {
-	      _canClear = false;
-	      _timerClick = setTimeout(function() {
-	        _canClear = true;
-	        _timerClick = null;
-	      }, 100);
-	    }
-	  }
-	};
-
-	module.exports = TextAreaSelectionMixin;
-
-
-/***/ },
-/* 621 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var React = __webpack_require__(1);
-	var ReactDOM = __webpack_require__(38);
-
-	var ButtonManagerMixin = {
-	  iconsProviderName: null,
-
-	  setIconsProvider: function(name) {
-	    this.iconsProviderName = name;
-	  },
-
-	  isFontAwesome: function() {
-	    return this.iconsProviderName === 'font-awesome';
-	  },
-
-	  getStyleMarkdownBtn: function() {
-	    return {
-	      'flex': '1',
-	      'maxWidth': '50px',
-	      'border': '1px solid #ddd',
-	      'backgroundColor': 'white',
-	      'borderRadius': '4px',
-	      'margin': '0 2px',
-	      'padding': '2px 3px',
-	      'cursor': 'pointer',
-	      'display': 'flex',
-	      'justifyContent': 'center',
-	      'alignItems': 'center'
-	    };
-	  },
-
-	  getBoldButton: function(isDisabled, onClickHandler) {
-	    var _style = this.getStyleMarkdownBtn();
-	    if (this.isFontAwesome()) {
-	      return this.getButtonFontAwesomeIcon(isDisabled, onClickHandler, _style, 'fa-bold', 'bold-btn');
-	    } else {
-	      return this.getButtonMaterializeIcon(isDisabled, onClickHandler, _style, 'format_bold', 'bold-btn');
-	    }
-	  },
-
-	  getButtonMaterializeIcon: function(isDisabled, onClickHandler, styleBtn, iconName, containerClassName) {
-	    return (
-	      React.createElement("div", {role: "button", className: containerClassName, style: styleBtn, disabled: isDisabled, onClick: onClickHandler}, 
-	        React.createElement("i", {className: "material-icons"}, iconName)
-	      )
-	    );
-	  },
-
-	  getButtonFontAwesomeIcon: function(isDisabled, onClickHandler, styleBtn, iconName, containerClassName) {
-	    var _className = 'fa ' + iconName;
-	    return (
-	      React.createElement("div", {role: "button", className: containerClassName, style: styleBtn, disabled: isDisabled, onClick: onClickHandler}, 
-	        React.createElement("i", {className: _className})
-	      )
-	    );
-	  },
-
-	  getButtonWithoutIcon: function(isDisabled, onClickHandler, additionalClassName, textBtn) {
-	    var styleBtn = {
-	      'display': 'flex',
-	      'minWidth': '50px',
-	      'border': '1px solid #ddd',
-	      'color': 'black',
-	      'backgroundColor': 'white',
-	      'borderRadius': '4px',
-	      'margin': '0 2px',
-	      'padding': '2px 3px',
-	      'cursor': 'pointer',
-	      'textAlign': 'center',
-	      'justifyContent': 'flex-end',
-	      'alignItems': 'center'
-	    };
-
-	    return (
-	      React.createElement("div", {role: "button", style: styleBtn, className: additionalClassName, disabled: isDisabled, onClick: onClickHandler}, 
-	        React.createElement("span", null, textBtn)
-	      )
-	    );
-	  },
-
-	  getItalicButton: function(isDisabled, onClickHandler) {
-	    if (this.isFontAwesome()) {
-	      var _style = this.getStyleMarkdownBtn();
-	      return this.getButtonFontAwesomeIcon(isDisabled, onClickHandler, _style, 'fa-italic', 'italic-btn');
-	    } else {
-	      var _style = this.getStyleMarkdownBtn();
-	      return this.getButtonMaterializeIcon(isDisabled, onClickHandler, _style, 'format_italic', 'italic-btn');
-	    }
-	  },
-
-	  getMakeListButton: function(isDisabled, onClickHandler) {
-	    if (this.isFontAwesome()) {
-	      var _style = this.getStyleMarkdownBtn();
-	      return this.getButtonFontAwesomeIcon(isDisabled, onClickHandler, _style, 'fa-list-ul', 'list-btn');
-	    } else {
-	      var _style = this.getStyleMarkdownBtn();
-	      return this.getButtonMaterializeIcon(isDisabled, onClickHandler, _style, 'format_list_bulleted', 'list-btn');
-	    }
-	  },
-
-	  getImageButton: function(isDisabled, onClickHandler) {
-	    if (this.isFontAwesome()) {
-	      var _style = this.getStyleMarkdownBtn();
-	      return this.getButtonFontAwesomeIcon(isDisabled, onClickHandler, _style, 'fa-file-image-o', 'insert-img-btn');
-	    } else {
-	      var _style = this.getStyleMarkdownBtn();
-	      return this.getButtonMaterializeIcon(isDisabled, onClickHandler, _style, 'insert_photo', 'insert-img-btn');
-	    }
-	  },
-
-	  getLinkButton: function(isDisabled, onClickHandler) {
-	    if (this.isFontAwesome()) {
-	      var _style = this.getStyleMarkdownBtn();
-	      return this.getButtonFontAwesomeIcon(isDisabled, onClickHandler, _style, 'fa-link', 'insert-link-btn');
-	    } else {
-	      var _style = this.getStyleMarkdownBtn();
-	      return this.getButtonMaterializeIcon(isDisabled, onClickHandler, _style, 'insert_link', 'insert-link-btn');
-	    }
-	  }
-	};
-
-	module.exports = ButtonManagerMixin;
-
-
-/***/ },
-/* 622 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var Reflux = __webpack_require__(593);
-	var MarkdownEditorActions = __webpack_require__(617);
-	var MarkdownSelectionActions = __webpack_require__(619);
-
-	var MarkdownEditorStore = Reflux.createStore({
-	  init: function() {
-	    this.currentSelection = null;
-	    this.listenTo(MarkdownEditorActions.makeBold, this.handleMakeBold);
-	    this.listenTo(MarkdownEditorActions.makeItalic, this.handleMakeItalic);
-	    this.listenTo(MarkdownEditorActions.makeHeader, this.handleMakeHeader);
-	    this.listenTo(MarkdownEditorActions.makeSubHeader, this.handleMakeSubHeader);
-	    this.listenTo(MarkdownEditorActions.makeImage, this.handleMakeImage);
-	    this.listenTo(MarkdownEditorActions.makeLink, this.handleMakeLink);
-	    this.listenTo(MarkdownEditorActions.makeList, this.handleMakeList);
-	    this.listenTo(MarkdownEditorActions.makeUnderline, this.handleMakeUnderline);
-	    this.listenTo(MarkdownEditorActions.clearSelection, this.handleClearSelection);
-	    this.listenTo(MarkdownEditorActions.setSelection, this.handleSetSelection);
-	  },
-
-	  handleMakeBold: function() {
-	    this.trigger({action: 'bold', currentSelection: this.currentSelection});
-	  },
-
-	  handleMakeItalic: function() {
-	    this.trigger({action: 'italic', currentSelection: this.currentSelection});
-	  },
-
-	  handleMakeLink: function() {
-	    this.trigger({action: 'link', currentSelection: this.currentSelection});
-	  },
-
-	  handleMakeUnderline: function() {
-	    this.trigger({action: 'underline', currentSelection: this.currentSelection});
-	  },
-
-	  handleMakeHeader: function() {
-	    this.trigger({action: 'header', currentSelection: this.currentSelection});
-	  },
-
-	  handleMakeSubHeader: function() {
-	    this.trigger({action: 'subheader', currentSelection: this.currentSelection});
-	  },
-
-	  handleMakeList: function() {
-	    this.trigger({action: 'list', currentSelection: this.currentSelection});
-	  },
-
-	  handleMakeImage: function() {
-	    this.trigger({action: 'image', currentSelection: this.currentSelection});
-	  },
-
-	  handleClearSelection: function() {
-	    this.currentSelection = null;
-	    MarkdownSelectionActions.selectionCleared();
-	  },
-
-	  handleSetSelection: function(_selection) {
-	    this.currentSelection = _selection;
-	    MarkdownSelectionActions.selectionSet();
-	  }
-	});
-
-	module.exports = MarkdownEditorStore;
-
-
-/***/ },
-/* 623 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var Reflux = __webpack_require__(593);
-	var MarkdownSelectionActions = __webpack_require__(619);
-
-	var MarkdownSelectionStore = Reflux.createStore({
-	  init: function() {
-	    this.listenTo(MarkdownSelectionActions.selectionSet, this.handleSelectionSet);
-	    this.listenTo(MarkdownSelectionActions.selectionCleared, this.handleSelectionCleared);
-	  },
-
-	  handleSelectionCleared: function() {
-	    this.trigger({type: 'clear'});
-	  },
-
-	  handleSelectionSet: function() {
-	    this.trigger({type: 'set'});
-	  }
-	});
-
-	module.exports = MarkdownSelectionStore;
-
-
-/***/ },
-/* 624 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var Reflux = __webpack_require__(593);
-	var MarkdownEditorActions = __webpack_require__(617);
-
-	var MarkdownEditorTabsInteractionStore = Reflux.createStore({
-	  init: function() {
-	    this.listenTo(MarkdownEditorActions.clickPreviewTab, this.handleClickPreviewTab);
-	    this.listenTo(MarkdownEditorActions.clickEditorTab, this.handleClickEditorTab);
-	  },
-
-	  handleClickPreviewTab: function() {
-	    this.trigger({activeTab: 1});
-	  },
-
-	  handleClickEditorTab: function() {
-	    this.trigger({activeTab: 0});
-	  }
-	});
-
-	module.exports = MarkdownEditorTabsInteractionStore;
-
-
-/***/ },
-/* 625 */
-/***/ function(module, exports) {
-
-	var RegularMarkdownToken = function(token, isSymetric) {
-	  this.token = token;
-	  this.isSymetric = isSymetric;
-	};
-
-	RegularMarkdownToken.prototype.applyTokenTo = function(_text) {
-	  var res = this.token;
-	  res += _text;
-
-	  if (this.isSymetric) {
-	    res += this.token;
-	  }
-
-	  return res;
-	};
-
-	var NullMarkdownToken = function() {
-	  RegularMarkdownToken.call(this, '', false);
-	};
-
-	NullMarkdownToken.prototype = Object.create(RegularMarkdownToken.prototype);
-
-	NullMarkdownToken.prototype.applyTokenTo = function(_text) {
-	  return _text;
-	};
-
-	var HeaderMarkdownToken = function(_token) {
-	  var t = _token || '##';
-	  RegularMarkdownToken.call(this, t, false);
-	};
-
-	HeaderMarkdownToken.prototype = Object.create(RegularMarkdownToken.prototype);
-
-	HeaderMarkdownToken.prototype.applyTokenTo = function(_text) {
-	  return '\n' + this.token + ' ' + _text + '\n';
-	};
-
-	var SubHeaderMarkdownToken = function() {
-	  HeaderMarkdownToken.call(this, '###', false);
-	};
-
-	SubHeaderMarkdownToken.prototype = Object.create(HeaderMarkdownToken.prototype);
-
-	var UrlMarkdownToken = function() {
-	  RegularMarkdownToken.call(this, null, false);
-	};
-
-	UrlMarkdownToken.prototype = Object.create(RegularMarkdownToken.prototype);
-
-	UrlMarkdownToken.prototype.applyTokenTo = function(_text) {
-	  return '[' + _text + '](' + _text + ')';
-	};
-
-	var ListMarkdownToken = function() {
-	  RegularMarkdownToken.call(this, null, false);
-	};
-
-	ListMarkdownToken.prototype = Object.create(RegularMarkdownToken.prototype);
-
-	ListMarkdownToken.prototype.applyTokenTo = function(_text) {
-	  var items = _text.split('\n');
-	  var t = items.reduce(function(acc, item) {
-	    return acc + '+ ' + item + '\n';
-	  }, '\n');
-
-	  return t + '\n';
-	};
-
-	var ImageMarkdownToken = function() {
-	  RegularMarkdownToken.call(this, null, false);
-	};
-
-	ImageMarkdownToken.prototype = Object.create(RegularMarkdownToken.prototype);
-
-	ImageMarkdownToken.prototype.applyTokenTo = function(_text) {
-	  return '![' + _text + '](' + _text + ')';
-	};
-
-	module.exports = {
-	  RegularMarkdownToken: RegularMarkdownToken,
-	  NullMarkdownToken: NullMarkdownToken,
-	  HeaderMarkdownToken: HeaderMarkdownToken,
-	  SubHeaderMarkdownToken: SubHeaderMarkdownToken,
-	  UrlMarkdownToken: UrlMarkdownToken,
-	  ListMarkdownToken: ListMarkdownToken,
-	  ImageMarkdownToken: ImageMarkdownToken
-	};
-
-
-/***/ },
-/* 626 */
-/***/ function(module, exports) {
-
-	var toMarkdown =  function(text) {
-	  return text.replace(/[\n\r]/g, '  \n');
-	};
-
-	module.exports = {
-	  toMarkdown: toMarkdown
-	};
-
-
-/***/ },
-/* 627 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var Reflux = __webpack_require__(593);
-	var PublicMarkdownEditorActions = __webpack_require__(618);
-
-	var MarkdownEditorContentStore = Reflux.createStore({
-	  init: function() {
-	    this.listenTo(PublicMarkdownEditorActions.updateText, this.onUpdateText);
-	  },
-
-	  onUpdateText: function(updatedMarkdown) {
-	    this.trigger({content: updatedMarkdown});
-	  }
-	});
-
-	module.exports = MarkdownEditorContentStore;
-
-
-/***/ },
-/* 628 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _react = __webpack_require__(1);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _Stepper = __webpack_require__(478);
-
-	var _RaisedButton = __webpack_require__(437);
-
-	var _RaisedButton2 = _interopRequireDefault(_RaisedButton);
-
-	var _FlatButton = __webpack_require__(420);
-
-	var _FlatButton2 = _interopRequireDefault(_FlatButton);
-
-	var _Dialog = __webpack_require__(450);
-
-	var _Dialog2 = _interopRequireDefault(_Dialog);
-
-	var _TextField = __webpack_require__(431);
-
-	var _TextField2 = _interopRequireDefault(_TextField);
-
-	var _Divider = __webpack_require__(452);
-
-	var _Divider2 = _interopRequireDefault(_Divider);
-
-	var _Paper = __webpack_require__(391);
-
-	var _Paper2 = _interopRequireDefault(_Paper);
-
-	var _reducerActions = __webpack_require__(423);
-
-	var actions = _interopRequireWildcard(_reducerActions);
-
-	var _reactRedux = __webpack_require__(341);
-
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var opts = {
-	  height: 390,
-	  width: '100%'
-	};
-
-	var style = {
-
-	  dialogHugePlayer: {
-	    position: 'relative',
-	    height: '100%',
-	    minHeight: 400,
-	    maxHeight: '100%',
-	    width: '100%',
-	    maxWidth: 'none',
-	    overflow: 'scroll'
-	  },
-	  fill: {
-	    width: '100%',
-	    height: 50,
-	    maxHeight: 'none'
-	  },
-	  contentDiv: {
-	    width: '100%',
-	    height: '100%'
-	  },
-	  floatLeftTopButton: {
-	    float: 'left',
-	    minWidth: "75%"
-	  },
-	  floatRightTopButton: {
-	    float: 'right',
-	    minWidth: "25%"
-	  },
-	  textStyle: {
-	    marginLeft: 20
-	  },
-	  contentStyle: {
-	    minWidth: 640,
-	    height: '100%',
-	    minHeight: 400,
-	    alignItems: 'center',
-	    justifyContent: 'center'
-	  }
-	};
-
-	var AddArticle = function (_Component) {
-	  _inherits(AddArticle, _Component);
-
-	  function AddArticle(props) {
-	    _classCallCheck(this, AddArticle);
-
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(AddArticle).call(this, props));
-
-	    _this.contentChange = function (e, value) {
-	      _this.setState({
-	        description: e
-	      });
-	    };
-
-	    _this.handleSubmit = function () {
-	      _this.setState({
-	        currentArticle: _this.state.articleURL
-	      });
-	    };
-
-	    _this.handleTextChange = function (e, value) {
-	      _this.setState({
-	        articleURL: value
-	      });
-	    };
-
-	    _this.handleNext = function () {
-
-	      var index = _this.state.stepIndex + 1;
-
-	      _this.setState({
-	        stepIndex: _this.state.stepIndex + 1,
-	        finished: _this.state.stepIndex > 1
-	      });
-	      if (_this.state.stepIndex === 1) {
-	        _this.setState({
-	          stepIndex: 0
-	        });
-
-	        _this.props.currentNode._private.data.articles.push({
-	          article: _this.state.articleURL
-	        });
-
-	        _this.props.closeAddArticle();
-	      }
-	    };
-
-	    _this.handlePrev = function () {
-	      var stepIndex = _this.state.stepIndex;
-
-	      if (stepIndex > 0) {
-	        _this.setState({ stepIndex: stepIndex - 1 });
-	      }
-	    };
-
-	    _this.state = {
-	      finished: false,
-	      stepIndex: 0,
-	      description: "",
-	      currentNode: null,
-	      articleURL: 'http://www.material-ui.com/#/components/dialog',
-	      currentArticle: 'http://www.material-ui.com/#/components/dialog'
-	    };
-	    return _this;
-	  }
-
-	  // Listen for changes on the description change field, if so, update the description state
-
-	  // On button press, submit the current textbox value article URL to the completed current article
-
-	  // Listen for changes on the articleURL text box and map them to the articleURL state
-
-	  _createClass(AddArticle, [{
-	    key: 'getStepContent',
-	    value: function getStepContent(stepIndex) {
-	      switch (stepIndex) {
-	        case 0:
-	          return _react2.default.createElement(
-	            'div',
-	            { style: style.contentDiv },
-	            _react2.default.createElement(
-	              'div',
-	              { style: style.floatLeftTopButton },
-	              _react2.default.createElement(_TextField2.default, { onChange: this.handleTextChange, hintText: 'Confirm', style: style.textStyle, underlineShow: false }),
-	              _react2.default.createElement(_Divider2.default, null)
-	            ),
-	            _react2.default.createElement(
-	              'div',
-	              { style: style.floatRightTopButton },
-	              _react2.default.createElement(_RaisedButton2.default, {
-	                style: style.fill,
-	                label: 'Submit',
-	                primary: true,
-	                onTouchTap: this.handleSubmit
-	              })
-	            ),
-	            _react2.default.createElement(
-	              _Paper2.default,
-	              { zDepth: 2 },
-	              _react2.default.createElement('iframe', { style: style.dialogHugePlayer, src: this.state.currentArticle, height: '100%', width: '100%' })
-	            )
-	          );
-	        case 1:
-	          return _react2.default.createElement(
-	            'div',
-	            null,
-	            _react2.default.createElement(
-	              _Paper2.default,
-	              { zDepth: 2 },
-	              _react2.default.createElement('iframe', { style: style.dialogHugePlayer, src: this.state.currentArticle, height: '100%', width: '100%' })
-	            )
-	          );
-	        default:
-	          return 'You\'re a long way from home sonny jim!';
-	      }
-	    }
-	  }, {
-	    key: 'render',
-	    value: function render() {
-	      var _this2 = this;
-
-	      console.log("RENDERING ADDARTICLE");
-	      var _state = this.state;
-	      var finished = _state.finished;
-	      var stepIndex = _state.stepIndex;
-
-	      return _react2.default.createElement(
-	        'div',
-	        null,
-	        _react2.default.createElement(
-	          _Dialog2.default,
-	          {
-	            modal: false,
-	            open: this.props.addArticle,
-	            contentStyle: style.modalStyle,
-	            onRequestClose: this.handleClose },
-	          _react2.default.createElement(
-	            _Stepper.Stepper,
-	            { activeStep: stepIndex },
-	            _react2.default.createElement(
-	              _Stepper.Step,
-	              null,
-	              _react2.default.createElement(
-	                _Stepper.StepLabel,
-	                null,
-	                'Select an artcle'
-	              )
-	            ),
-	            _react2.default.createElement(
-	              _Stepper.Step,
-	              null,
-	              _react2.default.createElement(
-	                _Stepper.StepLabel,
-	                null,
-	                'Preview and submit'
-	              )
-	            )
-	          ),
-	          _react2.default.createElement(
-	            'div',
-	            { style: style.contentStyle },
-	            finished ? _react2.default.createElement(
-	              'p',
-	              null,
-	              _react2.default.createElement(
-	                'a',
-	                {
-	                  href: '#',
-	                  onClick: function onClick(event) {
-	                    event.preventDefault();
-	                    _this2.setState({ stepIndex: 0, finished: false });
-	                  }
-	                },
-	                'Click here'
-	              ),
-	              ' to reset the example.'
-	            ) : _react2.default.createElement(
-	              'div',
-	              null,
-	              this.getStepContent(stepIndex),
-	              _react2.default.createElement(
-	                'div',
-	                { style: { marginTop: 12 } },
-	                _react2.default.createElement(_FlatButton2.default, {
-	                  label: 'Back',
-	                  disabled: stepIndex === 0,
-	                  onTouchTap: this.handlePrev,
-	                  style: { marginRight: 12 } }),
-	                _react2.default.createElement(_RaisedButton2.default, {
-	                  label: stepIndex === 1 ? 'Finish' : 'Next',
-	                  primary: true,
-	                  onTouchTap: this.handleNext })
-	              )
-	            )
-	          )
-	        )
-	      );
-	    }
-	  }]);
-
-	  return AddArticle;
-	}(_react.Component);
-
-	function mapStateToProps(state) {
-
-	  console.debug("MAPPING PROPS TO STATE IN ADDARTICLE");
-	  return { currentNode: state.selectNode.currentNode, addArticle: state.adminEdit.addArticle };
-	}
-
-	exports.default = (0, _reactRedux.connect)(mapStateToProps, actions)(AddArticle);
-
-/***/ },
-/* 629 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _react = __webpack_require__(1);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _Table = __webpack_require__(465);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var style = {
-	  adminList: {
-	    marginTop: 15,
-	    float: 'left',
-	    width: '48%',
-	    left: 0,
-	    height: 450
-	  }
-	};
-
-	var AddAdmin = function (_Component) {
-	  _inherits(AddAdmin, _Component);
-
-	  function AddAdmin() {
-	    _classCallCheck(this, AddAdmin);
-
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(AddAdmin).apply(this, arguments));
-	  }
-
-	  _createClass(AddAdmin, [{
-	    key: 'render',
-	    value: function render() {
-	      return _react2.default.createElement(
-	        'div',
-	        { style: style.adminList },
-	        _react2.default.createElement(
-	          'span',
-	          null,
-	          'Admins'
-	        ),
-	        _react2.default.createElement(
-	          _Table.Table,
-	          null,
-	          _react2.default.createElement(
-	            _Table.TableHeader,
-	            null,
-	            _react2.default.createElement(
-	              _Table.TableRow,
-	              null,
-	              _react2.default.createElement(
-	                _Table.TableHeaderColumn,
-	                null,
-	                'ID'
-	              ),
-	              _react2.default.createElement(
-	                _Table.TableHeaderColumn,
-	                null,
-	                'Name'
-	              ),
-	              _react2.default.createElement(
-	                _Table.TableHeaderColumn,
-	                null,
-	                'Priviledges'
-	              )
-	            )
-	          ),
-	          _react2.default.createElement(
-	            _Table.TableBody,
-	            null,
-	            _react2.default.createElement(
-	              _Table.TableRow,
-	              null,
-	              _react2.default.createElement(
-	                _Table.TableRowColumn,
-	                null,
-	                '1'
-	              ),
-	              _react2.default.createElement(
-	                _Table.TableRowColumn,
-	                null,
-	                'Scott'
-	              ),
-	              _react2.default.createElement(
-	                _Table.TableRowColumn,
-	                null,
-	                'Full'
-	              )
-	            ),
-	            _react2.default.createElement(
-	              _Table.TableRow,
-	              null,
-	              _react2.default.createElement(
-	                _Table.TableRowColumn,
-	                null,
-	                '2'
-	              ),
-	              _react2.default.createElement(
-	                _Table.TableRowColumn,
-	                null,
-	                'Michael'
-	              ),
-	              _react2.default.createElement(
-	                _Table.TableRowColumn,
-	                null,
-	                'Full'
-	              )
-	            ),
-	            _react2.default.createElement(
-	              _Table.TableRow,
-	              null,
-	              _react2.default.createElement(
-	                _Table.TableRowColumn,
-	                null,
-	                '3'
-	              ),
-	              _react2.default.createElement(
-	                _Table.TableRowColumn,
-	                null,
-	                'Rong'
-	              ),
-	              _react2.default.createElement(
-	                _Table.TableRowColumn,
-	                null,
-	                'Full'
-	              )
-	            ),
-	            _react2.default.createElement(
-	              _Table.TableRow,
-	              null,
-	              _react2.default.createElement(
-	                _Table.TableRowColumn,
-	                null,
-	                '4'
-	              ),
-	              _react2.default.createElement(
-	                _Table.TableRowColumn,
-	                null,
-	                'Jon'
-	              ),
-	              _react2.default.createElement(
-	                _Table.TableRowColumn,
-	                null,
-	                'Full'
-	              )
-	            )
-	          )
-	        )
-	      );
-	    }
-	  }]);
-
-	  return AddAdmin;
-	}(_react.Component);
-
-	exports.default = AddAdmin;
-
-/***/ },
-/* 630 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-		value: true
-	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _Table = __webpack_require__(465);
-
-	var _react = __webpack_require__(1);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _Paper = __webpack_require__(391);
-
-	var _Paper2 = _interopRequireDefault(_Paper);
-
-	var _reactRedux = __webpack_require__(341);
-
-	var _reducerActions = __webpack_require__(423);
-
-	var actions = _interopRequireWildcard(_reducerActions);
-
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var style = {
-		nodeList: {
-			marginTop: 15,
-			float: 'right',
-			width: '48%',
-			height: 450,
-			right: 0,
-			overflow: "scroll"
-		}
-	};
-
-	var AddConnections = function (_Component) {
-		_inherits(AddConnections, _Component);
-
-		function AddConnections(props) {
-			_classCallCheck(this, AddConnections);
-
-			var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(AddConnections).call(this, props));
-
-			_this.selectorFunction = function (value) {
-
-				var newList = [];
-
-				for (var i = 0; i < value.length; i++) {
-					newList.push(_this.state.availableConnections[value[i]]);
-				}
-
-				_this.props.registerEdge({ selectedEdges: newList });
-			};
-
-			_this.state = {
-				edit_currentEdges: [],
-				currentSelected: [],
-				availableConnections: [],
-				selectedEdges: []
-			};
-			return _this;
-		}
-
-		_createClass(AddConnections, [{
-			key: 'render',
-			value: function render() {
-				var _this2 = this;
-
-				console.log("RENDERING ADDCONNECTION");
-
-				var checkAdd_root = function checkAdd_root() {
-
-					if (_this2.props.create) {
-
-						_this2.state.availableConnections = [_this2.props.currentNode._private.data.id];
-
-						return _react2.default.createElement(
-							_Table.TableRow,
-							{ selected: true, selectable: false },
-							_react2.default.createElement(
-								_Table.TableRowColumn,
-								null,
-								_this2.props.currentNode._private.data.id
-							),
-							_react2.default.createElement(
-								_Table.TableRowColumn,
-								null,
-								_this2.props.currentNode._private.data.id
-							),
-							_react2.default.createElement(
-								_Table.TableRowColumn,
-								null,
-								'Yes'
-							)
-						);
-					}
-				};
-
-				var checkAdd_all = function checkAdd_all() {
-
-					if (_this2.props.create) {
-						var allNodes = [];
-						var newnodes = _this2.props.cy.nodes();
-
-						for (var i = 0; i < newnodes.length; i++) {
-							if (newnodes[i]._private.data.id !== _this2.props.currentNode._private.data.id) {
-								allNodes.push(newnodes[i]._private.data.id);
-								_this2.state.availableConnections.push(newnodes[i]._private.data.id);
-							}
-						}
-
-						return allNodes.map(function (value) {
-							return _react2.default.createElement(
-								_Table.TableRow,
-								null,
-								_react2.default.createElement(
-									_Table.TableRowColumn,
-									null,
-									value,
-									' '
-								),
-								_react2.default.createElement(
-									_Table.TableRowColumn,
-									null,
-									value
-								),
-								_react2.default.createElement(
-									_Table.TableRowColumn,
-									null,
-									'No'
-								)
-							);
-						});
-					}
-				};
-
-				var checkEdit_root = function checkEdit_root() {
-					if (_this2.props.edit) {
-
-						var currentEdges = [];
-						_this2.state.availableConnections = [];
-						_this2.state.edit_currentEdges = [];
-						for (var i = 0; i < _this2.props.currentNode._private.edges.length; i++) {
-							if (_this2.props.currentNode._private.edges[i]._private.data.source === _this2.props.currentNode._private.data.id) {
-								currentEdges.push(_this2.props.currentNode._private.edges[i]._private.data.target);
-								_this2.state.availableConnections.push(_this2.props.currentNode._private.edges[i]._private.data.target);
-								continue;
-							}
-							currentEdges.push(_this2.props.currentNode._private.edges[i]._private.data.source);
-							_this2.state.availableConnections.push(_this2.props.currentNode._private.edges[i]._private.data.source);
-						}
-
-						_this2.state.edit_currentEdges = currentEdges;
-
-						return currentEdges.map(function (value) {
-							return _react2.default.createElement(
-								_Table.TableRow,
-								{ selected: true, selectable: true },
-								_react2.default.createElement(
-									_Table.TableRowColumn,
-									null,
-									value
-								),
-								_react2.default.createElement(
-									_Table.TableRowColumn,
-									null,
-									value
-								),
-								_react2.default.createElement(
-									_Table.TableRowColumn,
-									null,
-									'Yes'
-								)
-							);
-						});
-					}
-				};
-
-				var checkEdit_all = function checkEdit_all() {
-
-					if (_this2.props.edit) {
-
-						var allNodes = [];
-						var newNodes = _this2.props.cy.nodes();
-						var holderObject = {};
-
-						for (var i = 0; i < newNodes.length; i++) {
-							allNodes.push(newNodes[i]._private.data.id);
-						}
-
-						for (var i = 0; i < _this2.state.edit_currentEdges.length; i++) {
-							holderObject[_this2.state.edit_currentEdges[i]] = 1;
-						}
-
-						return allNodes.map(function (value) {
-							if (!holderObject[value] && value !== _this2.props.currentNode._private.data.id) {
-								_this2.state.availableConnections.push(value);
-								return _react2.default.createElement(
-									_Table.TableRow,
-									{ selected: false, selectable: true },
-									_react2.default.createElement(
-										_Table.TableRowColumn,
-										null,
-										value
-									),
-									_react2.default.createElement(
-										_Table.TableRowColumn,
-										null,
-										value
-									),
-									_react2.default.createElement(
-										_Table.TableRowColumn,
-										null,
-										'No'
-									)
-								);
-							}
-						});
-					}
-				};
-
-				return _react2.default.createElement(
-					'div',
-					{ style: style.nodeList },
-					_react2.default.createElement(
-						'span',
-						null,
-						'Node Connections'
-					),
-					_react2.default.createElement(
-						_Table.Table,
-						{ multiSelectable: true, onRowSelection: this.selectorFunction },
-						_react2.default.createElement(
-							_Table.TableHeader,
-							{ enableSelectAll: false },
-							_react2.default.createElement(
-								_Table.TableRow,
-								null,
-								_react2.default.createElement(
-									_Table.TableHeaderColumn,
-									null,
-									'ID'
-								),
-								_react2.default.createElement(
-									_Table.TableHeaderColumn,
-									null,
-									'Name'
-								),
-								_react2.default.createElement(
-									_Table.TableHeaderColumn,
-									null,
-									'Connection Status'
-								)
-							)
-						),
-						_react2.default.createElement(
-							_Table.TableBody,
-							{ deselectOnClickaway: false },
-							checkAdd_root(),
-							checkAdd_all(),
-							checkEdit_root(),
-							checkEdit_all()
-						)
-					)
-				);
-			}
-		}]);
-
-		return AddConnections;
-	}(_react.Component);
-
-	function mapStateToProps(state) {
-		console.debug("MAPPING PROPS TO STATE IN ADDCONNECTIONS");
-		return { create: state.adminAdd.create, edit: state.adminEdit.edit, cy: state.selectNode.cy, currentNode: state.selectNode.currentNode };
-	}
-
-	exports.default = (0, _reactRedux.connect)(mapStateToProps, actions)(AddConnections);
-
-/***/ },
-/* 631 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _react = __webpack_require__(1);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _Dialog = __webpack_require__(450);
-
-	var _Dialog2 = _interopRequireDefault(_Dialog);
-
-	var _FlatButton = __webpack_require__(420);
-
-	var _FlatButton2 = _interopRequireDefault(_FlatButton);
-
-	var _Paper = __webpack_require__(391);
-
-	var _Paper2 = _interopRequireDefault(_Paper);
-
-	var _RaisedButton = __webpack_require__(437);
-
-	var _RaisedButton2 = _interopRequireDefault(_RaisedButton);
-
-	var _markdown = __webpack_require__(454);
-
-	var _markdown2 = _interopRequireDefault(_markdown);
-
-	var _Drawer = __webpack_require__(416);
-
-	var _Drawer2 = _interopRequireDefault(_Drawer);
-
-	var _Tabs = __webpack_require__(441);
-
-	var _Divider = __webpack_require__(452);
-
-	var _Divider2 = _interopRequireDefault(_Divider);
-
-	var _reactYoutube = __webpack_require__(488);
-
-	var _reactYoutube2 = _interopRequireDefault(_reactYoutube);
-
-	var _Popover = __webpack_require__(632);
-
-	var _Popover2 = _interopRequireDefault(_Popover);
-
-	var _Menu = __webpack_require__(634);
-
-	var _Menu2 = _interopRequireDefault(_Menu);
-
-	var _MenuItem = __webpack_require__(413);
-
-	var _MenuItem2 = _interopRequireDefault(_MenuItem);
-
-	var _quiz = __webpack_require__(635);
-
-	var _quiz2 = _interopRequireDefault(_quiz);
-
-	var _RadioButton = __webpack_require__(457);
-
-	var _Card = __webpack_require__(636);
-
-	var _reactRedux = __webpack_require__(341);
-
-	var _reducerActions = __webpack_require__(423);
-
-	var actions = _interopRequireWildcard(_reducerActions);
-
-	var _TextField = __webpack_require__(431);
-
-	var _TextField2 = _interopRequireDefault(_TextField);
-
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var MarkdownEditor = __webpack_require__(591).MarkdownEditor;
-
-
-	var styles = {
-	  containerStyle: {
-	    maxWidth: '100%',
-	    display: 'block ',
-	    position: 'absolute',
-	    background: 'url(./assets/imgs/lol.jpg)',
-	    backgroundSize: 'cover'
-
-	  },
-	  backButton: {
-	    position: 'fixed',
-	    bottom: 0,
-	    right: 0,
-	    margin: 5
-	  },
-	  innerDiv: {
-	    top: 0,
-	    bottom: 0,
-	    right: 0,
-	    left: 0,
-	    backgroundColor: 'black',
-	    position: 'relative',
-	    display: 'block'
-	  },
-	  dialog: {
-	    alignItems: 'center',
-	    justifyContent: 'center',
-	    overflow: 'scroll',
-	    width: '80%',
-	    maxWidth: 'none'
-	  },
-
-	  buttonDiv: {
-	    minWidth: '100%',
-	    marginBottom: 5
-	  },
-	  dialogBody: {
-	    minHeight: 600,
-	    overflow: 'scroll',
-	    background: 'url(./assets/imgs/new.png)',
-	    backgroundSize: 'cover',
-	    borderRadius: 3
-	  },
-	  tabsColor: {
-	    backgroundColor: "#186dad"
-	  },
-	  tabsColor2: {
-	    backgroundColor: "#7eabca"
-	  },
-	  dialogBackground: {
-	    borderRadius: 500,
-	    overflow: "scroll"
-	  },
-	  dialogHuge: {
-	    position: 'fixed',
-	    top: 0,
-	    left: 0,
-	    bottom: 0,
-	    right: 0,
-	    overflow: 'auto',
-	    minHeight: 600,
-	    width: '100%',
-	    maxWidth: 'none'
-	  },
-	  dialogHugePlayer: {
-	    minHeight: 580
-	  },
-	  rocketImg: {
-	    opacity: .2,
-	    maxHeight: '100%',
-	    position: 'fixed',
-	    maxWidth: '100%'
-	  },
-	  floatLeft: {
-	    float: 'left',
-	    width: '49%',
-	    maxWidth: "49%",
-	    marginTop: 10,
-	    marginLeft: 10
-	  },
-	  floatRight: {
-	    float: 'right',
-	    maxWidth: "49%",
-	    width: '49%',
-	    marginTop: 10,
-	    bottom: 0,
-	    height: '100%',
-	    overflow: 'scroll',
-	    display: 'block',
-	    marginRight: 10,
-	    padding: 10
-
-	  },
-	  topTab: {
-	    height: 35,
-	    textAlign: 'top'
-	  },
-	  markdownMargins: {
-	    margin: 3
-	  },
-	  buttonDecline: {
-	    minWidth: '50%',
-	    color: 'white'
-
-	  },
-	  buttonAccept: {
-	    minWidth: '50%',
-	    color: 'white'
-	  },
-	  description: {
-	    padding: 10,
-	    marginTop: 10
-	  },
-	  headline: {
-	    fontSize: 24,
-	    paddingTop: 16,
-	    marginBottom: 12,
-	    fontWeight: 400,
-	    opacity: 1
-	  },
-	  textStyle: {
-	    marginLeft: 20
-	  },
-	  launchDiv: {
-	    maxWidth: '60%',
-	    margin: '0 auto',
-	    textColor: "white"
-	  },
-	  descPadding: {
-	    padding: 5
-	  },
-	  inkBarStyle: {
-	    backgroundColor: "#c2ddf0"
-	  },
-	  radioButton: {
-	    marginBottom: 16
-	  }
-	};
-
-	var User = function (_Component) {
-	  _inherits(User, _Component);
-
-	  function User(props) {
-	    _classCallCheck(this, User);
-
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(User).call(this, props));
-
-	    _this.handleCloseModule = function () {
-	      _this.props.closeModule();
-	      _this.props.cy.zoomingEnabled(true);
-	      _this.props.cy.panningEnabled(true);
-	    };
-
-	    _this.handleOpenModule = function () {
-	      _this.props.cy.zoomingEnabled(false);
-	      _this.props.cy.panningEnabled(false);
-	      _this.props.openModule();
-	    };
-
-	    _this.handleToggleNext = function (event) {
-	      console.log(event.currentTarget);
-	      _this.setState({
-	        anchorEl: event.currentTarget,
-	        lol: true
-	      });
-	    };
-
-	    _this.handleClosePrompt = function () {
-	      _this.props.closeUserView();
-	    };
-
-	    _this.handleOpenDrawer = function (open, reason) {
-	      console.log(open);
-	      console.log("eh?");
-	    };
-
-	    _this.state = {
-	      open: false,
-	      navigateNext: false
-	    };
-	    return _this;
-	  }
-
-	  _createClass(User, [{
-	    key: 'render',
-	    value: function render() {
-
-	      var opts = {
-	        height: 390,
-	        width: '100%'
-	      };
-
-	      var cancel = [_react2.default.createElement(_FlatButton2.default, {
-	        label: 'Back to galactic view',
-	        primary: true,
-	        onTouchTap: this.props.closeModule
-	      })];
-
-	      var contentStyle = {
-	        minWidth: 640,
-	        height: '100%',
-	        minHeight: 480,
-	        alignItems: 'center',
-	        justifyContent: 'center'
-	      };
-
-	      console.log("RENDERING USERVIEW");
-
-	      return _react2.default.createElement(
-	        'div',
-	        null,
-	        _react2.default.createElement(
-	          _Dialog2.default,
-	          {
-	            modal: false,
-	            bodyStyle: styles.dialogBody,
-	            contentStyle: styles.dialog,
-	            open: this.props.openUserView,
-	            width: 800,
-	            onRequestClose: this.handleClose },
-	          _react2.default.createElement(
-	            'div',
-	            { style: styles.launchDiv },
-	            _react2.default.createElement(
-	              _Paper2.default,
-	              { style: styles.buttonDiv, zDepth: 5 },
-	              _react2.default.createElement(
-	                _RaisedButton2.default,
-	                { onClick: this.handleClosePrompt, backgroundColor: '#ff0000', style: styles.buttonDecline },
-	                'ABORT'
-	              ),
-	              _react2.default.createElement(
-	                _RaisedButton2.default,
-	                { onClick: this.handleOpenModule, backgroundColor: '#3ed715', style: styles.buttonAccept },
-	                'LAUNCH'
-	              )
-	            ),
-	            _react2.default.createElement(
-	              _Paper2.default,
-	              { style: styles.descPadding, zDepth: 2 },
-	              _react2.default.createElement(_markdown2.default, { style: styles.description, markdown: this.props.moduleDescription })
-	            )
-	          )
-	        ),
-	        _react2.default.createElement(
-	          _Drawer2.default,
-	          {
-	            docked: false,
-	            containerStyle: styles.containerStyle,
-	            overlayStyle: styles.containerStyle,
-	            onRequestChange: function onRequestChange(open) {
-	              (function () {
-	                console.log("fuck");
-	              })();
-	            },
-	            width: 1680,
-	            open: this.props.openModuleView },
-	          _react2.default.createElement(
-	            _Tabs.Tabs,
-	            { tabItemContainerStyle: styles.tabsColor, inkBarStyle: styles.inkBarStyle },
-	            _react2.default.createElement(
-	              _Tabs.Tab,
-	              { label: 'Content' },
-	              _react2.default.createElement(
-	                _Tabs.Tabs,
-	                { tabItemContainerStyle: styles.tabsColor2, inkBarStyle: styles.inkBarStyle },
-	                this.props.currentVideos.map(function (value) {
-	                  return _react2.default.createElement(
-	                    _Tabs.Tab,
-	                    { label: value.name },
-	                    _react2.default.createElement(
-	                      'div',
-	                      { style: styles.contentDiv },
-	                      _react2.default.createElement(
-	                        'div',
-	                        { style: styles.floatLeft },
-	                        _react2.default.createElement(
-	                          _Paper2.default,
-	                          { zDepth: 4 },
-	                          _react2.default.createElement(_reactYoutube2.default, {
-	                            videoId: value.video,
-	                            opts: opts })
-	                        )
-	                      ),
-	                      _react2.default.createElement(
-	                        'div',
-	                        null,
-	                        _react2.default.createElement(
-	                          _Paper2.default,
-	                          { style: styles.floatRight, zDepth: 4 },
-	                          _react2.default.createElement(_markdown2.default, { style: styles.markdownMargins, markdown: value.markdown })
-	                        )
-	                      )
-	                    )
-	                  );
-	                })
-	              )
-	            ),
-	            _react2.default.createElement(
-	              _Tabs.Tab,
-	              { label: 'Documentation' },
-	              _react2.default.createElement(
-	                _Tabs.Tabs,
-	                { tabItemContainerStyle: styles.tabsColor2, inkBarStyle: styles.inkBarStyle },
-	                this.props.currentArticles.map(function (value) {
-	                  return _react2.default.createElement(
-	                    _Tabs.Tab,
-	                    { label: value.name },
-	                    _react2.default.createElement(
-	                      'div',
-	                      { style: styles.dialogHugePlayer },
-	                      _react2.default.createElement('iframe', { style: styles.dialogHugePlayer, src: value.url, height: '50%', width: '100%' })
-	                    )
-	                  );
-	                })
-	              )
-	            ),
-	            _react2.default.createElement(
-	              _Tabs.Tab,
-	              { label: 'Questions' },
-	              _react2.default.createElement(
-	                'div',
-	                null,
-	                _react2.default.createElement(
-	                  'h2',
-	                  { style: styles.headline },
-	                  'Questions'
-	                ),
-	                _react2.default.createElement(
-	                  'p',
-	                  null,
-	                  'Please confirm your edit by typing \'confirm\' in the textbox below '
-	                ),
-	                _react2.default.createElement(_Paper2.default, null)
-	              )
-	            ),
-	            _react2.default.createElement(
-	              _Tabs.Tab,
-	              { label: 'Quizzes' },
-	              _react2.default.createElement(
-	                _Card.Card,
-	                null,
-	                _react2.default.createElement(_Card.CardHeader, {
-	                  title: 'Closures',
-	                  subtitle: 'A quiz on closures',
-	                  actAsExpander: true,
-	                  showExpandableButton: true
-	                }),
-	                _react2.default.createElement(
-	                  _Card.CardMedia,
-	                  { expandable: true },
-	                  _react2.default.createElement(_quiz2.default, null)
-	                ),
-	                _react2.default.createElement(
-	                  _Card.CardActions,
-	                  { expandable: true },
-	                  _react2.default.createElement(_FlatButton2.default, { label: 'Cancel' }),
-	                  _react2.default.createElement(_FlatButton2.default, { label: 'Submit' })
-	                )
-	              )
-	            )
-	          ),
-	          _react2.default.createElement(
-	            'div',
-	            { style: styles.backButton },
-	            _react2.default.createElement(
-	              _Paper2.default,
-	              { zDepth: 4 },
-	              _react2.default.createElement(_FlatButton2.default, { onTouchTap: this.handleCloseModule, label: 'Back to Galactic View' }),
-	              _react2.default.createElement(_FlatButton2.default, { onTouchTap: this.handleToggleNext, label: 'Next Nodes' })
-	            )
-	          )
-	        )
-	      );
-	    }
-	  }]);
-
-	  return User;
-	}(_react.Component);
-
-	function mapStateToProps(state) {
-	  console.debug("MAPPING STATE TO PROPS IN USERVIEW");
-	  return {
-	    cy: state.selectNode.cy,
-	    openModuleView: state.selectNode.openModuleView,
-	    moduleDescription: state.selectNode.moduleDescription,
-	    currentArticles: state.selectNode.currentArticles,
-	    currentVideos: state.selectNode.currentVideos,
-	    previousNode: state.selectNode.previousNode,
-	    currentNode: state.selectNode.currentNode,
-	    openUserView: state.selectNode.openUserView };
-	}
-
-	exports.default = (0, _reactRedux.connect)(mapStateToProps, actions)(User);
 
 /***/ },
 /* 632 */
@@ -76852,93 +76986,6 @@
 	          'h3',
 	          null,
 	          'This is the question'
-	        ),
-	        _react2.default.createElement(
-	          _RadioButton.RadioButtonGroup,
-	          { name: 'shipSpeed', defaultSelected: 'not_light' },
-	          _react2.default.createElement(_RadioButton.RadioButton, {
-	            value: 'light',
-	            label: 'Simple',
-	            style: styles.radioButton
-	          }),
-	          _react2.default.createElement(_RadioButton.RadioButton, {
-	            value: 'ludicrous',
-	            label: 'Custom icon',
-	            style: styles.radioButton
-	          }),
-	          _react2.default.createElement(_RadioButton.RadioButton, {
-	            value: 'ludicrous',
-	            label: 'Custom icon',
-	            style: styles.radioButton
-	          }),
-	          _react2.default.createElement(_RadioButton.RadioButton, {
-	            value: 'not_light',
-	            label: 'Selected by default',
-	            style: styles.radioButton
-	          }),
-	          _react2.default.createElement(_RadioButton.RadioButton, {
-	            value: 'ludicrous',
-	            label: 'Custom icon',
-	            style: styles.radioButton
-	          })
-	        ),
-	        _react2.default.createElement(
-	          _RadioButton.RadioButtonGroup,
-	          { name: 'shipSpeed', defaultSelected: 'not_light' },
-	          _react2.default.createElement(_RadioButton.RadioButton, {
-	            value: 'light',
-	            label: 'Simple',
-	            style: styles.radioButton
-	          }),
-	          _react2.default.createElement(_RadioButton.RadioButton, {
-	            value: 'ludicrous',
-	            label: 'Custom icon',
-	            style: styles.radioButton
-	          }),
-	          _react2.default.createElement(_RadioButton.RadioButton, {
-	            value: 'ludicrous',
-	            label: 'Custom icon',
-	            style: styles.radioButton
-	          }),
-	          _react2.default.createElement(_RadioButton.RadioButton, {
-	            value: 'not_light',
-	            label: 'Selected by default',
-	            style: styles.radioButton
-	          }),
-	          _react2.default.createElement(_RadioButton.RadioButton, {
-	            value: 'ludicrous',
-	            label: 'Custom icon',
-	            style: styles.radioButton
-	          })
-	        ),
-	        _react2.default.createElement(
-	          _RadioButton.RadioButtonGroup,
-	          { name: 'shipSpeed', defaultSelected: 'not_light' },
-	          _react2.default.createElement(_RadioButton.RadioButton, {
-	            value: 'light',
-	            label: 'Simple',
-	            style: styles.radioButton
-	          }),
-	          _react2.default.createElement(_RadioButton.RadioButton, {
-	            value: 'ludicrous',
-	            label: 'Custom icon',
-	            style: styles.radioButton
-	          }),
-	          _react2.default.createElement(_RadioButton.RadioButton, {
-	            value: 'ludicrous',
-	            label: 'Custom icon',
-	            style: styles.radioButton
-	          }),
-	          _react2.default.createElement(_RadioButton.RadioButton, {
-	            value: 'not_light',
-	            label: 'Selected by default',
-	            style: styles.radioButton
-	          }),
-	          _react2.default.createElement(_RadioButton.RadioButton, {
-	            value: 'ludicrous',
-	            label: 'Custom icon',
-	            style: styles.radioButton
-	          })
 	        ),
 	        _react2.default.createElement(
 	          _RadioButton.RadioButtonGroup,
@@ -78897,13 +78944,18 @@
 
 	var _admin4 = _interopRequireDefault(_admin3);
 
+	var _userAction = __webpack_require__(701);
+
+	var _userAction2 = _interopRequireDefault(_userAction);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	var RootReducer = (0, _redux.combineReducers)({
 		form: _reduxForm.reducer,
 		adminAdd: _admin2.default,
 		selectNode: _selectNode2.default,
-		adminEdit: _admin4.default
+		adminEdit: _admin4.default,
+		userActions: _userAction2.default
 	});
 
 	exports.default = RootReducer;
@@ -82045,7 +82097,7 @@
 			case _actionList.REGISTER_CY:
 				return _extends({}, state, { cy: action.payload.cy });
 			case _actionList.SELECT_NODE:
-				return _extends({}, state, { moduleDescription: action.payload.moduleDescription, currentArticles: [], currentVideos: action.payload.currentVideos, currentNode: action.payload.currentNode, openUserView: action.payload.openUserView, previousNode: action.payload.previousNode });
+				return _extends({}, state, { currentQuestions: action.payload.currentQuestions, moduleDescription: action.payload.moduleDescription, currentArticles: action.payload.currentArticles, currentVideos: action.payload.currentVideos, currentNode: action.payload.currentNode, openUserView: action.payload.openUserView, previousNode: action.payload.previousNode });
 			case _actionList.CLOSE_USER_VIEW:
 				return _extends({}, state, { openUserView: action.payload.openUserView });
 			case _actionList.ADMIN_OPEN_VIEW:
@@ -82066,6 +82118,7 @@
 		previousNode: {},
 		cy: {},
 		nodes: {},
+		currentQuestions: [],
 		currentArticles: [],
 		currentVideos: [],
 		moduleDescription: '',
@@ -82094,6 +82147,10 @@
 		switch (action.type) {
 			case _actionList.ADMIN_OPEN_EDIT:
 				return _extends({}, state, { edit: true });
+			case _actionList.ADMIN_EDIT_EDGES:
+				return state;
+			case _actionList.ADMIN_SUBMIT_EDIT:
+				return _extends({}, state);
 			case _actionList.ADMIN_CLOSE_EDIT:
 				return _extends({}, state, { edit: false });
 			case _actionList.ADMIN_OPEN_ADDVIDEO:
@@ -82125,6 +82182,374 @@
 		addArticle: false
 
 	};
+
+/***/ },
+/* 700 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _reducerActions = __webpack_require__(423);
+
+	var actions = _interopRequireWildcard(_reducerActions);
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactRedux = __webpack_require__(341);
+
+	var _Card = __webpack_require__(636);
+
+	var _Avatar = __webpack_require__(642);
+
+	var _Avatar2 = _interopRequireDefault(_Avatar);
+
+	var _TextField = __webpack_require__(431);
+
+	var _TextField2 = _interopRequireDefault(_TextField);
+
+	var _FlatButton = __webpack_require__(420);
+
+	var _FlatButton2 = _interopRequireDefault(_FlatButton);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var styles = {
+	  avatar: {
+	    marginRight: 30
+	  }
+	};
+
+	var QuestionEntry = function (_Component) {
+	  _inherits(QuestionEntry, _Component);
+
+	  function QuestionEntry(props) {
+	    _classCallCheck(this, QuestionEntry);
+
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(QuestionEntry).call(this, props));
+
+	    _this.handleTextChange = function (e, value) {
+	      _this.state.submitAnswer = value;
+	    };
+
+	    _this.handleAnswerSubmit = function () {
+	      _this.state.question.answers.push(_this.state.submitAnswer);
+	      _this.setState({
+	        lock: true
+	      });
+	      _this.props.submitAnswer(_this.props.currentNode);
+	    };
+
+	    _this.state = {
+	      question: props.question,
+	      submitAnswer: '',
+	      lock: false
+	    };
+	    return _this;
+	  }
+
+	  _createClass(QuestionEntry, [{
+	    key: 'render',
+	    value: function render() {
+	      return _react2.default.createElement(
+	        _Card.Card,
+	        null,
+	        _react2.default.createElement(_Card.CardHeader, {
+	          title: this.state.question.subject,
+	          subtitle: this.state.question.question,
+	          actAsExpander: true,
+	          showExpandableButton: true
+	        }),
+	        _react2.default.createElement(
+	          _Card.CardText,
+	          { expandable: true },
+	          this.state.question.answers.map(function (value) {
+	            return _react2.default.createElement(
+	              'div',
+	              null,
+	              _react2.default.createElement(_Avatar2.default, {
+	                size: 30,
+	                style: styles.avatar
+	              }),
+	              _react2.default.createElement(
+	                'span',
+	                null,
+	                value
+	              ),
+	              _react2.default.createElement('br', null),
+	              _react2.default.createElement('br', null)
+	            );
+	          }),
+	          _react2.default.createElement(_TextField2.default, {
+	            hintText: 'Submit an answer',
+	            onChange: this.handleTextChange,
+	            disabled: this.state.lock
+	          })
+	        ),
+	        _react2.default.createElement(
+	          _Card.CardActions,
+	          { expandable: true },
+	          _react2.default.createElement(_FlatButton2.default, { label: 'Cancel' }),
+	          _react2.default.createElement(_FlatButton2.default, { label: 'Submit',
+	            disabled: this.state.lock,
+	            onTouchTap: this.handleAnswerSubmit
+	          })
+	        )
+	      );
+	    }
+	  }]);
+
+	  return QuestionEntry;
+	}(_react.Component);
+
+	function mapStateToProps(state) {
+
+	  console.debug("MAPPING PROPS TO STATE IN QUESTIONENTRY");
+	  return { currentNode: state.selectNode.currentNode };
+	}
+
+	exports.default = (0, _reactRedux.connect)(mapStateToProps, actions)(QuestionEntry);
+
+/***/ },
+/* 701 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	exports.default = function () {
+		var state = arguments.length <= 0 || arguments[0] === undefined ? INITIAL_STATE : arguments[0];
+		var action = arguments[1];
+
+
+		switch (action.type) {
+			case _actionList.USER_SUBMITQUESTION:
+				return _extends({}, state, { questionPrompt: false });
+			case _actionList.USER_OPEN_SUBMITQUESTION:
+				return _extends({}, state, { questionPrompt: true });
+			case _actionList.USER_CLOSE_SUBMITQUESTION:
+				return _extends({}, state, { questionPrompt: false });
+			case _actionList.USER_SUBMITANSWER:
+				return state;
+			default:
+				return state;
+		}
+	};
+
+	var _actionList = __webpack_require__(424);
+
+	var INITIAL_STATE = {
+		questionPrompt: false
+	};
+
+/***/ },
+/* 702 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _reducerActions = __webpack_require__(423);
+
+	var actions = _interopRequireWildcard(_reducerActions);
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactRedux = __webpack_require__(341);
+
+	var _Dialog = __webpack_require__(450);
+
+	var _Dialog2 = _interopRequireDefault(_Dialog);
+
+	var _FlatButton = __webpack_require__(420);
+
+	var _FlatButton2 = _interopRequireDefault(_FlatButton);
+
+	var _Paper = __webpack_require__(391);
+
+	var _Paper2 = _interopRequireDefault(_Paper);
+
+	var _TextField = __webpack_require__(431);
+
+	var _TextField2 = _interopRequireDefault(_TextField);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var styles = {
+		question: {
+			marginTop: 25,
+			width: '100%',
+			height: 300,
+			overflow: 'scroll'
+		},
+
+		dialogBody: {
+			minHeight: 600,
+			overflow: 'scroll',
+			background: 'url(./assets/imgs/metalBackground.jpg)',
+			backgroundSize: 'cover',
+			borderRadius: 3,
+			zIndex: 100002
+		},
+		zIndex: {
+			zIndex: 100002
+		},
+
+		subject: {
+			width: '100%',
+			height: '100%'
+		},
+
+		dialog: {
+			alignItems: 'center',
+			justifyContent: 'center',
+			overflow: 'scroll',
+			width: '80%',
+			maxWidth: 'none'
+		}
+	};
+
+	var AskQuestion = function (_Component) {
+		_inherits(AskQuestion, _Component);
+
+		function AskQuestion(props) {
+			_classCallCheck(this, AskQuestion);
+
+			var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(AskQuestion).call(this, props));
+
+			_this.handleTextChangeSubject = function (e, value) {
+				console.log(value);
+				_this.state.subject = value;
+			};
+
+			_this.handleTextChangeQuestion = function (e, value) {
+				console.log(value);
+				_this.state.question = value;
+			};
+
+			_this.handleSubmit = function () {
+				_this.props.currentNode._private.data.questions.push({
+					subject: _this.state.subject,
+					question: _this.state.question,
+					answers: []
+				});
+				_this.props.submitQuestion(_this.props.currentNode);
+				_this.props.closeQuestion();
+			};
+
+			_this.state = {
+				subject: "",
+				question: ""
+			};
+			return _this;
+		}
+
+		_createClass(AskQuestion, [{
+			key: 'render',
+			value: function render() {
+
+				var actions = [_react2.default.createElement(_FlatButton2.default, {
+					label: 'Cancel',
+					primary: true,
+					onTouchTap: this.handleClose
+				}), _react2.default.createElement(_FlatButton2.default, {
+					label: 'Submit',
+					primary: true,
+					onTouchTap: this.handleSubmit
+				})];
+
+				console.log("RENDERING SUBMITQUESTIONPROMPT");
+				console.log(this.props.questionPrompt, "huh");
+
+				return _react2.default.createElement(
+					_Dialog2.default,
+					{
+						modal: true,
+						style: styles.zIndex,
+						bodyStyle: styles.dialogBody,
+						contentStyle: styles.dialog,
+						open: this.props.questionPrompt,
+						width: 800,
+						actions: actions,
+						onRequestClose: this.handleClose },
+					_react2.default.createElement(
+						_Paper2.default,
+						{
+							zDepth: 4,
+							style: styles.subject },
+						_react2.default.createElement(_TextField2.default, {
+							hintText: 'Subject',
+							onChange: this.handleTextChangeSubject,
+							style: styles.textStyle
+
+						})
+					),
+					_react2.default.createElement(_Paper2.default, { zDepth: 2 }),
+					_react2.default.createElement(
+						_Paper2.default,
+						{
+							zDepth: 2,
+							style: styles.question },
+						_react2.default.createElement(_TextField2.default, {
+							hintText: 'Question',
+							multiLine: true,
+							onChange: this.handleTextChangeQuestion,
+							style: styles.textStyle
+
+						})
+					)
+				);
+			}
+		}]);
+
+		return AskQuestion;
+	}(_react.Component);
+
+	function mapStateToProps(state) {
+
+		console.log(state);
+
+		console.debug("MAPPING PROPS TO STATE IN SUBMITQUESTION");
+		return { currentNode: state.selectNode.currentNode,
+			questionPrompt: state.userActions.questionPrompt };
+	}
+
+	exports.default = (0, _reactRedux.connect)(mapStateToProps, actions)(AskQuestion);
 
 /***/ }
 /******/ ]);

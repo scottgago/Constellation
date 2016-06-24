@@ -143,21 +143,29 @@ class EditNode extends Component {
     }
 
 
+    
     for(var i = 0; i < addNodes.length; i++){
 
-      this.props.cy.add({
+      var newEdge = {
+        
         group: 'edges',
         data: {
           id : this.props.currentNode._private.data.id + addNodes[i],
           source: this.props.currentNode._private.data.id,
           target: addNodes[i]
           }
-        })
-      this.props.addConnection()
+        }
+
+      this.props.cy.add(newEdge)
+      this.props.editEdges({selectedEdge: newEdge})
 
       }
 
-      this.props.submitEdit(currentNode)
+
+
+
+
+
       this.props.closeEdit()
   }
 
@@ -225,9 +233,9 @@ class EditNode extends Component {
                         {this.props.currentVideos.map(function(value, index){
                           return (<TableRow>
                                     <TableRowColumn>{index + 1}</TableRowColumn>
-                                    <TableRowColumn>Name</TableRowColumn>
+                                    <TableRowColumn>{value.name}</TableRowColumn>
                                     <TableRowColumn>{value.video}</TableRowColumn>
-                                    <TableRowColumn>Employed</TableRowColumn>
+                                    <TableRowColumn>{value.description}</TableRowColumn>
                                     <TableRowColumn><RaisedButton>Edit</RaisedButton></TableRowColumn>
                                   </TableRow>)
                         })}
