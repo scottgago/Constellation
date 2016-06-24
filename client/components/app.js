@@ -15,7 +15,7 @@ const styles = {
 	    background: 'url(http://wallpaper.zone/img/210731.jpg)',
 	    backgroundSize: 'cover',
 	    transitionDuration: '.5s',
-	    transitionDelay: '.3s',
+	    transitionDelay: '.2s',
 	    zIndex: 1000000
   },
 }

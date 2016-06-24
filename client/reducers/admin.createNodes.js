@@ -34,6 +34,7 @@ export default function(state = INITIAL_STATE, action) {
             		description: action.payload.markdownDescription,
             		videos: [],
             		articles: [],
+                questions: [],
             		styles: {
               			width: action.payload.width,
               			height: action.payload.height,
@@ -46,6 +47,20 @@ export default function(state = INITIAL_STATE, action) {
         			'width'           : action.payload.width,
         			'height'          : action.payload.height
       			})
+
+          if(!action.payload.connections.length){
+            console.log("creating connection")
+            action.payload.cy.add({
+                group : 'edges',
+                data  : {
+                  id     : action.payload.currentNode._private.data.id+action.payload.id,
+                  source : action.payload.id,
+                  target : action.payload.currentNode._private.data.id
+                }
+            })
+          } 
+
+          console.log("not creating a connection")
 
       		action.payload.connections.forEach((edge) => {
         		action.payload.cy.add({
@@ -64,5 +79,3 @@ export default function(state = INITIAL_STATE, action) {
 			return state;
 	}
 }
-
-//Object.assign({}, state, { cy: action.payload.tasks })

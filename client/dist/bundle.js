@@ -36571,7 +36571,7 @@
 			background: 'url(http://wallpaper.zone/img/210731.jpg)',
 			backgroundSize: 'cover',
 			transitionDuration: '.5s',
-			transitionDelay: '.3s',
+			transitionDelay: '.2s',
 			zIndex: 1000000
 		}
 	};
@@ -46258,28 +46258,6 @@
 	var Posts = new _firebase2.default('https://constellations-3ccaa.firebaseio.com');
 	var nodesRef = Posts.child('elements');
 
-	// var newNode = nodesRef.push()
-
-	// newNode.setWithPriority({
-	// 			group: 'nodes',
-	//         	data: {
-	//         		firebaseID: newNode.toString(),
-	// 	          	id: "JavaScript",
-	// 	          	videos: '[]',
-	// 	          	articles: '[]',
-	// 	          	description: "",
-	// 	          	questions: '[]',
-	// 	          	quizzes: '[]',
-	// 	          	style: {
-	// 	          		width: 100,
-	// 	          		height: 100,
-	// 	          		starType: "./assets/imgs/star (1).png"
-	// 	          	}
-	//         	}
-	//       	}, "JavaScript")
-
-	// console.log("creating?")
-
 	function openQuestion() {
 		return { type: _actionList.USER_OPEN_SUBMITQUESTION, payload: { questionPrompt: true } };
 	}
@@ -46416,6 +46394,17 @@
 				}
 			}
 		}, nodeName);
+
+		if (!{ connections: connections }.connections.length) {
+			nodesRef.push({
+				group: 'edges',
+				data: {
+					id: nodeName + { currentNode: currentNode }.currentNode._private.data.id,
+					source: nodeName,
+					target: { currentNode: currentNode }.currentNode._private.data.id
+				}
+			});
+		}
 
 		for (var i = 0; i < { connections: connections }.connections.length; i++) {
 			nodesRef.push({
@@ -46603,6 +46592,7 @@
 	var ADMIN_OPENCREATE = exports.ADMIN_OPENCREATE = "ADMIN_OPENCREATE";
 	var ADMIN_CREATEDCOMPLETE = exports.ADMIN_CREATEDCOMPLETE = "ADMIN_CREATEDCOMPLETE";
 	var ADMIN_CREATE_EDGES = exports.ADMIN_CREATE_EDGES = 'ADMIN_CREATE_EDGES';
+	var ADMIN_DELETENODE = exports.ADMIN_DELETENODE = "ADMIN_DELETENODE";
 
 	var ADMIN_EDITNODE = exports.ADMIN_EDITNODE = "ADMIN_EDITNODE";
 	var ADMIN_OPEN_EDIT = exports.ADMIN_OPEN_EDIT = "ADMIN_OPEN_EDIT";
@@ -46615,8 +46605,6 @@
 	var ADMIN_CLOSE_ADDVIDEO = exports.ADMIN_CLOSE_ADDVIDEO = "ADMIN_CLOSE_ADDVIDEO";
 	var ADMIN_OPEN_ADDARTICLE = exports.ADMIN_OPEN_ADDARTICLE = "ADMIN_OPEN_ADDARTICLE";
 	var ADMIN_CLOSE_ADDARTICLE = exports.ADMIN_CLOSE_ADDARTICLE = "ADMIN_CLOSE_ADDARTICLE";
-
-	var ADMIN_DELETENODE = exports.ADMIN_DELETENODE = "ADMIN_DELETENODE";
 
 	var ADMIN_ADDCONNECTION = exports.ADMIN_ADDCONNECTION = "ADMIN_ADDCONNECTION";
 	var ADMIN_ADDVIDEO = exports.ADMIN_ADDVIDEO = "ADMIN_ADDVIDEO";
@@ -47771,11 +47759,15 @@
 	    value: function componentDidMount() {
 	      var _this2 = this;
 
+	      bind = this;
+
 	      var defaultOptions = {
 	        // Called on `layoutready`
 
 	        name: "cose-bilkent",
-	        ready: function ready() {},
+	        ready: function ready() {
+	          bind.props.openBlastDoor();
+	        },
 	        // Called on `layoutstop`
 	        stop: function stop() {},
 	        // Whether to fit the network view after when done
@@ -47787,7 +47779,7 @@
 	        // Node repulsion (non overlapping) multiplier
 	        nodeRepulsion: 4500,
 	        // Ideal edge (non nested) length
-	        idealEdgeLength: 50,
+	        idealEdgeLength: 75,
 	        // Divisor to compute edge forces
 	        edgeElasticity: 0.45,
 	        // Nesting factor (multiplier) to compute ideal edge length for nested edges
@@ -47795,7 +47787,7 @@
 	        // Gravity force (constant)
 	        gravity: 0.25,
 	        // Maximum number of iterations to perform
-	        numIter: 3000,
+	        numIter: 4000,
 	        // For enabling tiling
 	        tile: true,
 	        // Type of layout animation. The option set is {'during', 'end', false}
@@ -47827,6 +47819,7 @@
 	              'background-opacity': 0,
 	              'label': 'data(id)',
 	              'text-valign': 'top',
+	              'overlay-opacity': 0,
 	              'font-size': 15,
 	              'color': 'white',
 	              'z-index': '-100',
@@ -47929,7 +47922,6 @@
 	        }
 	        cy.layout(defaultOptions);
 	        _this2.props.registerCY({ cy: cy });
-	        _this2.props.openBlastDoor();
 	      };
 
 	      this.props.fetchNodes(initCy);
@@ -82050,6 +82042,7 @@
 	          description: action.payload.markdownDescription,
 	          videos: [],
 	          articles: [],
+	          questions: [],
 	          styles: {
 	            width: action.payload.width,
 	            height: action.payload.height,
@@ -82061,6 +82054,20 @@
 	        'width': action.payload.width,
 	        'height': action.payload.height
 	      });
+
+	      if (!action.payload.connections.length) {
+	        console.log("creating connection");
+	        action.payload.cy.add({
+	          group: 'edges',
+	          data: {
+	            id: action.payload.currentNode._private.data.id + action.payload.id,
+	            source: action.payload.id,
+	            target: action.payload.currentNode._private.data.id
+	          }
+	        });
+	      }
+
+	      console.log("not creating a connection");
 
 	      action.payload.connections.forEach(function (edge) {
 	        action.payload.cy.add({
@@ -82081,9 +82088,6 @@
 	};
 
 	var _actionList = __webpack_require__(424);
-
-	//Object.assign({}, state, { cy: action.payload.tasks })
-
 
 	var INITIAL_STATE = {
 	  newNodeName: '',

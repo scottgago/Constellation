@@ -41,48 +41,51 @@ class MainView extends Component {
 
   componentDidMount() {
 
+    bind = this
+
     var defaultOptions = {
   // Called on `layoutready`
 
   name : "cose-bilkent",
-  ready: function () {
-  },
-  // Called on `layoutstop`
-  stop: function () {
-  },
-  // Whether to fit the network view after when done
-  fit: true,
-  // Padding on fit
-  padding: 10,
-  // Whether to enable incremental mode
-  randomize: true,
-  // Node repulsion (non overlapping) multiplier
-  nodeRepulsion: 4500,
-  // Ideal edge (non nested) length
-  idealEdgeLength: 50,
-  // Divisor to compute edge forces
-  edgeElasticity: 0.45,
-  // Nesting factor (multiplier) to compute ideal edge length for nested edges
-  nestingFactor: 0.1,
-  // Gravity force (constant)
-  gravity: 0.25,
-  // Maximum number of iterations to perform
-  numIter: 3000,
-  // For enabling tiling
-  tile: true,
-  // Type of layout animation. The option set is {'during', 'end', false}
-  animate: 'end',
-  // Represents the amount of the vertical space to put between the zero degree members during the tiling operation(can also be a function)
-  tilingPaddingVertical: 10,
-  // Represents the amount of the horizontal space to put between the zero degree members during the tiling operation(can also be a function)
-  tilingPaddingHorizontal: 10,
-  // Gravity range (constant) for compounds
-  gravityRangeCompound: 1.5,
-  // Gravity force (constant) for compounds
-  gravityCompound: 1.0,
-  // Gravity range (constant)
-  gravityRange: 3.8
-};
+    ready: function () {
+      bind.props.openBlastDoor()
+    },
+    // Called on `layoutstop`
+    stop: function () {
+    },
+    // Whether to fit the network view after when done
+    fit: true,
+    // Padding on fit
+    padding: 10,
+    // Whether to enable incremental mode
+    randomize: true,
+    // Node repulsion (non overlapping) multiplier
+    nodeRepulsion: 4500,
+    // Ideal edge (non nested) length
+    idealEdgeLength: 75,
+    // Divisor to compute edge forces
+    edgeElasticity: 0.45,
+    // Nesting factor (multiplier) to compute ideal edge length for nested edges
+    nestingFactor: 0.1,
+    // Gravity force (constant)
+    gravity: 0.25,
+    // Maximum number of iterations to perform
+    numIter: 4000,
+    // For enabling tiling
+    tile: true,
+    // Type of layout animation. The option set is {'during', 'end', false}
+    animate: 'end',
+    // Represents the amount of the vertical space to put between the zero degree members during the tiling operation(can also be a function)
+    tilingPaddingVertical: 10,
+    // Represents the amount of the horizontal space to put between the zero degree members during the tiling operation(can also be a function)
+    tilingPaddingHorizontal: 10,
+    // Gravity range (constant) for compounds
+    gravityRangeCompound: 1.5,
+    // Gravity force (constant) for compounds
+    gravityCompound: 1.0,
+    // Gravity range (constant)
+    gravityRange: 3.8
+  };
 
   	var bind = this
 
@@ -99,6 +102,7 @@ class MainView extends Component {
           'background-opacity': 0,
           'label': 'data(id)',
           'text-valign': 'top',
+          'overlay-opacity': 0,
           'font-size': 15,
           'color': 'white',
           'z-index': '-100',
@@ -210,7 +214,7 @@ class MainView extends Component {
     }
     cy.layout(defaultOptions)
     this.props.registerCY({cy : cy})
-    this.props.openBlastDoor()
+    
     }
   	
     this.props.fetchNodes(initCy)

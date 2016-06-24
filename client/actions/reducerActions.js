@@ -5,28 +5,6 @@ import Firebase from 'firebase';
 const Posts = new Firebase('https://constellations-3ccaa.firebaseio.com');
 const nodesRef = Posts.child('elements')
 
-// var newNode = nodesRef.push()
-
-// newNode.setWithPriority({
-// 			group: 'nodes',
-//         	data: { 
-//         		firebaseID: newNode.toString(),
-// 	          	id: "JavaScript",
-// 	          	videos: '[]',
-// 	          	articles: '[]',
-// 	          	description: "",
-// 	          	questions: '[]',
-// 	          	quizzes: '[]',
-// 	          	style: {
-// 	          		width: 100,
-// 	          		height: 100,
-// 	          		starType: "./assets/imgs/star (1).png"
-// 	          	}
-//         	}
-//       	}, "JavaScript")
-
-// console.log("creating?")
-
 export function openQuestion(){
 	return {type: USER_OPEN_SUBMITQUESTION, payload: {questionPrompt: true}}
 }
@@ -157,6 +135,17 @@ export function createNode({cy, currentNode, id, description, styles, admins, wi
 	          	}
         	}
       	}, nodeName)
+
+      	if(!{connections}.connections.length){
+      		nodesRef.push({
+      			group: 'edges',
+      			data: {
+      				id: nodeName + {currentNode}.currentNode._private.data.id,
+      				source: nodeName,
+      				target: {currentNode}.currentNode._private.data.id
+      			}
+      		})
+      	}
 
 
       	for(var i = 0; i < {connections}.connections.length; i++){
