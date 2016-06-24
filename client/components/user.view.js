@@ -12,6 +12,10 @@ import Popover from 'material-ui/Popover';
 import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem';
 import QuizEntry from './quiz.entry';
+import QuestionEntry from './question.entry'
+import AskQuestion from './user.submitQuestion' 
+
+import Avatar from 'material-ui/Avatar';
 
 import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
 
@@ -35,7 +39,8 @@ const newStyles = {
       left:0, 
       backgroundSize: 'cover',
       zIndex: 100000,
-      pointerEvents: 'auto'
+      pointerEvents: 'auto',
+      submitQuestion: false
     }
   }
 
@@ -130,7 +135,7 @@ const styles = {
 	dialogBody: {
 		minHeight: 600,
 		overflow: 'scroll',
-    background: 'url(./assets/imgs/new.png)',
+    background: 'url(./assets/imgs/metalBackground.jpg)',
     backgroundSize: 'cover',
     borderRadius: 3
 	},
@@ -218,7 +223,10 @@ const styles = {
     opacity: 1,
   },
   textStyle: {
-    marginLeft: 20
+    marginLeft: 20,
+    marginRight: 20,
+    maxWidth: '95%',
+    width: '95%'
   },
   launchDiv : {
     maxWidth: '60%',
@@ -253,6 +261,15 @@ const styles = {
     maxHeight: '33.33%',
     height: '33.33%',
     width: '100%',
+  },
+  question: {
+    marginTop: 25,
+    width: '100%',
+    height: 300, 
+    overflow: 'scroll'
+  },
+  avatar: {
+    marginRight: 30
   }
 }
 
@@ -270,13 +287,19 @@ class User extends Component {
   }
 
   handleCloseModule = () => {
+
+    document.getElementById("cy").style.display = 'block'
     this.props.cy.zoomingEnabled(true)
     this.props.cy.panningEnabled(true)
     this.props.closeModule()
   };
 
+  handleOpenQuestion = () => {
+    this.props.openQuestion()
+  }
+
   handleOpenModule = () => {
-    document.getElementById("cy")
+    document.getElementById("cy").style.display = 'none'
     this.props.cy.zoomingEnabled(false)
     this.props.cy.panningEnabled(false)
     setTimeout(()=>{
@@ -293,7 +316,6 @@ class User extends Component {
   };
 
   handleToggleNext = (event) => {
-    console.log(event.currentTarget)
     this.setState({
       anchorEl : event.currentTarget,
       lol: true
@@ -335,35 +357,13 @@ class User extends Component {
       />
     ];
 
-     const actions = [
-      <FlatButton
-        label="Cancel"
-        primary={true}
-        onTouchTap={this.handleClose}
-      />,
-      <FlatButton
-        label="Submit"
-        primary={true}
-        disabled={true}
-        onTouchTap={this.handleClose}
-      />,
-    ];
-
-      const contentStyle = {
+    const contentStyle = {
       minWidth: 640,
       height: '100%',
       minHeight: 480,
       alignItems: 'center',
       justifyContent: 'center'
     }
-
-    
-
-    
-
-
-
-
 
     console.log("RENDERING USERVIEW")
 
@@ -372,6 +372,7 @@ class User extends Component {
 
     return(
   		<div>
+
       <Drawer
             docked={false}
             containerStyle={styles.launchContainerStyle}
@@ -561,37 +562,13 @@ class User extends Component {
               </Tabs>
             </Tab>
             <Tab label="Questions">
+              <AskQuestion />
               <div>
-               <Dialog
-                modal={false}
-                bodyStyle= {styles.dialogBody}
-                contentStyle= {styles.dialog}
-                open={false}
-                width={800}
-                actions={actions}
-                onRequestClose={this.handleClose}> 
-
-                  <Paper zDepth={1} style={styles.subject}>
-                    <TextField />
-                  </Paper>
-                  <Paper zDepth={2} />
-
-              </Dialog>
-              <Card>
-              <CardHeader
-                title="Closures"
-                subtitle="A quiz on closures"
-                actAsExpander={true}
-                showExpandableButton={true}
-              />
-              <CardMedia  expandable={true}>
-              
-              </CardMedia>
-              <CardActions expandable={true}>
-                <FlatButton label="Cancel" />
-                <FlatButton label="Submit" />
-              </CardActions>
-            </Card>
+              {this.props.currentQuestions.map((value)=>{
+                
+                return <QuestionEntry question={value }/>
+                
+              })}
               </div>
             </Tab>
             <Tab label="Quizzes">
@@ -603,6 +580,7 @@ class User extends Component {
                 showExpandableButton={true}
               />
               <CardMedia  expandable={true}>
+
               <QuizEntry />
               </CardMedia>
               <CardActions expandable={true}>
@@ -616,7 +594,7 @@ class User extends Component {
       <div style={styles.backButton} > 
       <Paper zDepth = {4}>           
         <FlatButton  onTouchTap={this.handleCloseModule} label="Back to Galactic View"/>
-      
+        <FlatButton  onTouchTap={this.handleOpenQuestion} label="Ask A Question"/>
         <FlatButton  onTouchTap = {this.handleToggleNext} label="Next Nodes"/>
       </Paper>
       </div>
@@ -634,9 +612,11 @@ function mapStateToProps(state){
           moduleDescription: state.selectNode.moduleDescription, 
           currentArticles: state.selectNode.currentArticles, 
           currentVideos: state.selectNode.currentVideos, 
+          currentQuestions: state.selectNode.currentQuestions,
           previousNode: state.selectNode.previousNode, 
           currentNode: state.selectNode.currentNode, 
-          openUserView: state.selectNode.openUserView })
+          openUserView: state.selectNode.openUserView, 
+        })
 }
 
 export default connect(mapStateToProps, actions)(User)
