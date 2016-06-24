@@ -6,6 +6,7 @@ import User from './user.view'
 import Drawer from 'material-ui/Drawer';
 import * as actions from '../actions/reducerActions';
 import { connect } from 'react-redux';
+import { POST_SIGN_IN_PATH, POST_SIGN_OUT_PATH } from '../auth/config';
 
 const styles = {
 	launchContainerStylePanel2 : {
@@ -22,10 +23,35 @@ const styles = {
 
 
 class App extends Component {
+	static contextTypes = {
+    	router: React.PropTypes.object.isRequired
+  	};
+
+  	constructor(props, context) {
+    	super(props, context);
+  	}
+
+  	componentWillReceiveProps(nextProps) {
+    	const { router } = this.context;
+    	const { auth } = this.props;
+
+    	if (auth.authenticated && !nextProps.auth.authenticated) {
+      		router.replace(POST_SIGN_OUT_PATH);
+    	}
+    	else if (!auth.authenticated && nextProps.auth.authenticated) {
+      		router.replace(POST_SIGN_IN_PATH);
+    	}
+    }
+
+
+
 	render () {
+		const {auth, children} = this.props;
 		return(
 			<div>
-
+				<div>
+        			<main className="main">{children}</main>
+      			</div>
 				<Drawer
               docked={false}
               zDepth={5}
@@ -52,7 +78,8 @@ class App extends Component {
 
 function mapStateToProps(state){
   console.debug("MAPPING STATE TO PROPS IN APP")
-  return { closeBlastDoors : state.selectNode.closeBlastDoors }
+  return { auth:state.auth, closeBlastDoors : state.selectNode.closeBlastDoors }
 }
 
 export default connect(mapStateToProps, actions)(App)
+
