@@ -31,8 +31,36 @@ export function openQuestion(){
 	return {type: USER_OPEN_SUBMITQUESTION, payload: {questionPrompt: true}}
 }
 
+export function submitAnswer(currentNode){
+
+	var nodeRef = new Firebase(currentNode._private.data.firebaseID + "/data")
+
+	nodeRef.update({
+		questions: currentNode._private.data.questions
+	})
+
+	return {type: USER_SUBMITANSWER, payload: {}}
+}
+
 export function submitQuestion(currentNode){
 
+	var nodeRef = new Firebase(currentNode._private.data.firebaseID + "/data")
+
+	var questionsObject = {
+		question: currentNode._private.data.questions[currentNode._private.data.questions.length-1].question,
+		subject: currentNode._private.data.questions[currentNode._private.data.questions.length-1].subject,
+		answers: '[]'
+	}
+
+	var copy = currentNode._private.data.questions.slice()
+	copy.pop()
+	copy.push(questionsObject)
+
+	nodeRef.update({
+		questions: copy
+	})
+
+	return {type: USER_SUBMITQUESTION, payload: {questionPrompt: false}}
 }
 
 export function closeQuestion(){
@@ -178,7 +206,6 @@ export function fetchNodes(callback) {
 	      	}
 	    } else {
 	    	arr.push(snapshot.val().elements[key])
-	    	console.log(arr)
 	    	continue
 	    }
       	
@@ -197,6 +224,12 @@ export function fetchNodes(callback) {
       		newObj.data.questions = []
       	} else {
       		newObj.data.questions = snapshot.val().elements[key].data.questions
+      		for(var i = 0; i < newObj.data.questions.length; i++){
+      			console.log(newObj.data.questions[i])
+      			if(newObj.data.questions[i].answers === '[]' || newObj.data.questions[i].answers === undefined){
+      				newObj.data.questions[i].answers = []
+      			}
+      		}
       	}
       	if(snapshot.val().elements[key].data.quizzes === '[]' || snapshot.val().elements[key].data.quizzes === undefined ){
       		newObj.data.quizzes = []
@@ -204,7 +237,6 @@ export function fetchNodes(callback) {
       		newObj.data.quizzes = snapshot.val().elements[key].data.quizzes
       	}
       	arr.push(newObj)
-      	console.log(arr)
       }
 
       callback(arr)

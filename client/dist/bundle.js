@@ -46174,6 +46174,7 @@
 		value: true
 	});
 	exports.openQuestion = openQuestion;
+	exports.submitAnswer = submitAnswer;
 	exports.submitQuestion = submitQuestion;
 	exports.closeQuestion = closeQuestion;
 	exports.submitEdit = submitEdit;
@@ -46238,7 +46239,37 @@
 		return { type: _actionList.USER_OPEN_SUBMITQUESTION, payload: { questionPrompt: true } };
 	}
 
-	function submitQuestion(currentNode) {}
+	function submitAnswer(currentNode) {
+
+		var nodeRef = new _firebase2.default(currentNode._private.data.firebaseID + "/data");
+
+		nodeRef.update({
+			questions: currentNode._private.data.questions
+		});
+
+		return { type: USER_SUBMITANSWER, payload: {} };
+	}
+
+	function submitQuestion(currentNode) {
+
+		var nodeRef = new _firebase2.default(currentNode._private.data.firebaseID + "/data");
+
+		var questionsObject = {
+			question: currentNode._private.data.questions[currentNode._private.data.questions.length - 1].question,
+			subject: currentNode._private.data.questions[currentNode._private.data.questions.length - 1].subject,
+			answers: '[]'
+		};
+
+		var copy = currentNode._private.data.questions.slice();
+		copy.pop();
+		copy.push(questionsObject);
+
+		nodeRef.update({
+			questions: copy
+		});
+
+		return { type: _actionList.USER_SUBMITQUESTION, payload: { questionPrompt: false } };
+	}
 
 	function closeQuestion() {
 		return { type: _actionList.USER_CLOSE_SUBMITQUESTION, payload: { questionPrompt: false } };
@@ -46388,7 +46419,6 @@
 						};
 					} else {
 						arr.push(snapshot.val().elements[key]);
-						console.log(arr);
 						continue;
 					}
 
@@ -46407,6 +46437,12 @@
 						newObj.data.questions = [];
 					} else {
 						newObj.data.questions = snapshot.val().elements[key].data.questions;
+						for (var i = 0; i < newObj.data.questions.length; i++) {
+							console.log(newObj.data.questions[i]);
+							if (newObj.data.questions[i].answers === '[]' || newObj.data.questions[i].answers === undefined) {
+								newObj.data.questions[i].answers = [];
+							}
+						}
 					}
 					if (snapshot.val().elements[key].data.quizzes === '[]' || snapshot.val().elements[key].data.quizzes === undefined) {
 						newObj.data.quizzes = [];
@@ -46414,7 +46450,6 @@
 						newObj.data.quizzes = snapshot.val().elements[key].data.quizzes;
 					}
 					arr.push(newObj);
-					console.log(arr);
 				}
 
 				callback(arr);
@@ -64839,6 +64874,10 @@
 
 	var _question2 = _interopRequireDefault(_question);
 
+	var _user = __webpack_require__(702);
+
+	var _user2 = _interopRequireDefault(_user);
+
 	var _Avatar = __webpack_require__(642);
 
 	var _Avatar2 = _interopRequireDefault(_Avatar);
@@ -65130,6 +65169,10 @@
 	      _this.props.cy.zoomingEnabled(true);
 	      _this.props.cy.panningEnabled(true);
 	      _this.props.closeModule();
+	    };
+
+	    _this.handleOpenQuestion = function () {
+	      _this.props.openQuestion();
 	    };
 
 	    _this.handleOpenModule = function () {
@@ -65445,6 +65488,7 @@
 	            _react2.default.createElement(
 	              _Tabs.Tab,
 	              { label: 'Questions' },
+	              _react2.default.createElement(_user2.default, null),
 	              _react2.default.createElement(
 	                'div',
 	                null,
@@ -65487,6 +65531,7 @@
 	              _Paper2.default,
 	              { zDepth: 4 },
 	              _react2.default.createElement(_FlatButton2.default, { onTouchTap: this.handleCloseModule, label: 'Back to Galactic View' }),
+	              _react2.default.createElement(_FlatButton2.default, { onTouchTap: this.handleOpenQuestion, label: 'Ask A Question' }),
 	              _react2.default.createElement(_FlatButton2.default, { onTouchTap: this.handleToggleNext, label: 'Next Nodes' })
 	            )
 	          )
@@ -65506,18 +65551,11 @@
 	    moduleDescription: state.selectNode.moduleDescription,
 	    currentArticles: state.selectNode.currentArticles,
 	    currentVideos: state.selectNode.currentVideos,
-	    currentQuestions: [{
-	      subject: "Closures",
-	      question: "How does a closure keep private variables hidden?",
-	      answers: ["Because they do, lol", "no"]
-	    }, {
-	      subject: "Closures",
-	      question: "How hidden do variables I keep, lol?",
-	      answers: ["Because they don't, loleleleel", "no"]
-	    }],
+	    currentQuestions: state.selectNode.currentQuestions,
 	    previousNode: state.selectNode.previousNode,
 	    currentNode: state.selectNode.currentNode,
-	    openUserView: state.selectNode.openUserView };
+	    openUserView: state.selectNode.openUserView
+	  };
 	}
 
 	exports.default = (0, _reactRedux.connect)(mapStateToProps, actions)(User);
@@ -78905,9 +78943,9 @@
 
 	var _admin4 = _interopRequireDefault(_admin3);
 
-	var _userActions = __webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"./user.actions.reducer\""); e.code = 'MODULE_NOT_FOUND'; throw e; }()));
+	var _userAction = __webpack_require__(701);
 
-	var _userActions2 = _interopRequireDefault(_userActions);
+	var _userAction2 = _interopRequireDefault(_userAction);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -78916,7 +78954,7 @@
 		adminAdd: _admin2.default,
 		selectNode: _selectNode2.default,
 		adminEdit: _admin4.default,
-		userActions: _userActions2.default
+		userActions: _userAction2.default
 	});
 
 	exports.default = RootReducer;
@@ -82156,9 +82194,15 @@
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+	var _reducerActions = __webpack_require__(423);
+
+	var actions = _interopRequireWildcard(_reducerActions);
+
 	var _react = __webpack_require__(1);
 
 	var _react2 = _interopRequireDefault(_react);
+
+	var _reactRedux = __webpack_require__(341);
 
 	var _Card = __webpack_require__(636);
 
@@ -82166,11 +82210,17 @@
 
 	var _Avatar2 = _interopRequireDefault(_Avatar);
 
+	var _TextField = __webpack_require__(431);
+
+	var _TextField2 = _interopRequireDefault(_TextField);
+
 	var _FlatButton = __webpack_require__(420);
 
 	var _FlatButton2 = _interopRequireDefault(_FlatButton);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -82192,8 +82242,22 @@
 
 	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(QuestionEntry).call(this, props));
 
+	    _this.handleTextChange = function (e, value) {
+	      _this.state.submitAnswer = value;
+	    };
+
+	    _this.handleAnswerSubmit = function () {
+	      _this.state.question.answers.push(_this.state.submitAnswer);
+	      _this.setState({
+	        lock: true
+	      });
+	      _this.props.submitAnswer(_this.props.currentNode.questions);
+	    };
+
 	    _this.state = {
-	      question: props.question
+	      question: props.question,
+	      submitAnswer: '',
+	      lock: false
 	    };
 	    return _this;
 	  }
@@ -82205,7 +82269,7 @@
 	        _Card.Card,
 	        null,
 	        _react2.default.createElement(_Card.CardHeader, {
-	          title: 'Closures',
+	          title: this.state.question.subject,
 	          subtitle: this.state.question.question,
 	          actAsExpander: true,
 	          showExpandableButton: true
@@ -82229,13 +82293,21 @@
 	              _react2.default.createElement('br', null),
 	              _react2.default.createElement('br', null)
 	            );
+	          }),
+	          _react2.default.createElement(_TextField2.default, {
+	            hintText: 'Submit an answer',
+	            onChange: this.handleTextChange,
+	            disabled: this.state.lock
 	          })
 	        ),
 	        _react2.default.createElement(
 	          _Card.CardActions,
 	          { expandable: true },
 	          _react2.default.createElement(_FlatButton2.default, { label: 'Cancel' }),
-	          _react2.default.createElement(_FlatButton2.default, { label: 'Submit' })
+	          _react2.default.createElement(_FlatButton2.default, { label: 'Submit',
+	            disabled: this.state.lock,
+	            onTouchTap: this.handleAnswerSubmit
+	          })
 	        )
 	      );
 	    }
@@ -82244,7 +82316,238 @@
 	  return QuestionEntry;
 	}(_react.Component);
 
-	exports.default = QuestionEntry;
+	function mapStateToProps(state) {
+
+	  console.debug("MAPPING PROPS TO STATE IN QUESTIONENTRY");
+	  return { currentNode: state.selectNode.currentNode };
+	}
+
+	exports.default = (0, _reactRedux.connect)(mapStateToProps, actions)(QuestionEntry);
+
+/***/ },
+/* 701 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	exports.default = function () {
+		var state = arguments.length <= 0 || arguments[0] === undefined ? INITIAL_STATE : arguments[0];
+		var action = arguments[1];
+
+
+		switch (action.type) {
+			case _actionList.USER_SUBMITQUESTION:
+				return _extends({}, state, { questionPrompt: false });
+			case _actionList.USER_OPEN_SUBMITQUESTION:
+				return _extends({}, state, { questionPrompt: true });
+			case _actionList.USER_CLOSE_SUBMITQUESTION:
+				return _extends({}, state, { questionPrompt: false });
+
+			default:
+				return state;
+		}
+	};
+
+	var _actionList = __webpack_require__(424);
+
+	var INITIAL_STATE = {
+		questionPrompt: false
+	};
+
+/***/ },
+/* 702 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _reducerActions = __webpack_require__(423);
+
+	var actions = _interopRequireWildcard(_reducerActions);
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactRedux = __webpack_require__(341);
+
+	var _Dialog = __webpack_require__(450);
+
+	var _Dialog2 = _interopRequireDefault(_Dialog);
+
+	var _FlatButton = __webpack_require__(420);
+
+	var _FlatButton2 = _interopRequireDefault(_FlatButton);
+
+	var _Paper = __webpack_require__(391);
+
+	var _Paper2 = _interopRequireDefault(_Paper);
+
+	var _TextField = __webpack_require__(431);
+
+	var _TextField2 = _interopRequireDefault(_TextField);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var styles = {
+		question: {
+			marginTop: 25,
+			width: '100%',
+			height: 300,
+			overflow: 'scroll'
+		},
+
+		dialogBody: {
+			minHeight: 600,
+			overflow: 'scroll',
+			background: 'url(./assets/imgs/metalBackground.jpg)',
+			backgroundSize: 'cover',
+			borderRadius: 3,
+			zIndex: 100002
+		},
+		zIndex: {
+			zIndex: 100002
+		},
+
+		subject: {
+			width: '100%',
+			height: '100%'
+		},
+
+		dialog: {
+			alignItems: 'center',
+			justifyContent: 'center',
+			overflow: 'scroll',
+			width: '80%',
+			maxWidth: 'none'
+		}
+	};
+
+	var AskQuestion = function (_Component) {
+		_inherits(AskQuestion, _Component);
+
+		function AskQuestion(props) {
+			_classCallCheck(this, AskQuestion);
+
+			var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(AskQuestion).call(this, props));
+
+			_this.handleTextChangeSubject = function (e, value) {
+				console.log(value);
+				_this.state.subject = value;
+			};
+
+			_this.handleTextChangeQuestion = function (e, value) {
+				console.log(value);
+				_this.state.question = value;
+			};
+
+			_this.handleSubmit = function () {
+				_this.props.currentNode._private.data.questions.push({
+					subject: _this.state.subject,
+					question: _this.state.question,
+					answers: []
+				});
+				_this.props.submitQuestion(_this.props.currentNode);
+				_this.props.closeQuestion();
+			};
+
+			_this.state = {
+				subject: "",
+				question: ""
+			};
+			return _this;
+		}
+
+		_createClass(AskQuestion, [{
+			key: 'render',
+			value: function render() {
+
+				var actions = [_react2.default.createElement(_FlatButton2.default, {
+					label: 'Cancel',
+					primary: true,
+					onTouchTap: this.handleClose
+				}), _react2.default.createElement(_FlatButton2.default, {
+					label: 'Submit',
+					primary: true,
+					onTouchTap: this.handleSubmit
+				})];
+
+				console.log("RENDERING SUBMITQUESTIONPROMPT");
+				console.log(this.props.questionPrompt, "huh");
+
+				return _react2.default.createElement(
+					_Dialog2.default,
+					{
+						modal: true,
+						style: styles.zIndex,
+						bodyStyle: styles.dialogBody,
+						contentStyle: styles.dialog,
+						open: this.props.questionPrompt,
+						width: 800,
+						actions: actions,
+						onRequestClose: this.handleClose },
+					_react2.default.createElement(
+						_Paper2.default,
+						{
+							zDepth: 4,
+							style: styles.subject },
+						_react2.default.createElement(_TextField2.default, {
+							hintText: 'Subject',
+							onChange: this.handleTextChangeSubject,
+							style: styles.textStyle
+
+						})
+					),
+					_react2.default.createElement(_Paper2.default, { zDepth: 2 }),
+					_react2.default.createElement(
+						_Paper2.default,
+						{
+							zDepth: 2,
+							style: styles.question },
+						_react2.default.createElement(_TextField2.default, {
+							hintText: 'Question',
+							multiLine: true,
+							onChange: this.handleTextChangeQuestion,
+							style: styles.textStyle
+
+						})
+					)
+				);
+			}
+		}]);
+
+		return AskQuestion;
+	}(_react.Component);
+
+	function mapStateToProps(state) {
+
+		console.log(state);
+
+		console.debug("MAPPING PROPS TO STATE IN SUBMITQUESTION");
+		return { currentNode: state.selectNode.currentNode,
+			questionPrompt: state.userActions.questionPrompt };
+	}
+
+	exports.default = (0, _reactRedux.connect)(mapStateToProps, actions)(AskQuestion);
 
 /***/ }
 /******/ ]);

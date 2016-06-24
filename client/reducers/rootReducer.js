@@ -3,7 +3,7 @@ import { reducer as form } from 'redux-form';
 import addNodeReducer from './admin.createNodes'
 import selectNodeReducer from './selectNode.reducer'
 import editNodeReducer from './admin.editNodes'
-import userActionReducer from './user.actions.reducer'
+import userActionReducer from './user.action.reducer'
 
 const RootReducer = combineReducers({
 	form,

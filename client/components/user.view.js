@@ -13,6 +13,7 @@ import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem';
 import QuizEntry from './quiz.entry';
 import QuestionEntry from './question.entry'
+import AskQuestion from './user.submitQuestion' 
 
 import Avatar from 'material-ui/Avatar';
 
@@ -293,6 +294,10 @@ class User extends Component {
     this.props.closeModule()
   };
 
+  handleOpenQuestion = () => {
+    this.props.openQuestion()
+  }
+
   handleOpenModule = () => {
     document.getElementById("cy").style.display = 'none'
     this.props.cy.zoomingEnabled(false)
@@ -367,6 +372,7 @@ class User extends Component {
 
     return(
   		<div>
+
       <Drawer
             docked={false}
             containerStyle={styles.launchContainerStyle}
@@ -556,6 +562,7 @@ class User extends Component {
               </Tabs>
             </Tab>
             <Tab label="Questions">
+              <AskQuestion />
               <div>
               {this.props.currentQuestions.map((value)=>{
                 
@@ -587,7 +594,7 @@ class User extends Component {
       <div style={styles.backButton} > 
       <Paper zDepth = {4}>           
         <FlatButton  onTouchTap={this.handleCloseModule} label="Back to Galactic View"/>
-      
+        <FlatButton  onTouchTap={this.handleOpenQuestion} label="Ask A Question"/>
         <FlatButton  onTouchTap = {this.handleToggleNext} label="Next Nodes"/>
       </Paper>
       </div>
@@ -605,21 +612,11 @@ function mapStateToProps(state){
           moduleDescription: state.selectNode.moduleDescription, 
           currentArticles: state.selectNode.currentArticles, 
           currentVideos: state.selectNode.currentVideos, 
-          currentQuestions: [{
-            subject: "Closures",
-            question: "How does a closure keep private variables hidden?",
-            answers: ["Because they do, lol", "no"]
-          },
-          {
-            subject: "Closures",
-            question: "How hidden do variables I keep, lol?",
-            answers: ["Because they don't, loleleleel", "no"]
-          }
-
-          ],
+          currentQuestions: state.selectNode.currentQuestions,
           previousNode: state.selectNode.previousNode, 
           currentNode: state.selectNode.currentNode, 
-          openUserView: state.selectNode.openUserView })
+          openUserView: state.selectNode.openUserView, 
+        })
 }
 
 export default connect(mapStateToProps, actions)(User)
