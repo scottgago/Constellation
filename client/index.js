@@ -8,6 +8,8 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 import { Provider } from  'react-redux'
 import reduxThunk from 'redux-thunk';
+import Root from './components/root';
+import SignIn from './components/signin';
 injectTapEventPlugin();
 
 import App from './components/app'
@@ -20,11 +22,11 @@ ReactDOM.render(
 	<Provider store = {store(RootReducer)} >
 		<MuiThemeProvider muiTheme={getMuiTheme()}>
 		 	<Router history={browserHistory}>
-				<Route path ='/' component={App} />
+				<Route path ='/' component={Root} >
+					<IndexRoute component={SignIn} />
+					<Route path = '/app' component = {App} > </Route>
+				</Route>
 			</Router>
 		</MuiThemeProvider>
 	</Provider>
 , document.getElementById('app'))
-
-
-
