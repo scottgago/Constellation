@@ -32,7 +32,7 @@ class QuestionEntry extends Component {
 		this.setState({
 			lock: true
 		})
-		this.props.submitAnswer(this.props.currentNode.questions)
+		this.props.submitAnswer(this.props.currentNode)
 	}
 
 	render () {

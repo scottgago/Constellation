@@ -46247,7 +46247,7 @@
 			questions: currentNode._private.data.questions
 		});
 
-		return { type: USER_SUBMITANSWER, payload: {} };
+		return { type: _actionList.USER_SUBMITANSWER, payload: {} };
 	}
 
 	function submitQuestion(currentNode) {
@@ -46583,6 +46583,7 @@
 	var USER_SUBMITQUESTION = exports.USER_SUBMITQUESTION = "USER_SUBMITQUESTION";
 	var USER_OPEN_SUBMITQUESTION = exports.USER_OPEN_SUBMITQUESTION = "USER_OPEN_SUBMITQUESTION";
 	var USER_CLOSE_SUBMITQUESTION = exports.USER_CLOSE_SUBMITQUESTION = "USER_CLOSE_SUBMITQUESTION";
+	var USER_SUBMITANSWER = exports.USER_SUBMITANSWER = "USER_SUBMITANSWER";
 
 /***/ },
 /* 425 */
@@ -82251,7 +82252,7 @@
 	      _this.setState({
 	        lock: true
 	      });
-	      _this.props.submitAnswer(_this.props.currentNode.questions);
+	      _this.props.submitAnswer(_this.props.currentNode);
 	    };
 
 	    _this.state = {
@@ -82348,7 +82349,8 @@
 				return _extends({}, state, { questionPrompt: true });
 			case _actionList.USER_CLOSE_SUBMITQUESTION:
 				return _extends({}, state, { questionPrompt: false });
-
+			case _actionList.USER_SUBMITANSWER:
+				return state;
 			default:
 				return state;
 		}

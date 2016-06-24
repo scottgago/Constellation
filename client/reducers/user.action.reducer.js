@@ -1,4 +1,4 @@
-import { USER_SUBMITQUESTION, USER_OPEN_SUBMITQUESTION, USER_CLOSE_SUBMITQUESTION} from '../actions/actionList';
+import { USER_SUBMITANSWER, USER_SUBMITQUESTION, USER_OPEN_SUBMITQUESTION, USER_CLOSE_SUBMITQUESTION} from '../actions/actionList';
 
 const INITIAL_STATE = {
 	questionPrompt: false
@@ -13,7 +13,8 @@ export default function(state = INITIAL_STATE, action) {
 			return {...state, questionPrompt: true}
 		case USER_CLOSE_SUBMITQUESTION:
 			return {...state, questionPrompt: false}
-
+		case USER_SUBMITANSWER:
+			return state
 		default:
 			return state;
 	}
