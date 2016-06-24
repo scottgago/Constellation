@@ -36543,6 +36543,18 @@
 
 	var _user2 = _interopRequireDefault(_user);
 
+	var _Drawer = __webpack_require__(416);
+
+	var _Drawer2 = _interopRequireDefault(_Drawer);
+
+	var _reducerActions = __webpack_require__(423);
+
+	var actions = _interopRequireWildcard(_reducerActions);
+
+	var _reactRedux = __webpack_require__(341);
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -36550,6 +36562,19 @@
 	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var styles = {
+		launchContainerStylePanel2: {
+			maxWidth: '50%',
+			display: 'block ',
+			position: 'absolute',
+			background: 'url(http://wallpaper.zone/img/210731.jpg)',
+			backgroundSize: 'cover',
+			transitionDuration: '.5s',
+			transitionDelay: '.3s',
+			zIndex: 1000000
+		}
+	};
 
 	var App = function (_Component) {
 		_inherits(App, _Component);
@@ -36566,6 +36591,19 @@
 				return _react2.default.createElement(
 					'div',
 					null,
+					_react2.default.createElement(_Drawer2.default, {
+						docked: false,
+						zDepth: 5,
+						containerStyle: styles.launchContainerStylePanel2,
+						openSecondary: true,
+						width: 1800,
+						open: this.props.closeBlastDoors }),
+					_react2.default.createElement(_Drawer2.default, {
+						docked: false,
+						zDepth: 5,
+						containerStyle: styles.launchContainerStylePanel2,
+						width: 1800,
+						open: this.props.closeBlastDoors }),
 					_react2.default.createElement(_menu2.default, null),
 					_react2.default.createElement(_mainview2.default, null),
 					_react2.default.createElement(_admin2.default, null),
@@ -36577,7 +36615,12 @@
 		return App;
 	}(_react.Component);
 
-	exports.default = App;
+	function mapStateToProps(state) {
+		console.debug("MAPPING STATE TO PROPS IN APP");
+		return { closeBlastDoors: state.selectNode.closeBlastDoors };
+	}
+
+	exports.default = (0, _reactRedux.connect)(mapStateToProps, actions)(App);
 
 /***/ },
 /* 350 */
@@ -46174,6 +46217,8 @@
 		value: true
 	});
 	exports.openQuestion = openQuestion;
+	exports.openBlastDoor = openBlastDoor;
+	exports.closeBlastDoor = closeBlastDoor;
 	exports.submitAnswer = submitAnswer;
 	exports.submitQuestion = submitQuestion;
 	exports.closeQuestion = closeQuestion;
@@ -46237,6 +46282,14 @@
 
 	function openQuestion() {
 		return { type: _actionList.USER_OPEN_SUBMITQUESTION, payload: { questionPrompt: true } };
+	}
+
+	function openBlastDoor() {
+		return { type: _actionList.OPEN_BLASTDOORS, payload: { closeBlastDoors: false } };
+	}
+
+	function closeBlastDoor() {
+		return { type: _actionList.CLOSE_BLASTDOORS, payload: { closeBlastDoors: true } };
 	}
 
 	function submitAnswer(currentNode) {
@@ -46584,6 +46637,8 @@
 	var USER_OPEN_SUBMITQUESTION = exports.USER_OPEN_SUBMITQUESTION = "USER_OPEN_SUBMITQUESTION";
 	var USER_CLOSE_SUBMITQUESTION = exports.USER_CLOSE_SUBMITQUESTION = "USER_CLOSE_SUBMITQUESTION";
 	var USER_SUBMITANSWER = exports.USER_SUBMITANSWER = "USER_SUBMITANSWER";
+	var OPEN_BLASTDOORS = exports.OPEN_BLASTDOORS = "OPEN_BLASTDOORS";
+	var CLOSE_BLASTDOORS = exports.CLOSE_BLASTDOORS = "CLOSE_BLASTDOORS";
 
 /***/ },
 /* 425 */
@@ -47740,7 +47795,7 @@
 	        // Gravity force (constant)
 	        gravity: 0.25,
 	        // Maximum number of iterations to perform
-	        numIter: 2500,
+	        numIter: 3000,
 	        // For enabling tiling
 	        tile: true,
 	        // Type of layout animation. The option set is {'during', 'end', false}
@@ -47874,6 +47929,7 @@
 	        }
 	        cy.layout(defaultOptions);
 	        _this2.props.registerCY({ cy: cy });
+	        _this2.props.openBlastDoor();
 	      };
 
 	      this.props.fetchNodes(initCy);
@@ -65180,17 +65236,11 @@
 	      document.getElementById("cy").style.display = 'none';
 	      _this.props.cy.zoomingEnabled(false);
 	      _this.props.cy.panningEnabled(false);
+	      _this.props.closeBlastDoor();
 	      setTimeout(function () {
 	        _this.props.openModule();
-	      }, 0);
-	      _this.setState({
-	        gates: true
-	      });
-	      setTimeout(function () {
-	        _this.setState({
-	          gates: false
-	        });
-	      }, 750);
+	        _this.props.openBlastDoor();
+	      }, 800);
 	    };
 
 	    _this.handleToggleNext = function (event) {
@@ -65407,29 +65457,6 @@
 	        _react2.default.createElement(
 	          'div',
 	          { style: this.checkStyle() },
-	          _react2.default.createElement(_Drawer2.default, {
-	            docked: false,
-	            zDepth: 5,
-	            containerStyle: styles.launchContainerStylePanel2,
-	            openSecondary: true,
-	            onRequestChange: function onRequestChange(open) {
-	              (function () {
-	                console.log("fuck");
-	              })();
-	            },
-	            width: 1800,
-	            open: this.state.gates }),
-	          _react2.default.createElement(_Drawer2.default, {
-	            docked: false,
-	            zDepth: 5,
-	            containerStyle: styles.launchContainerStylePanel2,
-	            onRequestChange: function onRequestChange(open) {
-	              (function () {
-	                console.log("fuck");
-	              })();
-	            },
-	            width: 1800,
-	            open: this.state.gates }),
 	          _react2.default.createElement(
 	            _Tabs.Tabs,
 	            { tabItemContainerStyle: styles.tabsColor, inkBarStyle: styles.inkBarStyle },
@@ -82094,6 +82121,10 @@
 				return _extends({}, state, { adminMode: action.payload.adminMode });
 			case _actionList.FETCH_NODES:
 				return _extends({}, state, { nodes: action.payload.nodes });
+			case _actionList.OPEN_BLASTDOORS:
+				return _extends({}, state, { closeBlastDoors: action.payload.closeBlastDoors });
+			case _actionList.CLOSE_BLASTDOORS:
+				return _extends({}, state, { closeBlastDoors: action.payload.closeBlastDoors });
 			case _actionList.REGISTER_CY:
 				return _extends({}, state, { cy: action.payload.cy });
 			case _actionList.SELECT_NODE:
@@ -82125,7 +82156,8 @@
 		openUserView: false,
 		openAdminView: false,
 		openModuleView: false,
-		adminMode: false
+		adminMode: false,
+		closeBlastDoors: true
 	};
 
 /***/ },

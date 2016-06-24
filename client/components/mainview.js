@@ -67,7 +67,7 @@ class MainView extends Component {
   // Gravity force (constant)
   gravity: 0.25,
   // Maximum number of iterations to perform
-  numIter: 2500,
+  numIter: 3000,
   // For enabling tiling
   tile: true,
   // Type of layout animation. The option set is {'during', 'end', false}
@@ -210,6 +210,7 @@ class MainView extends Component {
     }
     cy.layout(defaultOptions)
     this.props.registerCY({cy : cy})
+    this.props.openBlastDoor()
     }
   	
     this.props.fetchNodes(initCy)
