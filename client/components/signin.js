@@ -11,8 +11,7 @@ function SignIn({signInWithGoogle}) {
       <div className="g-col">
         <h1 className="sign-in__heading">Sign in</h1>
         <button className="sign-in__button" onClick={signInWithGoogle} type="button">Google</button>
-        <Link to='/app'> app </Link>
-
+        <Link to='/realapp'> go to ReaApp </Link>
       </div>
     </div>
   );
