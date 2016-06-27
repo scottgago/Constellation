@@ -56,7 +56,6 @@ class AskQuestion extends Component {
 	}
 
 	handleTextChangeQuestion = (e,value) =>{ 
-		console.log(value)
 		this.state.question = value
 	}
 
@@ -89,7 +88,6 @@ class AskQuestion extends Component {
     ];
 
     console.log("RENDERING SUBMITQUESTIONPROMPT")
-    console.log(this.props.questionPrompt, "huh")
 
 		return (
 			<Dialog
@@ -129,8 +127,6 @@ class AskQuestion extends Component {
 }
 
 function mapStateToProps(state){
-
-	console.log(state)
 
   console.debug("MAPPING PROPS TO STATE IN SUBMITQUESTION")
   return {currentNode: state.selectNode.currentNode, 

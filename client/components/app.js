@@ -67,7 +67,7 @@ class App extends Component {
               width={1800}
               open={this.props.closeBlastDoors}>
             </Drawer>
-				<Menu />
+				
 				<MainView />
 				<Admin  />
       			<User  />
