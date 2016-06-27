@@ -17,6 +17,23 @@ import * as actions from '../actions/reducerActions';
 
 var MarkdownEditor = require('react-markdown-editor').MarkdownEditor;
 
+const newStyles = {
+  containerStyle: {
+      maxWidth: '100%',
+      display: 'block',
+      position: 'fixed',
+      background: 'url(./assets/imgs/metalBackground.jpg)',
+      top: 0,
+      bottom: 0,
+      right: 0,
+      left:0, 
+      backgroundSize: 'cover',
+      zIndex: 100000,
+      pointerEvents: 'auto',
+      submitQuestion: false
+    }
+  }
+
 const style = {
   contentDiv : {
     width: '100%',
@@ -71,7 +88,21 @@ const style = {
   },
   actionButtons: {
     color: '#6f2d6f'
-  }
+  },
+  containerStyle : {
+    maxWidth: '100%',
+    display: 'none',
+    position: 'fixed',
+    background: 'url(./assets/imgs/metalBackground.jpg)',
+    top: 0,
+    bottom: 0,
+    right: 0,
+    left:0, 
+    backgroundSize: 'cover',
+    zIndex: 100000,
+    pointerEvents: 'auto'
+
+  },
 }
 
 class EditNode extends Component {
@@ -89,6 +120,14 @@ class EditNode extends Component {
 
   handleAddArticle = () => {
     this.props.openAddArticle()
+  }
+
+  checkStyle = () =>{
+    if(!this.props.openModuleView){
+      return style.containerStyle
+    } else {
+      return newStyles.containerStyle
+    }
   }
 
   handleRequestClosePrompt = () => {
@@ -123,6 +162,8 @@ class EditNode extends Component {
       }
     }
 
+    // Add the new Nodes in the edit
+
     var cleanUp = []
 
     for(var i = 0; i < this.props.currentNode._private.edges.length; i++){
@@ -142,6 +183,8 @@ class EditNode extends Component {
       this.props.cy.remove(cleanUp[i])
     }
 
+    // Clean up the nodes that are being removed
+
 
     
     for(var i = 0; i < addNodes.length; i++){
@@ -158,6 +201,8 @@ class EditNode extends Component {
 
       this.props.cy.add(newEdge)
       this.props.editEdges({selectedEdge: newEdge})
+
+      // Add the edges in the cytoscape instance and post changes to the firebase DB
 
       }
 
@@ -191,16 +236,7 @@ class EditNode extends Component {
     ];
 
     return (
-      <div>
-        
-        <Dialog
-          modal={false}
-          actions={cancel}
-          open={this.props.edit}
-          bodyStyle={style.editBackgroundBody}
-          actionsContainerStyle={style.actionsContainer}
-          style={style.editBackground}
-          contentStyle ={style.dialogBody}>
+      <div style={this.checkStyle()}>
           <AdminAddVideo />
           <AdminAddArticle />
           <div style = {style.dialogBody}>
@@ -295,7 +331,6 @@ class EditNode extends Component {
               </Tab>
             </Tabs>
           </div>
-        </Dialog>
       </div>
     )
   }
