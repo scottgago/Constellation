@@ -40,7 +40,6 @@ const newStyles = {
       backgroundSize: 'cover',
       zIndex: 100000,
       pointerEvents: 'auto',
-      submitQuestion: false
     }
   }
 
@@ -64,7 +63,8 @@ const styles = {
     display: 'block ',
     position: 'absolute',
     background: 'url(./assets/imgs/metalBackground.jpg)',
-    transitionDuration: '1.5s',
+    zIndex: 100001,
+    transitionDuration: '.75s',
     backgroundSize: 'cover',
 
   },
@@ -269,6 +269,9 @@ const styles = {
   },
   avatar: {
     marginRight: 30
+  },
+  zIndex: {
+    zIndex: 1000501
   }
 }
 
@@ -301,17 +304,15 @@ class User extends Component {
     document.getElementById("cy").style.display = 'none'
     this.props.cy.zoomingEnabled(false)
     this.props.cy.panningEnabled(false)
-    this.props.closeBlastDoor()
-    setTimeout(()=>{
-      this.props.openModule()
-      this.props.openBlastDoor()
-    },800)
+    this.props.openModule()
+    this.props.openBlastDoor()
 
     
     
   };
 
   handleToggleNext = (event) => {
+    console.log(event.currentTarget)
     this.setState({
       anchorEl : event.currentTarget,
       lol: true
@@ -361,6 +362,14 @@ class User extends Component {
     console.log("RENDERING USERVIEW")
     return(
   		<div>
+
+        <Drawer
+          docked={false}
+          width={1600}
+          containerStyle={styles.launchContainerStyle}
+          open={this.props.openUserView}
+        >
+        
         <div style={this.checkStyleLaunch()}>
           <RaisedButton onClick = {this.handleClosePrompt} backgroundColor ='#ff0000' style={styles.buttonDecline}>ABORT</RaisedButton>
         {
@@ -371,6 +380,9 @@ class User extends Component {
         }
           <RaisedButton onClick = {this.handleOpenModule} backgroundColor ='#3ed715' style={styles.buttonAccept}>LAUNCH</RaisedButton>
         </div>
+      
+        </Drawer>
+
 
         <div style={this.checkStyle()}>
           <Tabs tabItemContainerStyle={styles.tabsColor} inkBarStyle={styles.inkBarStyle}>
@@ -380,11 +392,11 @@ class User extends Component {
                   return (<Tab key={value.name} label={value.name}>
                     <div style={styles.contentDiv}>
                       <div style={styles.floatLeft}>
-                      {
-                      // <YouTube
-                      //  videoId={value.video}
-                      //  opts={opts} />
-                      }
+                      
+                      <YouTube
+                       videoId={value.video}
+                       opts={opts} />
+                      
                       </div>
                     <div>
                       <Paper style={styles.floatRight} zDepth = {4} >
@@ -401,8 +413,8 @@ class User extends Component {
               {this.props.currentArticles.map((value)=>{
                 return ( <Tab key= {value.name} label = {value.name}>
                   <div style={styles.topIframeMargin}>
-                    {//<iframe style={styles.dialogHugePlayer} src={value.article} height={'50%'} width={'100%'}/>
-                    }
+                    <iframe style={styles.dialogHugePlayer} src={value.article} height={'50%'} width={'100%'}/>
+                    
                   </div>
                   </Tab>)
 
@@ -420,13 +432,31 @@ class User extends Component {
               </div>
             </Tab>
           </Tabs>
+          <Popover
+                style={styles.zIndex}
+                open={this.state.lol}
+                anchorEl={this.state.anchorEl}
+                anchorOrigin={{"horizontal":"left", "vertical":"top"}}
+                targetOrigin={{"horizontal":"middle","vertical":"bottom"}}
+                onRequestClose={this.handleRequestClose}
+              >
+                <Menu>
+                  <MenuItem primaryText="Refresh" />
+                  <MenuItem primaryText="Help &amp; feedback" />
+                  <MenuItem primaryText="Settings" />
+                  <MenuItem primaryText="Sign out" />
+                </Menu>
+              </Popover>
           <div style={styles.backButton} > 
-            <Paper zDepth = {4}>           
+            <Paper zDepth = {4}>   
+
               <FlatButton  onTouchTap={this.handleCloseModule} label="Back to Galactic View"/>
+              
               <FlatButton  onTouchTap={this.handleOpenQuestion} label="Ask A Question"/>
               <FlatButton  onTouchTap = {this.handleToggleNext} label="Next Nodes"/>
             </Paper>
           </div>
+
           </div>
       </div>
   	)

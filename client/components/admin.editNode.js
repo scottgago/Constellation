@@ -252,9 +252,9 @@ class EditNode extends Component {
 
     return (
       <div style={this.checkStyle()}>
-          {// <AdminAddVideo />
-          // <AdminAddArticle />
-        }
+          <AdminAddVideo />
+          <AdminAddArticle />
+        
           <div style = {style.dialogBody}>
             <Tabs inkBarStyle={style.inkBarStyle} style={style.contentDiv} tabItemContainerStyle={style.tabsColor}>
               <Tab label="Style">
