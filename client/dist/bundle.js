@@ -36631,7 +36631,6 @@
 	          containerStyle: styles.launchContainerStylePanel2,
 	          width: 1800,
 	          open: this.props.closeBlastDoors }),
-	        _react2.default.createElement(_menu2.default, null),
 	        _react2.default.createElement(_mainview2.default, null),
 	        _react2.default.createElement(_admin2.default, null),
 	        _react2.default.createElement(_user2.default, null)
@@ -47791,10 +47790,7 @@
 	    value: function componentDidMount() {
 	      var _this2 = this;
 
-	      bind = this;
-
 	      var defaultOptions = {
-	        // Called on `layoutready`
 
 	        name: "cose-bilkent",
 	        ready: function ready() {
@@ -47875,7 +47871,6 @@
 	          }],
 	          layout: {
 	            name: 'cose-bilkent'
-
 	          }
 	        }).on('tap', function (event) {
 
@@ -47922,7 +47917,6 @@
 	            currentNode: evtTarget,
 	            previousNode: holder,
 	            view: true,
-
 	            cy: cy
 	          }, function () {
 	            if (bind.props.previousNode._private) {
@@ -47938,11 +47932,9 @@
 	                  'width': 1
 	                });
 	              });
-	              // bind.findPath()
 	            }
 	          });
 	        });
-
 	        var nodes = cy.nodes();
 
 	        for (var i = 0; i < nodes.length; i++) {
@@ -47955,7 +47947,6 @@
 	        cy.layout(defaultOptions);
 	        _this2.props.registerCY({ cy: cy });
 	      };
-
 	      this.props.fetchNodes(initCy);
 	    }
 	  }, {
@@ -65278,18 +65269,12 @@
 	      _this.props.closeUserView();
 	    };
 
-	    _this.handleOpenDrawer = function (open, reason) {
-	      console.log(open);
-	      console.log("eh?");
-	    };
+	    _this.handleOpenDrawer = function (open, reason) {};
 
 	    _this.checkStyle = function () {
 	      if (!_this.props.openModuleView) {
-	        console.log(_this.props.openModuleView);
 	        return styles.containerStyle;
 	      } else {
-
-	        console.log(_this.props.openModuleView);
 	        return newStyles.containerStyle;
 	      }
 	    };
@@ -65326,9 +65311,6 @@
 	      };
 
 	      console.log("RENDERING USERVIEW");
-
-	      console.log(this.props);
-
 	      return _react2.default.createElement(
 	        'div',
 	        null,
@@ -65337,11 +65319,6 @@
 	          {
 	            docked: false,
 	            containerStyle: styles.launchContainerStyle,
-	            onRequestChange: function onRequestChange(open) {
-	              (function () {
-	                console.log("fuck");
-	              })();
-	            },
 	            width: 1680,
 	            open: this.props.openUserView },
 	          _react2.default.createElement(_Drawer2.default, {
@@ -65350,11 +65327,6 @@
 	            zDepth: 5,
 	            containerStyle: styles.launchContainerStylePanel2,
 	            overlayStyle: styles.overlayOpacity,
-	            onRequestChange: function onRequestChange(open) {
-	              (function () {
-	                console.log("fuck");
-	              })();
-	            },
 	            width: 100,
 	            open: this.props.openUserView }),
 	          _react2.default.createElement(_Drawer2.default, {
@@ -65365,11 +65337,6 @@
 	            overlayStyle: styles.overlayOpacity,
 
 	            openSecondary: true,
-	            onRequestChange: function onRequestChange(open) {
-	              (function () {
-	                console.log("fuck");
-	              })();
-	            },
 	            width: 100,
 	            open: this.props.openUserView }),
 	          _react2.default.createElement(_Drawer2.default, {
@@ -65380,11 +65347,6 @@
 	            overlayStyle: styles.overlayOpacity,
 
 	            openSecondary: true,
-	            onRequestChange: function onRequestChange(open) {
-	              (function () {
-	                console.log("fuck");
-	              })();
-	            },
 	            width: 200,
 	            open: this.props.openUserView }),
 	          _react2.default.createElement(_Drawer2.default, {
@@ -65393,11 +65355,6 @@
 	            zDepth: 5,
 	            containerStyle: styles.launchContainerStylePanel3,
 	            overlayStyle: styles.overlayOpacity,
-	            onRequestChange: function onRequestChange(open) {
-	              (function () {
-	                console.log("fuck");
-	              })();
-	            },
 	            width: 200,
 	            open: this.props.openUserView }),
 	          _react2.default.createElement(
@@ -65408,11 +65365,6 @@
 	              zDepth: 5,
 	              containerStyle: styles.launchContainerStylePanel4,
 	              overlayStyle: styles.overlayOpacity,
-	              onRequestChange: function onRequestChange(open) {
-	                (function () {
-	                  console.log("fuck");
-	                })();
-	              },
 	              width: 300,
 	              open: this.props.openUserView },
 	            _react2.default.createElement('div', { style: styles.panelDivs }),
@@ -65435,11 +65387,6 @@
 	              containerStyle: styles.launchContainerStylePanel4,
 	              overlayStyle: styles.overlayOpacity,
 	              openSecondary: true,
-	              onRequestChange: function onRequestChange(open) {
-	                (function () {
-	                  console.log("fuck");
-	                })();
-	              },
 	              width: 300,
 	              open: this.props.openUserView },
 	            _react2.default.createElement('div', { style: styles.panelDivs }),
@@ -65459,22 +65406,12 @@
 	            zDepth: 5,
 	            containerStyle: styles.launchContainerStylePanel2,
 	            openSecondary: true,
-	            onRequestChange: function onRequestChange(open) {
-	              (function () {
-	                console.log("fuck");
-	              })();
-	            },
 	            width: 1800,
 	            open: this.state.gates }),
 	          _react2.default.createElement(_Drawer2.default, {
 	            docked: false,
 	            zDepth: 5,
 	            containerStyle: styles.launchContainerStylePanel2,
-	            onRequestChange: function onRequestChange(open) {
-	              (function () {
-	                console.log("fuck");
-	              })();
-	            },
 	            width: 1800,
 	            open: this.state.gates })
 	        ),
@@ -82534,7 +82471,6 @@
 			};
 
 			_this.handleTextChangeQuestion = function (e, value) {
-				console.log(value);
 				_this.state.question = value;
 			};
 
@@ -82570,7 +82506,6 @@
 				})];
 
 				console.log("RENDERING SUBMITQUESTIONPROMPT");
-				console.log(this.props.questionPrompt, "huh");
 
 				return _react2.default.createElement(
 					_Dialog2.default,
@@ -82617,8 +82552,6 @@
 	}(_react.Component);
 
 	function mapStateToProps(state) {
-
-		console.log(state);
 
 		console.debug("MAPPING PROPS TO STATE IN SUBMITQUESTION");
 		return { currentNode: state.selectNode.currentNode,

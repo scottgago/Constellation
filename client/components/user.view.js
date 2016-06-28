@@ -324,17 +324,12 @@ class User extends Component {
   };
 
   handleOpenDrawer = (open, reason) =>{
-    console.log(open)
-    console.log("eh?")
   }
 
   checkStyle = () =>{
     if(!this.props.openModuleView){
-      console.log(this.props.openModuleView)
       return styles.containerStyle
     } else {
-
-      console.log(this.props.openModuleView)
       return newStyles.containerStyle
     }
   }
@@ -363,17 +358,12 @@ class User extends Component {
     }
 
     console.log("RENDERING USERVIEW")
-
-    console.log(this.props)
-
-
     return(
   		<div>
 
       <Drawer
             docked={false}
             containerStyle={styles.launchContainerStyle}
-            onRequestChange={(open) => {(()=>{console.log("fuck")})()}}
             width={1680}
             open={this.props.openUserView}>
 
@@ -383,7 +373,6 @@ class User extends Component {
               zDepth={5}
               containerStyle={styles.launchContainerStylePanel2}
               overlayStyle={styles.overlayOpacity}
-              onRequestChange={(open) => {(()=>{console.log("fuck")})()}}
               width={100}
               open={this.props.openUserView}>
             </Drawer>
@@ -395,7 +384,6 @@ class User extends Component {
               overlayStyle={styles.overlayOpacity}
 
               openSecondary={true}
-              onRequestChange={(open) => {(()=>{console.log("fuck")})()}}
               width={100}
               open={this.props.openUserView}>
             </Drawer>
@@ -407,7 +395,6 @@ class User extends Component {
               overlayStyle={styles.overlayOpacity}
 
               openSecondary={true}
-              onRequestChange={(open) => {(()=>{console.log("fuck")})()}}
               width={200}
               open={this.props.openUserView}>
             </Drawer>
@@ -417,7 +404,6 @@ class User extends Component {
               zDepth={5}
               containerStyle={styles.launchContainerStylePanel3}
               overlayStyle={styles.overlayOpacity}
-              onRequestChange={(open) => {(()=>{console.log("fuck")})()}}
               width={200}
               open={this.props.openUserView}>
             </Drawer>
@@ -429,7 +415,6 @@ class User extends Component {
               zDepth={5}
               containerStyle={styles.launchContainerStylePanel4}
               overlayStyle={styles.overlayOpacity}
-              onRequestChange={(open) => {(()=>{console.log("fuck")})()}}
               width={300}
               open={this.props.openUserView}>
 
@@ -452,7 +437,6 @@ class User extends Component {
               containerStyle={styles.launchContainerStylePanel4}
               overlayStyle={styles.overlayOpacity}
               openSecondary={true}
-              onRequestChange={(open) => {(()=>{console.log("fuck")})()}}
               width={300}
               open={this.props.openUserView}>
               <div style={styles.panelDivs}></div>
@@ -467,7 +451,6 @@ class User extends Component {
               zDepth={5}
               containerStyle={styles.launchContainerStylePanel2}
               openSecondary={true}
-              onRequestChange={(open) => {(()=>{console.log("fuck")})()}}
               width={1800}
               open={this.state.gates}>
             </Drawer>
@@ -475,7 +458,6 @@ class User extends Component {
               docked={false}
               zDepth={5}
               containerStyle={styles.launchContainerStylePanel2}
-              onRequestChange={(open) => {(()=>{console.log("fuck")})()}}
               width={1800}
               open={this.state.gates}>
             </Drawer>
