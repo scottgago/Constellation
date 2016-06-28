@@ -1,4 +1,4 @@
-import { TOGGLE_ADMIN, ADMIN_OPEN_VIEW, ADMIN_CLOSE_VIEW, SELECT_NODE, REGISTER_CY, CLOSE_USER_VIEW, USER_OPEN_MODULE, FETCH_NODES, USER_CLOSE_MODULE } from '../actions/actionList'
+import { TOGGLE_ADMIN, CLOSE_BLASTDOORS, OPEN_BLASTDOORS, ADMIN_OPEN_VIEW, ADMIN_CLOSE_VIEW, SELECT_NODE, REGISTER_CY, CLOSE_USER_VIEW, USER_OPEN_MODULE, FETCH_NODES, USER_CLOSE_MODULE } from '../actions/actionList'
 
 
 const INITIAL_STATE = {
@@ -13,7 +13,8 @@ const INITIAL_STATE = {
 	openUserView: false,
 	openAdminView: false,
 	openModuleView: false,
-	adminMode: false
+	adminMode: false,
+	closeBlastDoors: true
 } 
 
 export default function(state = INITIAL_STATE, action) {
@@ -22,6 +23,10 @@ export default function(state = INITIAL_STATE, action) {
 		  return {...state, adminMode: action.payload.adminMode}
 		case FETCH_NODES:
 		  return {...state, nodes: action.payload.nodes}
+		case OPEN_BLASTDOORS:
+			return {...state, closeBlastDoors: action.payload.closeBlastDoors }
+		case CLOSE_BLASTDOORS:
+			return {...state, closeBlastDoors: action.payload.closeBlastDoors }
 		case REGISTER_CY:
 			return {...state, cy: action.payload.cy}
 		case SELECT_NODE: 
