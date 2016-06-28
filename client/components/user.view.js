@@ -56,8 +56,7 @@ const styles = {
     left:0, 
     backgroundSize: 'cover',
     zIndex: 100000,
-
-      pointerEvents: 'auto'
+    pointerEvents: 'auto'
 
   },
   launchContainerStyle : {
@@ -334,20 +333,22 @@ class User extends Component {
     }
   }
 
+  checkStyleLaunch = () =>{
+    if(!this.props.openUserView){
+      return styles.containerStyle
+    } else {
+      return newStyles.containerStyle
+    }
+  }
+
+
+
   render(){
 
     const opts = {
       height: 390,
       width: '100%',
     };
-
-    const cancel = [
-      <FlatButton
-          label="Back to galactic view"
-          primary={true}
-          onTouchTap={this.props.closeModule}
-      />
-    ];
 
     const contentStyle = {
       minWidth: 640,
@@ -360,162 +361,48 @@ class User extends Component {
     console.log("RENDERING USERVIEW")
     return(
   		<div>
+        <div style={this.checkStyleLaunch()}>
+          <RaisedButton onClick = {this.handleClosePrompt} backgroundColor ='#ff0000' style={styles.buttonDecline}>ABORT</RaisedButton>
+        {
+        //   <Paper style= {styles.descPadding} zDepth = {5}>
+        //   <MarkdownParser style={styles.description} markdown={this.props.moduleDescription}/>
+  
+        // </Paper>
+        }
+          <RaisedButton onClick = {this.handleOpenModule} backgroundColor ='#3ed715' style={styles.buttonAccept}>LAUNCH</RaisedButton>
+        </div>
 
-      <Drawer
-            docked={false}
-            containerStyle={styles.launchContainerStyle}
-            width={1680}
-            open={this.props.openUserView}>
-
-            <Drawer
-              docked={false}
-
-              zDepth={5}
-              containerStyle={styles.launchContainerStylePanel2}
-              overlayStyle={styles.overlayOpacity}
-              width={100}
-              open={this.props.openUserView}>
-            </Drawer>
-            <Drawer
-              docked={false}
-
-              zDepth={5}
-              containerStyle={styles.launchContainerStylePanel2}
-              overlayStyle={styles.overlayOpacity}
-
-              openSecondary={true}
-              width={100}
-              open={this.props.openUserView}>
-            </Drawer>
-            <Drawer
-              docked={false}
-
-              zDepth={5}
-              containerStyle={styles.launchContainerStylePanel3}
-              overlayStyle={styles.overlayOpacity}
-
-              openSecondary={true}
-              width={200}
-              open={this.props.openUserView}>
-            </Drawer>
-            <Drawer
-              docked={false}
-
-              zDepth={5}
-              containerStyle={styles.launchContainerStylePanel3}
-              overlayStyle={styles.overlayOpacity}
-              width={200}
-              open={this.props.openUserView}>
-            </Drawer>
-              
-
-              <Drawer
-              docked={false}
-
-              zDepth={5}
-              containerStyle={styles.launchContainerStylePanel4}
-              overlayStyle={styles.overlayOpacity}
-              width={300}
-              open={this.props.openUserView}>
-
-              
-
-              <div style={styles.panelDivs}></div>
-              <div style={styles.panelDivs}>
-              <RaisedButton onClick = {this.handleClosePrompt} backgroundColor ='#ff0000' style={styles.buttonDecline}>ABORT</RaisedButton>
-              </div>
-              <div style={styles.panelDivs}></div>
-              </Drawer>
-              {
-              //   <Paper style= {styles.descPadding} zDepth = {5}>
-              //   <MarkdownParser style={styles.description} markdown={this.props.moduleDescription}/>
-              // </Paper>
-            }
-              <Drawer
-              docked={false}
-              zDepth={5}
-              containerStyle={styles.launchContainerStylePanel4}
-              overlayStyle={styles.overlayOpacity}
-              openSecondary={true}
-              width={300}
-              open={this.props.openUserView}>
-              <div style={styles.panelDivs}></div>
-              <div style={styles.panelDivs}>
-              <RaisedButton onClick = {this.handleOpenModule} backgroundColor ='#3ed715' style={styles.buttonAccept}>LAUNCH</RaisedButton>
-              </div>
-              <div style={styles.panelDivs}></div> 
-              </Drawer>
-
-               <Drawer
-              docked={false}
-              zDepth={5}
-              containerStyle={styles.launchContainerStylePanel2}
-              openSecondary={true}
-              width={1800}
-              open={this.state.gates}>
-            </Drawer>
-            <Drawer
-              docked={false}
-              zDepth={5}
-              containerStyle={styles.launchContainerStylePanel2}
-              width={1800}
-              open={this.state.gates}>
-            </Drawer>
-        
-      </Drawer>
-
-
-
-
-
-      {
-  		 
-
-
-
-    }
-
-
-          <div style={this.checkStyle()}>
-          
-        
-            
-
-
-
-
-
-            
-        	 <Tabs tabItemContainerStyle={styles.tabsColor} inkBarStyle={styles.inkBarStyle}>
-
+        <div style={this.checkStyle()}>
+          <Tabs tabItemContainerStyle={styles.tabsColor} inkBarStyle={styles.inkBarStyle}>
             <Tab label="Content" >
-
               <Tabs tabItemContainerStyle={styles.tabsColor2} inkBarStyle={styles.inkBarStyle}>
-              {this.props.currentVideos.map(function(value){
-                return (<Tab label={value.name}>
-                <div style={styles.contentDiv}>
-                 <div style={styles.floatLeft}>
-                    <YouTube
-                     videoId={value.video}
-                     opts={opts} />
-                  </div>
-                  <div>
-                    <Paper style={styles.floatRight} zDepth = {4} >
-                      <MarkdownParser style={styles.markdownMargins} markdown={value.markdown}/>
-                    </Paper>
-                  </div>
+                {this.props.currentVideos.map(function(value){
+                  return (<Tab key={value.name} label={value.name}>
+                    <div style={styles.contentDiv}>
+                      <div style={styles.floatLeft}>
+                      {
+                      // <YouTube
+                      //  videoId={value.video}
+                      //  opts={opts} />
+                      }
+                      </div>
+                    <div>
+                      <Paper style={styles.floatRight} zDepth = {4} >
+                        <MarkdownParser style={styles.markdownMargins} markdown={value.markdown}/>
+                      </Paper>
+                    </div>
                   </div>
                 </Tab>)
               })}
-               
               </Tabs>
             </Tab>
             <Tab label="Documentation">
               <Tabs tabItemContainerStyle={styles.tabsColor2} inkBarStyle={styles.inkBarStyle}>
               {this.props.currentArticles.map((value)=>{
-                return ( <Tab label = {value.name}>
+                return ( <Tab key= {value.name} label = {value.name}>
                   <div style={styles.topIframeMargin}>
-                    <iframe style={styles.dialogHugePlayer} src={value.article} height={'50%'} width={'100%'}/>
+                    {//<iframe style={styles.dialogHugePlayer} src={value.article} height={'50%'} width={'100%'}/>
+                    }
                   </div>
                   </Tab>)
 
@@ -525,41 +412,22 @@ class User extends Component {
             <Tab label="Questions">
               <AskQuestion />
               <div>
-              {this.props.currentQuestions.map((value)=>{
+              {this.props.currentQuestions.map((value, index)=>{
                 
-                return <QuestionEntry question={value }/>
+                return <QuestionEntry key={index} question={value}/>
                 
               })}
               </div>
             </Tab>
-            <Tab label="Quizzes">
-            <Card  >
-              <CardHeader
-                title="Closures"
-                subtitle="A quiz on closures"
-                actAsExpander={true}
-                showExpandableButton={true}
-              />
-              <CardMedia  expandable={true}>
-
-              <QuizEntry />
-              </CardMedia>
-              <CardActions expandable={true}>
-                <FlatButton label="Cancel" />
-                <FlatButton label="Submit" />
-              </CardActions>
-            </Card>
-            </Tab>
           </Tabs>
-
-      <div style={styles.backButton} > 
-      <Paper zDepth = {4}>           
-        <FlatButton  onTouchTap={this.handleCloseModule} label="Back to Galactic View"/>
-        <FlatButton  onTouchTap={this.handleOpenQuestion} label="Ask A Question"/>
-        <FlatButton  onTouchTap = {this.handleToggleNext} label="Next Nodes"/>
-      </Paper>
-      </div>
-      </div>
+          <div style={styles.backButton} > 
+            <Paper zDepth = {4}>           
+              <FlatButton  onTouchTap={this.handleCloseModule} label="Back to Galactic View"/>
+              <FlatButton  onTouchTap={this.handleOpenQuestion} label="Ask A Question"/>
+              <FlatButton  onTouchTap = {this.handleToggleNext} label="Next Nodes"/>
+            </Paper>
+          </div>
+          </div>
       </div>
   	)
   }

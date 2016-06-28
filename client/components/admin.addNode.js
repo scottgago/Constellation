@@ -23,6 +23,23 @@ import AddConnections from './admin.addConnections'
 import Slider from 'material-ui/Slider';
 var MarkdownEditor = require('react-markdown-editor').MarkdownEditor;
 
+const newStyles = {
+  containerStyle: {
+    maxWidth: '100%',
+    display: 'block',
+    position: 'fixed',
+    background: 'url(./assets/imgs/metalBackground.jpg)',
+    top: 0,
+    bottom: 0,
+    right: 0,
+    left:0, 
+    backgroundSize: 'cover',
+    zIndex: 100000,
+    pointerEvents: 'auto',
+    submitQuestion: false
+  }
+}
+
 const style = {
 	contentDiv : {
   	width: '100%',
@@ -87,6 +104,27 @@ const style = {
     marginBottom: 75,
     maxWidth: '10%'
   },
+  containerStyle : {
+    maxWidth: '100%',
+    display: 'none',
+    position: 'fixed',
+    background: 'url(./assets/imgs/metalBackground.jpg)',
+    top: 0,
+    bottom: 0,
+    right: 0,
+    left:0, 
+    backgroundSize: 'cover',
+    zIndex: 100000,
+    pointerEvents: 'auto'
+
+  },
+
+  backButton: {
+    position: 'fixed',
+    bottom: 0,
+    right: 0,
+    margin: 5
+  },
   nodeList: {
     marginTop: 15,
     float: 'right',
@@ -132,8 +170,13 @@ class AddNode extends Component {
     
   }
 
+  // Sets the star type/width/height for the new node
+
 	handleRequestClosePrompt = () => {
     this.props.closeCreate()
+    document.getElementById("cy").style.display = 'block'
+    this.props.cy.zoomingEnabled(true)
+    this.props.cy.panningEnabled(true)
   };
 
 	handleChangeText = (e, value) => {
@@ -160,6 +203,14 @@ class AddNode extends Component {
   			starType: './assets/imgs/8902697.png'
   		})
   	}
+  }
+
+  checkStyle = () =>{
+    if(!this.props.create){
+      return style.containerStyle
+    } else {
+      return newStyles.containerStyle
+    }
   }
 
   onConfirm = (e, value) => {
@@ -192,7 +243,7 @@ class AddNode extends Component {
         edit: false,
 			})
 
-      this.props.closeCreate()
+      this.handleRequestClosePrompt()
     
   }
 
@@ -211,14 +262,7 @@ class AddNode extends Component {
       />
 		];
 		return(
-			<div>
-			<EditNode status={this.state} />
-			<Dialog
-	      title="Create Mode"
-	      modal={false}
-	      actions={cancel}
-				contentStyle ={style.dialogBody}
-	      open={this.props.create}>
+			<div style={this.checkStyle()}>
 	        <div style = {style.dialogBody}>
 		        <Tabs style={style.contentDiv}>
 		          <Tab label="Content" >
@@ -275,8 +319,13 @@ class AddNode extends Component {
           open={this.state.error}
           message={"Node name was blank or invalid. Please enter a new node name"}
           autoHideDuration={4000} />
-	     </Dialog>
-	    </div>
+          <div style={style.backButton} > 
+            <Paper zDepth = {4}>           
+              <FlatButton  onTouchTap={this.handleRequestClosePrompt} label="Exit without saving"/>
+              <FlatButton  onTouchTap={this.onConfirm} label="Save and exit"/>
+            </Paper>
+          </div>
+	     </div>
 	    )
 	}
 }

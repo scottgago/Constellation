@@ -52,22 +52,8 @@ class App extends Component {
 				<div>
         			<main className="main">{children}</main>
       			</div>
-				<Drawer
-              docked={false}
-              zDepth={5}
-              containerStyle={styles.launchContainerStylePanel2}
-              openSecondary={true}
-              width={1800}
-              open={this.props.closeBlastDoors}>
-            </Drawer>
-            <Drawer
-              docked={false}
-              zDepth={5}
-              containerStyle={styles.launchContainerStylePanel2}
-              width={1800}
-              open={this.props.closeBlastDoors}>
-            </Drawer>
 				
+				<Menu />
 				<MainView />
 				<Admin  />
       			<User  />
