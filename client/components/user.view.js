@@ -108,7 +108,14 @@ const styles = {
     position: 'fixed',
     bottom: 0,
     right: 0,
-    margin: 5
+    margin: 5,
+    fontFamily: "Chalks",
+    color: 'white'
+  },
+  buttonFonts: {
+
+    fontFamily: "Chalks",
+    color: 'white'
   },
   innerDiv : {
     top: 0,
@@ -141,6 +148,7 @@ const styles = {
   tabsColor: {
     backgroundColor: "#25383C"
   },
+
   tabsColor2: {
     backgroundColor: "#737CA1"
   },
@@ -398,10 +406,8 @@ class User extends Component {
                        opts={opts} />
                       
                       </div>
-                    <div>
-                      <Paper style={styles.floatRight} zDepth = {4} >
-                        <MarkdownParser style={styles.markdownMargins} markdown={value.markdown}/>
-                      </Paper>
+                    <div style={styles.floatRight}>
+                        <MarkdownParser className = "markdownParser"  markdown={value.markdown}/>
                     </div>
                   </div>
                 </Tab>)
@@ -447,14 +453,11 @@ class User extends Component {
                   <MenuItem primaryText="Sign out" />
                 </Menu>
               </Popover>
-          <div style={styles.backButton} > 
-            <Paper zDepth = {4}>   
+          <div style={styles.backButton} >
 
-              <FlatButton  onTouchTap={this.handleCloseModule} label="Back to Galactic View"/>
-              
-              <FlatButton  onTouchTap={this.handleOpenQuestion} label="Ask A Question"/>
-              <FlatButton  onTouchTap = {this.handleToggleNext} label="Next Nodes"/>
-            </Paper>
+              <FlatButton style={styles.buttonFonts} onTouchTap={this.handleCloseModule} label="Back to Galactic View"/>
+              <FlatButton style={styles.buttonFonts} onTouchTap={this.handleOpenQuestion} label="Ask A Question"/>
+              <FlatButton style={styles.buttonFonts} onTouchTap = {this.handleToggleNext} label="Next Nodes"/>
           </div>
 
           </div>

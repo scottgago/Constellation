@@ -118,12 +118,13 @@ const style = {
     pointerEvents: 'auto'
 
   },
-
   backButton: {
     position: 'fixed',
     bottom: 0,
     right: 0,
-    margin: 5
+    margin: 5,
+    fontFamily: "Chalks",
+    color: 'white'
   },
   nodeList: {
     marginTop: 15,
@@ -132,6 +133,12 @@ const style = {
     height: 450,
     right: 0,
     overflow: "scroll"
+  },
+  
+  buttonFonts: {
+
+    fontFamily: "Chalks",
+    color: 'white'
   }
 }
 
@@ -319,11 +326,9 @@ class AddNode extends Component {
           open={this.state.error}
           message={"Node name was blank or invalid. Please enter a new node name"}
           autoHideDuration={4000} />
-          <div style={style.backButton} > 
-            <Paper zDepth = {4}>           
-              <FlatButton  onTouchTap={this.handleRequestClosePrompt} label="Exit without saving"/>
-              <FlatButton  onTouchTap={this.onConfirm} label="Save and exit"/>
-            </Paper>
+          <div style={style.backButton} >      
+              <FlatButton style={style.buttonFonts} onTouchTap={this.handleRequestClosePrompt} label="Exit without saving"/>
+              <FlatButton style={style.buttonFonts} onTouchTap={this.onConfirm} label="Save and exit"/>
           </div>
 	     </div>
 	    )

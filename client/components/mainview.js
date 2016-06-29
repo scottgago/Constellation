@@ -213,12 +213,12 @@ class MainView extends Component {
   ], // function( ele ){ return [ /*...*/ ] }, // example function for commands
   fillColor: 'rgba(54,54,54, 1)', // the background colour of the menu
   activeFillColor: 'rgba(37,56,60, .6)', // the colour used to indicate the selected command
-  activePadding: 20, // additional size in pixels for the active command
-  indicatorSize: 7, // the size in pixels of the pointer to the active command
+  activePadding: 29, // additional size in pixels for the active command
+  indicatorSize: 17, // the size in pixels of the pointer to the active command
   separatorWidth: 7, // the empty spacing in pixels between successive commands
   spotlightPadding: 2, // extra spacing in pixels between the element and the spotlight
-  minSpotlightRadius: 24, // the minimum radius in pixels of the spotlight
-  maxSpotlightRadius: 6, // the maximum radius in pixels of the spotlight
+  minSpotlightRadius: 44, // the minimum radius in pixels of the spotlight
+  maxSpotlightRadius: 16, // the maximum radius in pixels of the spotlight
   openMenuEvents: 'cxttapstart taphold', // cytoscape events that will open the menu (space separated)
   itemColor: 'white', // the colour of text in the command's content
   itemTextShadowColor: 'black', // the text shadow colour of the command's content
@@ -278,7 +278,7 @@ class MainView extends Component {
         container: document.getElementById('cy'),
         autoungrabify: true,
 
-        minZoom: .55,
+        minZoom: .68,
         maxZoom: 7,
 
   touchTapThreshold: 1,
@@ -414,8 +414,9 @@ class MainView extends Component {
           'width' : nodes[i]._private.data.style.width,
           'height' : nodes[i]._private.data.style.height,
           'background-image' : 'url(./assets/imgs/chalk.png)',
+          "font-family": "Chalks",
 
-          'font-size': nodes[i]._private.data.style.height * .23,
+          'font-size': nodes[i]._private.data.style.height * .12,
           'text-valign': 'center', 
         })
       }

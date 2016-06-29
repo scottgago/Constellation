@@ -14,5 +14,25 @@
 
 @font-face {
     font-family: 'Chalks';
-    src: url(../fonts/DKCrayonCrumble.ttf);
+    src: url(../fonts/KGTenThousandReasons.ttf);
+}
+
+body {
+  font-family: 'Chalks';
+  background: 'white';
+}
+
+.markdownParser {
+  font-family: "Chalks";
+  background: 'white';
+}
+
+.cxtmenu-content {
+
+  font-family: "Chalks";
+  background: 'white';
+}
+
+.cxtmenu-disabled {
+  background: url('../imgs/metalBackground.jpg')
 }

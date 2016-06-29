@@ -13,6 +13,13 @@ marked.setOptions({
   smartypants: false
 });
 
+var style = {
+  markdown: {
+  	fontFamily: "Chalks",
+  	color: 'white'
+  }
+}
+
 export default class MarkdownParser extends Component {
 
 	constructor(props) {
@@ -38,7 +45,7 @@ export default class MarkdownParser extends Component {
 
 	render() {
 
-		return <div dangerouslySetInnerHTML={this.rawMarkup()} />;
+		return <div style={style.markdown} dangerouslySetInnerHTML={this.rawMarkup()} />;
 
 	}
 }

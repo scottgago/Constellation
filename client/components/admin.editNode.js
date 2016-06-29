@@ -112,6 +112,19 @@ const style = {
   inkBarStyle: {
     backgroundColor: "#F88017"
   },
+  backButton: {
+    position: 'fixed',
+    bottom: 0,
+    right: 0,
+    margin: 5,
+    fontFamily: "Chalks",
+    color: 'white'
+  },
+  buttonFonts: {
+
+    fontFamily: "Chalks",
+    color: 'white'
+  }
 }
 
 class EditNode extends Component {
@@ -348,10 +361,10 @@ class EditNode extends Component {
             </Tabs>
           </div>
           <div style={style.backButton} > 
-            <Paper zDepth = {4}>           
-              <FlatButton  onTouchTap={this.handleCancel} label="Exit without saving"/>
-              <FlatButton  onTouchTap={this.onSubmit} label="Save and exit"/>
-            </Paper>
+                     
+              <FlatButton style={style.buttonFonts} onTouchTap={this.handleCancel} label="Exit without saving"/>
+              <FlatButton style={style.buttonFonts} onTouchTap={this.onSubmit} label="Save and exit"/>
+            
           </div>
       </div>
     )
