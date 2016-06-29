@@ -10,13 +10,13 @@ import { POST_SIGN_IN_PATH, POST_SIGN_OUT_PATH } from '../auth/config';
 
 const styles = {
 	launchContainerStylePanel2 : {
-	    maxWidth: '50%',
+	    maxWidth: '100%',
 	    display: 'block ',
 	    position: 'absolute',
-	    background: 'url(http://wallpaper.zone/img/210731.jpg)',
+	    background: 'url(./assets/imgs/metalBackground.jpg)',
 	    backgroundSize: 'cover',
 	    transitionDuration: '.5s',
-	    transitionDelay: '.2s',
+	    transitionDelay: '.4s',
 	    zIndex: 1000000
   },
 }
@@ -49,25 +49,21 @@ class App extends Component {
 		const {auth, children} = this.props;
 		return(
 			<div>
-				<div>
-        			<main className="main">{children}</main>
-      			</div>
+			{
+				// <div>
+			
+    //     			<main className="main">{children}</main>
+    //   			</div>
+}
 				<Drawer
-              docked={false}
-              zDepth={5}
-              containerStyle={styles.launchContainerStylePanel2}
-              openSecondary={true}
-              width={1800}
-              open={this.props.closeBlastDoors}>
-            </Drawer>
-            <Drawer
-              docked={false}
-              zDepth={5}
-              containerStyle={styles.launchContainerStylePanel2}
-              width={1800}
-              open={this.props.closeBlastDoors}>
-            </Drawer>
-				
+              		docked={false}
+              		zDepth={5}
+              		containerStyle={styles.launchContainerStylePanel2}
+              		openSecondary={true}
+              		width={1800}
+              		open={this.props.closeBlastDoors}>
+            	</Drawer>
+				<Menu />
 				<MainView />
 				<Admin  />
       			<User  />

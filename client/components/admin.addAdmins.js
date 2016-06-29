@@ -2,14 +2,24 @@ import React, { Component } from 'react';
 
 import {Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn} from 'material-ui/Table'
 
+//TODO: This is abandoned code. We'll come back to admins, but for now,
+// let's leave this unlogiced.
+
 const style = {
   adminList: {
     marginTop: 15,
     float: 'left',
     width: '48%',
     left: 0,
-    height: 450
+    height: 450,
+    marginLeft: 15,
+    fontFamily: "Chalks",
+    color: 'white',
   },
+  buttonFonts: {
+    fontFamily: "Chalks",
+    color: 'white',
+  }
 }
 
 export default class AddAdmin extends Component {
@@ -18,7 +28,7 @@ export default class AddAdmin extends Component {
     return(
       <div style={style.adminList}>
         <span>Admins</span>
-        <Table>
+        <Table style={style.buttonFonts}>
           <TableHeader>
             <TableRow>
               <TableHeaderColumn>ID</TableHeaderColumn>

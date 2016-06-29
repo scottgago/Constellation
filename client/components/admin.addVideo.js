@@ -32,6 +32,10 @@ const styles = {
       justifyContent: 'center',
       overflow: 'scroll'
     },
+    zIndex: {
+      zIndex: 100001
+    },
+
     dialogBody: {
       minWidth: 600,
       minHeight: "100%",
@@ -159,12 +163,6 @@ const style = {
   }
 }
 
-/**
- * Horizontal steppers are ideal when the contents of one step depend on an earlier step.
- * Avoid using long step names in horizontal steppers.
- *
- * Linear steppers require users to complete one step in order to move on to the next.
- */
 class AddVideo extends Component {
 
   constructor(props){
@@ -234,6 +232,9 @@ class AddVideo extends Component {
       this.props.closeAddVideo()
     }
   };
+
+  // Handles the stepper status. If it reaches the end, submit the changes and post them to
+  // The firebase instance
 
   handlePrev = () => {
     const {stepIndex} = this.state;
@@ -306,7 +307,8 @@ class AddVideo extends Component {
           modal={false}
           open={this.props.addVideoOpen}
           style={style.modalStyle}
-          onRequestClose={this.handleClose}>
+          onRequestClose={this.handleClose}
+          style={styles.zIndex}>
 
             <Stepper activeStep={stepIndex}>
               <Step>

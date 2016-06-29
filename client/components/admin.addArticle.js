@@ -57,6 +57,9 @@ const style = {
     minHeight: 400,
     alignItems: 'center',
     justifyContent: 'center'
+  },
+  zIndex: {
+    zIndex: 1000001
   }
 }
 
@@ -122,6 +125,9 @@ class AddArticle extends Component {
     }
   };
 
+  // Handle the next step in the stepper. If the stepper is finished, push the new article
+  // to the cytoscape instance and then post it to the firebase database.
+
 
   handlePrev = () => {
     const {stepIndex} = this.state;
@@ -129,6 +135,8 @@ class AddArticle extends Component {
       this.setState({stepIndex: stepIndex - 1});
     }
   };
+
+  //This handles the previous button. Takes a step back in the stepper.
 
   getStepContent(stepIndex) {
     switch (stepIndex) {
@@ -174,6 +182,7 @@ class AddArticle extends Component {
             open={this.props.addArticleOpen}
             contentStyle={style.modalStyle}
             onRequestClose={this.handleClose}>
+            style={style.zIndex}
           <Stepper activeStep={stepIndex}>
             <Step>
               <StepLabel>Select an artcle</StepLabel>

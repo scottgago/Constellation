@@ -45,9 +45,9 @@ class QuestionEntry extends Component {
         showExpandableButton={true}
       />
       <CardText  expandable={true}>
-      	{this.state.question.answers.map((value)=>{
+      	{this.state.question.answers.map((value, index)=>{
       		return (
-      			<div>
+      			<div key={index}>
       				<Avatar
           			size={30}
           			style={styles.avatar}

@@ -52,6 +52,10 @@ export default class Admin extends Component {
   handleRequestOpenCreate = () => {
     this.props.openCreate()
     this.props.closeAdmin()
+    this.props.closeUserView()
+    document.getElementById("cy").style.display = 'none'
+    this.props.cy.zoomingEnabled(false)
+    this.props.cy.panningEnabled(false)
   };
 
   handleRequestClosePrompt = () => {
@@ -61,6 +65,10 @@ export default class Admin extends Component {
   handleRequestOpenEdit = () => {
     this.props.openEdit()
     this.props.closeAdmin()
+    this.props.closeUserView()
+    document.getElementById("cy").style.display = 'none'
+    this.props.cy.zoomingEnabled(false)
+    this.props.cy.panningEnabled(false)
   };
 
   handleOpen = () => {

@@ -17,10 +17,36 @@ import * as actions from '../actions/reducerActions';
 
 var MarkdownEditor = require('react-markdown-editor').MarkdownEditor;
 
+const newStyles = {
+  containerStyle: {
+    maxWidth: '100%',
+    display: 'block',
+    position: 'fixed',
+    background: 'url(./assets/imgs/metalBackground.jpg)',
+    top: 0,
+    bottom: 0,
+    right: 0,
+    left:0, 
+    backgroundSize: 'cover',
+    zIndex: 100000,
+    pointerEvents: 'auto',
+    submitQuestion: false
+  }
+}
+
 const style = {
   contentDiv : {
     width: '100%',
     height: '100%'
+  },
+  tabsColor: {
+    backgroundColor: "#25383C"
+  },
+  backButton: {
+    position: 'fixed',
+    bottom: 0,
+    right: 0,
+    margin: 5
   },
   dialogBody: {
     minWidth: 1000,
@@ -46,9 +72,6 @@ const style = {
     background: 'url(./assets/imgs/lol.jpg)',
     backgroundSize: 'cover'
   },
-  tabsColor: {
-    backgroundColor: "#6f2d6f"
-  },
   editBackgroundBody: {
 
     background: 'url(./assets/imgs/editbackground.png)',
@@ -71,6 +94,36 @@ const style = {
   },
   actionButtons: {
     color: '#6f2d6f'
+  },
+  containerStyle : {
+    maxWidth: '100%',
+    display: 'none',
+    position: 'fixed',
+    background: 'url(./assets/imgs/metalBackground.jpg)',
+    top: 0,
+    bottom: 0,
+    right: 0,
+    left:0, 
+    backgroundSize: 'cover',
+    zIndex: 100000,
+    pointerEvents: 'auto'
+
+  },
+  inkBarStyle: {
+    backgroundColor: "#F88017"
+  },
+  backButton: {
+    position: 'fixed',
+    bottom: 0,
+    right: 0,
+    margin: 5,
+    fontFamily: "Chalks",
+    color: 'white'
+  },
+  buttonFonts: {
+
+    fontFamily: "Chalks",
+    color: 'white'
   }
 }
 
@@ -89,6 +142,14 @@ class EditNode extends Component {
 
   handleAddArticle = () => {
     this.props.openAddArticle()
+  }
+
+  checkStyle = () =>{
+    if(!this.props.edit){
+      return style.containerStyle
+    } else {
+      return newStyles.containerStyle
+    }
   }
 
   handleRequestClosePrompt = () => {
@@ -123,6 +184,8 @@ class EditNode extends Component {
       }
     }
 
+    // Add the new Nodes in the edit
+
     var cleanUp = []
 
     for(var i = 0; i < this.props.currentNode._private.edges.length; i++){
@@ -142,6 +205,8 @@ class EditNode extends Component {
       this.props.cy.remove(cleanUp[i])
     }
 
+    // Clean up the nodes that are being removed
+
 
     
     for(var i = 0; i < addNodes.length; i++){
@@ -158,6 +223,11 @@ class EditNode extends Component {
 
       this.props.cy.add(newEdge)
       this.props.editEdges({selectedEdge: newEdge})
+      document.getElementById("cy").style.display = 'block'
+      this.props.cy.zoomingEnabled(true)
+      this.props.cy.panningEnabled(true)
+
+      // Add the edges in the cytoscape instance and post changes to the firebase DB
 
       }
 
@@ -171,6 +241,9 @@ class EditNode extends Component {
 
   handleCancel = () => {
     this.props.closeEdit()
+    document.getElementById("cy").style.display = 'block'
+    this.props.cy.zoomingEnabled(true)
+    this.props.cy.panningEnabled(true)
   }
 
   render(){
@@ -191,20 +264,12 @@ class EditNode extends Component {
     ];
 
     return (
-      <div>
-        
-        <Dialog
-          modal={false}
-          actions={cancel}
-          open={this.props.edit}
-          bodyStyle={style.editBackgroundBody}
-          actionsContainerStyle={style.actionsContainer}
-          style={style.editBackground}
-          contentStyle ={style.dialogBody}>
+      <div style={this.checkStyle()}>
           <AdminAddVideo />
           <AdminAddArticle />
+        
           <div style = {style.dialogBody}>
-            <Tabs style={style.contentDiv} tabItemContainerStyle={style.tabsColor}>
+            <Tabs inkBarStyle={style.inkBarStyle} style={style.contentDiv} tabItemContainerStyle={style.tabsColor}>
               <Tab label="Style">
               <Paper zDepth={2}>
                 <div style = {style.alignCenter}>
@@ -231,7 +296,7 @@ class EditNode extends Component {
                       </TableHeader>
                       <TableBody>
                         {this.props.currentVideos.map(function(value, index){
-                          return (<TableRow>
+                          return (<TableRow key={value.name}>
                                     <TableRowColumn>{index + 1}</TableRowColumn>
                                     <TableRowColumn>{value.name}</TableRowColumn>
                                     <TableRowColumn>{value.video}</TableRowColumn>
@@ -257,7 +322,7 @@ class EditNode extends Component {
                       </TableHeader>
                       <TableBody>
                         {this.props.currentArticles.map(function(value, index){
-                          return (<TableRow>
+                          return (<TableRow key={value.name}>
                                     <TableRowColumn>{index + 1}</TableRowColumn>
                                     <TableRowColumn>John Smith</TableRowColumn>
                                     <TableRowColumn>Employed</TableRowColumn>
@@ -295,7 +360,12 @@ class EditNode extends Component {
               </Tab>
             </Tabs>
           </div>
-        </Dialog>
+          <div style={style.backButton} > 
+                     
+              <FlatButton style={style.buttonFonts} onTouchTap={this.handleCancel} label="Exit without saving"/>
+              <FlatButton style={style.buttonFonts} onTouchTap={this.onSubmit} label="Save and exit"/>
+            
+          </div>
       </div>
     )
   }

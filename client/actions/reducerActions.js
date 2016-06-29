@@ -5,6 +5,10 @@ import Firebase from 'firebase';
 const Posts = new Firebase('https://constellations-3ccaa.firebaseio.com');
 const nodesRef = Posts.child('elements')
 
+nodesRef.orderByValue().once("value", function(value){
+	console.log(value.val(), "hey")
+})
+
 export function openQuestion(){
 	return {type: USER_OPEN_SUBMITQUESTION, payload: {questionPrompt: true}}
 }

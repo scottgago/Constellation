@@ -14,8 +14,15 @@ const style = {
     width: '48%',
     height: 450,
     right: 0,
-    overflow: "scroll"
-  }
+    overflow: "scroll",
+    fontFamily: "Chalks",
+    color: 'white',
+    marginRight: 15
+  },
+	buttonFonts: {
+    fontFamily: "Chalks",
+    color: 'white',
+  },
 }
 
 class AddConnections extends Component {
@@ -34,13 +41,13 @@ class AddConnections extends Component {
 	selectorFunction = (value) => {
 
 		var newList = []
-
 		for(var i = 0; i < value.length; i++){
 			newList.push(this.state.availableConnections[value[i]])
 		}
-
 		this.props.registerEdge({selectedEdges: newList})
 	}
+
+	// Updates the list of edges as they're clicked on
 
 	render(){
 
@@ -51,6 +58,9 @@ class AddConnections extends Component {
 			if(this.props.create){
 
 				this.state.availableConnections = [this.props.currentNode._private.data.id]
+				this.selectorFunction(this.props.currentNode._private.data.id)
+
+				//TODO: Check this
 
 				return (
 					<TableRow selected = {true} selectable={false}>
@@ -62,6 +72,9 @@ class AddConnections extends Component {
 
 			}
 		}
+
+		//Makes sure that the edge is created with the node that the new node is created off of
+		//Ensures that all nodes have at least this first connections
 
 		const checkAdd_all = () => {
 
@@ -78,7 +91,7 @@ class AddConnections extends Component {
 
 	      return allNodes.map((value)=>{
 	      	return (
-		      	<TableRow>
+		      	<TableRow key={value}>
 							<TableRowColumn>{value} </TableRowColumn>
 							<TableRowColumn>{value}</TableRowColumn>
 							<TableRowColumn>No</TableRowColumn>
@@ -87,6 +100,8 @@ class AddConnections extends Component {
 	      })
     	}
 		}
+
+		//Supplies the rest of the nodes beyond the root node
 
 		const checkEdit_root = () => {
 			if(this.props.edit){
@@ -109,7 +124,7 @@ class AddConnections extends Component {
 
 				return currentEdges.map((value)=>{
 					return (
-					<TableRow selected = {true} selectable={true}>
+					<TableRow key={value} selected = {true} selectable={true}>
 						<TableRowColumn>{value}</TableRowColumn>
 						<TableRowColumn>{value}</TableRowColumn>
 						<TableRowColumn>Yes</TableRowColumn>
@@ -118,6 +133,8 @@ class AddConnections extends Component {
 				})
 		}
 	}
+
+	// Maps out the current node connections in the edit version of this module
 
 		const checkEdit_all = () => {
 			
@@ -140,7 +157,7 @@ class AddConnections extends Component {
 				if(!holderObject[value] && value !== this.props.currentNode._private.data.id){
 							this.state.availableConnections.push(value)
 					return (
-						<TableRow selected = {false} selectable={true}>
+						<TableRow key = {value} selected = {false} selectable={true}>
 							<TableRowColumn>{value}</TableRowColumn>
 							<TableRowColumn>{value}</TableRowColumn>
 							<TableRowColumn>No</TableRowColumn>
@@ -151,11 +168,13 @@ class AddConnections extends Component {
 			}
 		}
 
+  // Maps out all the remaining connections available
+
 		return (
 			
 			<div style={style.nodeList}>
 				<span>Node Connections</span>
-				<Table multiSelectable={true} onRowSelection={this.selectorFunction}>
+				<Table style={style.buttonFonts} multiSelectable={true} onRowSelection={this.selectorFunction}>
 					<TableHeader enableSelectAll={false}>
 						<TableRow>
 							<TableHeaderColumn>ID</TableHeaderColumn>
