@@ -14,8 +14,15 @@ const style = {
     width: '48%',
     height: 450,
     right: 0,
-    overflow: "scroll"
-  }
+    overflow: "scroll",
+    fontFamily: "Chalks",
+    color: 'white',
+    marginRight: 15
+  },
+	buttonFonts: {
+    fontFamily: "Chalks",
+    color: 'white',
+  },
 }
 
 class AddConnections extends Component {
@@ -167,7 +174,7 @@ class AddConnections extends Component {
 			
 			<div style={style.nodeList}>
 				<span>Node Connections</span>
-				<Table multiSelectable={true} onRowSelection={this.selectorFunction}>
+				<Table style={style.buttonFonts} multiSelectable={true} onRowSelection={this.selectorFunction}>
 					<TableHeader enableSelectAll={false}>
 						<TableRow>
 							<TableHeaderColumn>ID</TableHeaderColumn>

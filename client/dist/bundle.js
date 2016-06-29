@@ -76054,13 +76054,23 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+	//TODO: This is abandoned code. We'll come back to admins, but for now,
+	// let's leave this unlogiced.
+
 	var style = {
 	  adminList: {
 	    marginTop: 15,
 	    float: 'left',
 	    width: '48%',
 	    left: 0,
-	    height: 450
+	    height: 450,
+	    marginLeft: 15,
+	    fontFamily: "Chalks",
+	    color: 'white'
+	  },
+	  buttonFonts: {
+	    fontFamily: "Chalks",
+	    color: 'white'
 	  }
 	};
 
@@ -76086,7 +76096,7 @@
 	        ),
 	        _react2.default.createElement(
 	          _Table.Table,
-	          null,
+	          { style: style.buttonFonts },
 	          _react2.default.createElement(
 	            _Table.TableHeader,
 	            null,
@@ -76245,7 +76255,14 @@
 			width: '48%',
 			height: 450,
 			right: 0,
-			overflow: "scroll"
+			overflow: "scroll",
+			fontFamily: "Chalks",
+			color: 'white',
+			marginRight: 15
+		},
+		buttonFonts: {
+			fontFamily: "Chalks",
+			color: 'white'
 		}
 	};
 
@@ -76459,7 +76476,7 @@
 					),
 					_react2.default.createElement(
 						_Table.Table,
-						{ multiSelectable: true, onRowSelection: this.selectorFunction },
+						{ style: style.buttonFonts, multiSelectable: true, onRowSelection: this.selectorFunction },
 						_react2.default.createElement(
 							_Table.TableHeader,
 							{ enableSelectAll: false },
