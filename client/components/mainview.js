@@ -19,7 +19,7 @@ class MainView extends Component {
 			cy : null,
 			view : false,
 			currentNode: null,
-      previousNode: null
+      previousNode: {}
 		}
   }
 
@@ -341,68 +341,54 @@ class MainView extends Component {
 
       //   // Builds the onTap event. When the node is clicked, apply styling changes to the node edges
       //   // and the node itself. Then, change state so that the current node is the clicked node.
+          var evtTarget = event.cyTarget;
+          var holder = bind.props.currentNode
+          bind.props.selectNode({ currentQuestions: evtTarget._private.data.questions, moduleDescription: evtTarget._private.data.description, currentArticles: evtTarget._private.data.articles, currentVideos: evtTarget._private.data.videos, currentNode: evtTarget, previousNode: holder})
 
-      //     var evtTarget = event.cyTarget;
-      //     var holder = bind.props.currentNode
+
+          if(bind.props.previousNode._private){
+            bind.props.previousNode._private.edges.forEach((value)=>{
+              value.style({
+              'line-color' : '#ccc',
+              'overlay-color' : '#ccc',
+              'overlay-opacity' : 0,
+              'width' : 1,
+              'overlay-padding': 1
+              })
+            })
+          }
+
+          evtTarget._private.edges.forEach((value)=>{
+            value.style({
+              'line-color' : [102,255,0],
+              'overlay-color' : [102,255,0],
+              'overlay-opacity' : .5,
+              'width' : 4,
+              'overlay-padding': 2
+            })
+          })
+
     
-      //     
-
-      //     evtTarget.style({
-      //       'font-size': 80
-      //     })
-
-      //     if(bind.props.previousNode._private){
-      //       bind.props.previousNode._private.edges.forEach((value)=>{
-      //         value.style({
-      //         'line-color' : '#ccc',
-      //         'overlay-color' : '#ccc',
-      //         'overlay-opacity' : 0,
-      //         'width' : 1,
-      //         'overlay-padding': 1
-      //         })
-      //       })
-      //     }
-
-      //     evtTarget._private.edges.forEach((value)=>{
-      //       value.style({
-      //         'line-color' : [102,255,0],
-      //         'overlay-color' : [102,255,0],
-      //         'overlay-opacity' : .5,
-      //         'width' : 4,
-      //         'overlay-padding': 2
-      //       })
-      //     })
-
-      //     bind.props.selectNode({ currentQuestions: evtTarget._private.data.questions, moduleDescription: evtTarget._private.data.description, currentArticles: evtTarget._private.data.articles, currentVideos: evtTarget._private.data.videos, currentNode: evtTarget, previousNode: holder, openUserView: true })
-    
-      //     if(bind.props.adminMode){
-      //       bind.props.openAdmin()
-      //     }
+       
      
-      //     bind.setState({
-      //       currentNode  : evtTarget,
-      //       previousNode : holder,
-      //       view         : true,
-      //       cy           : cy
-      //     },
-      //     ()=>{
-      //       if(bind.props.previousNode._private){
-      //         bind.props.previousNode._private.edges.forEach((value)=>{
-      //           bind.props.previousNode.style({
-      //             'font-size' : 30,
-      //             'color': "#66ff00"
-      //           })
-      //           if((value._private.data.source !== bind.props.currentNode._private.data.id) && (value._private.data.target !== bind.props.currentNode._private.data.id ))
-      //           value.style({
-      //             'line-color' : '#ccc',
-      //             'overlay-color' : '#ccc',
-      //             'overlay-opacity' : 0,
-      //             'width' : 1
-      //           })
-      //         })
-      //       }
-      //     }
-      //   )
+          bind.setState({
+            currentNode  : evtTarget,
+            previousNode : holder
+          },
+          ()=>{
+            if(bind.props.previousNode._private){
+              bind.props.previousNode._private.edges.forEach((value)=>{
+                if((value._private.data.source !== bind.props.currentNode._private.data.id) && (value._private.data.target !== bind.props.currentNode._private.data.id ))
+                value.style({
+                  'line-color' : '#ccc',
+                  'overlay-color' : '#ccc',
+                  'overlay-opacity' : 0,
+                  'width' : 1
+                })
+              })
+            }
+          }
+        )
       });
       var nodes = cy.nodes()
       var cxtmenuApi = cy.cxtmenu( defaults )

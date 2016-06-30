@@ -146,11 +146,15 @@ const styles = {
     borderRadius: 3
 	},
   tabsColor: {
-    backgroundColor: "#25383C"
+    backgroundColor: "#25383C",
+    fontFamily: "Chalks",
+    color: 'white'
   },
 
   tabsColor2: {
-    backgroundColor: "#737CA1"
+    backgroundColor: "#737CA1",
+    fontFamily: "Chalks",
+    color: 'white'
   },
   dialogBackground: {
     borderRadius: 500,
@@ -380,12 +384,7 @@ class User extends Component {
         
         <div style={this.checkStyleLaunch()}>
           <RaisedButton onClick = {this.handleClosePrompt} backgroundColor ='#ff0000' style={styles.buttonDecline}>ABORT</RaisedButton>
-        {
-        //   <Paper style= {styles.descPadding} zDepth = {5}>
-        //   <MarkdownParser style={styles.description} markdown={this.props.moduleDescription}/>
-  
-        // </Paper>
-        }
+          <MarkdownParser style={styles.description} markdown={this.props.moduleDescription}/>
           <RaisedButton onClick = {this.handleOpenModule} backgroundColor ='#3ed715' style={styles.buttonAccept}>LAUNCH</RaisedButton>
         </div>
       
@@ -393,8 +392,8 @@ class User extends Component {
 
 
         <div style={this.checkStyle()}>
-          <Tabs tabItemContainerStyle={styles.tabsColor} inkBarStyle={styles.inkBarStyle}>
-            <Tab label="Content" >
+          <Tabs style = {styles.buttonFonts} tabItemContainerStyle={styles.tabsColor} inkBarStyle={styles.inkBarStyle}>
+            <Tab style = {styles.buttonFonts} label="Content" >
               <Tabs tabItemContainerStyle={styles.tabsColor2} inkBarStyle={styles.inkBarStyle}>
                 {this.props.currentVideos.map(function(value){
                   return (<Tab key={value.name} label={value.name}>
@@ -414,7 +413,7 @@ class User extends Component {
               })}
               </Tabs>
             </Tab>
-            <Tab label="Documentation">
+            <Tab label="Documentation" style = {styles.buttonFonts} >
               <Tabs tabItemContainerStyle={styles.tabsColor2} inkBarStyle={styles.inkBarStyle}>
               {this.props.currentArticles.map((value)=>{
                 return ( <Tab key= {value.name} label = {value.name}>
@@ -427,7 +426,7 @@ class User extends Component {
               })}
               </Tabs>
             </Tab>
-            <Tab label="Questions">
+            <Tab label="Questions" style = {styles.buttonFonts} >
               <AskQuestion />
               <div>
               {this.props.currentQuestions.map((value, index)=>{

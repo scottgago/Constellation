@@ -40,6 +40,7 @@ class AddConnections extends Component {
 
 	selectorFunction = (value) => {
 
+
 		var newList = []
 		for(var i = 0; i < value.length; i++){
 			newList.push(this.state.availableConnections[value[i]])
@@ -57,9 +58,7 @@ class AddConnections extends Component {
 
 			if(this.props.create){
 
-				this.state.availableConnections = [this.props.currentNode._private.data.id]
-				this.selectorFunction(this.props.currentNode._private.data.id)
-
+				this.props.registerEdge({selectedEdges: [this.props.currentNode._private.data.id] })
 				//TODO: Check this
 
 				return (

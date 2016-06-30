@@ -140,6 +140,8 @@ export function createNode({cy, currentNode, id, description, styles, admins, wi
         	}
       	}, nodeName)
 
+      	console.log({connections}.connections)
+
       	if(!{connections}.connections.length){
       		nodesRef.push({
       			group: 'edges',
