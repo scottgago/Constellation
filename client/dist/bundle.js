@@ -46454,10 +46454,10 @@
 		return { type: _actionList.ADMIN_SUBMIT_EDIT, payload: {} };
 	}
 
-	function editEdges(_ref) {
+	function editEdges(_ref, userID) {
 		var selectedEdge = _ref.selectedEdge;
 
-
+		var nodesRef = Posts.child(userID + '/elements');
 		var newEdge = nodesRef.push();
 
 		var newEdgeObj = { selectedEdge: selectedEdge };
@@ -46490,7 +46490,7 @@
 		return { type: _actionList.ADMIN_ADDARTICLE, payload: {} };
 	}
 
-	function createNode(_ref2) {
+	function createNode(_ref2, userID) {
 		var cy = _ref2.cy;
 		var currentNode = _ref2.currentNode;
 		var id = _ref2.id;
@@ -46529,16 +46529,16 @@
 			}
 		}, nodeName);
 
-		if (!{ connections: connections }.connections.length) {
-			nodesRef.push({
-				group: 'edges',
-				data: {
-					id: nodeName + { currentNode: currentNode }.currentNode._private.data.id,
-					source: nodeName,
-					target: { currentNode: currentNode }.currentNode._private.data.id
-				}
-			});
-		}
+		// if(!{connections}.connections.length){
+		// 	nodesRef.push({
+		// 		group: 'edges',
+		// 		data: {
+		// 			id: nodeName + {currentNode}.currentNode._private.data.id,
+		// 			source: nodeName,
+		// 			target: {currentNode}.currentNode._private.data.id
+		// 		}
+		// 	})
+		// }
 
 		for (var i = 0; i < { connections: connections }.connections.length; i++) {
 			nodesRef.push({
@@ -46635,8 +46635,6 @@
 					}
 					console.log('oooooogggaaaaaaaa', arr);
 				} else {
-					console.log('am i even getting here bro fuck');
-
 					var _getState2 = getState();
 
 					var _auth = _getState2.auth;
@@ -46680,7 +46678,6 @@
 							videos: []
 						},
 						group: "nodes" }];
-					console.log('awerjao;iwejrioajwerjaiwejr;aiwe', arr);
 				}
 				callback(arr);
 			});
@@ -54519,7 +54516,7 @@
 	        height: _this.state.starHeight,
 	        connections: _this.props.selectedEdges,
 	        type: _this.state.starType
-	      });
+	      }, _this.props.userID);
 
 	      /**
 	       	Creates a new cytoscape node with all of current entered information. Will lead into the edit node
@@ -54672,7 +54669,7 @@
 
 	function mapStateToProps(state) {
 	  console.debug("MAPPING STATE TO PROPS IN ADDNODE");
-	  return { selectedEdges: state.adminAdd.selectedEdges, create: state.adminAdd.create, currentNode: state.selectNode.currentNode, cy: state.selectNode.cy };
+	  return { userID: state.auth.id, selectedEdges: state.adminAdd.selectedEdges, create: state.adminAdd.create, currentNode: state.selectNode.currentNode, cy: state.selectNode.cy };
 	}
 
 	exports.default = (0, _reactRedux.connect)(mapStateToProps, actions)(AddNode);
@@ -55609,7 +55606,7 @@
 	        };
 
 	        _this.props.cy.add(newEdge);
-	        _this.props.editEdges({ selectedEdge: newEdge });
+	        _this.props.editEdges({ selectedEdge: newEdge }, _this.props.userID);
 	        document.getElementById("cy").style.display = 'block';
 	        _this.props.cy.zoomingEnabled(true);
 	        _this.props.cy.panningEnabled(true);
@@ -55918,7 +55915,7 @@
 
 	function mapStateToProps(state) {
 	  console.debug("MAPPING STATE TO PROPS IN EDITNODE");
-	  return { markdownDescription: state.adminEdit.markdownDescription, selectedEdges: state.adminAdd.selectedEdges, edit: state.adminEdit.edit, currentVideos: state.selectNode.currentVideos, currentArticles: state.selectNode.currentArticles, currentNode: state.selectNode.currentNode, cy: state.selectNode.cy };
+	  return { userID: state.auth.id, markdownDescription: state.adminEdit.markdownDescription, selectedEdges: state.adminAdd.selectedEdges, edit: state.adminEdit.edit, currentVideos: state.selectNode.currentVideos, currentArticles: state.selectNode.currentArticles, currentNode: state.selectNode.currentNode, cy: state.selectNode.cy };
 	}
 
 	exports.default = (0, _reactRedux.connect)(mapStateToProps, actions)(EditNode);
