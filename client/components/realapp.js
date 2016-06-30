@@ -12,7 +12,7 @@ export default class RealApp extends Component {
 				<Menu />
 				<MainView />
 				<Admin  />
-      			<User  />
+      	<User  />
 			</div>
 		)
 	}
