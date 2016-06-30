@@ -70,8 +70,8 @@ export function submitEdit(currentNode){
 	return { type: ADMIN_SUBMIT_EDIT, payload: {}}
 }
 
-export function editEdges({selectedEdge}){
-
+export function editEdges({selectedEdge}, userID){
+	const nodesRef = Posts.child(`${userID}/elements`);
 	var newEdge = nodesRef.push()
 
 	var newEdgeObj = {selectedEdge}
@@ -109,16 +109,17 @@ export function addArticle(currentNode){
 	return { type: ADMIN_ADDARTICLE, payload: {}}
 }
 
-export function createNode({cy, currentNode, id, description, styles, admins, width, height, type, connections}) {
+export function createNode({cy, currentNode, id, description, styles, admins, width, height, type, connections}, userID) {
 
 
 		var nodeName = {id: id}.id
 		var height = {height: height}.height
 		var width = {width: width}.width
 		var starType = {type: type}.type
-
+		console.log('a;jwerajwei;rjawe;rjaew;r');
 		const nodesRef = Posts.child(`${userID}/elements`);
 		var newNode = nodesRef.push()
+		console.log('l;aje;rjaoiw;ejr;iaowjer;iaewjira');
 
 		newNode.setWithPriority({
 			group: 'nodes',
@@ -138,16 +139,16 @@ export function createNode({cy, currentNode, id, description, styles, admins, wi
         	}
       	}, nodeName)
 
-      	if(!{connections}.connections.length){
-      		nodesRef.push({
-      			group: 'edges',
-      			data: {
-      				id: nodeName + {currentNode}.currentNode._private.data.id,
-      				source: nodeName,
-      				target: {currentNode}.currentNode._private.data.id
-      			}
-      		})
-      	}
+      	// if(!{connections}.connections.length){
+      	// 	nodesRef.push({
+      	// 		group: 'edges',
+      	// 		data: {
+      	// 			id: nodeName + {currentNode}.currentNode._private.data.id,
+      	// 			source: nodeName,
+      	// 			target: {currentNode}.currentNode._private.data.id
+      	// 		}
+      	// 	})
+      	// }
 
 
       	for(var i = 0; i < {connections}.connections.length; i++){
@@ -243,7 +244,6 @@ export function fetchNodes(callback) {
 				console.log('oooooogggaaaaaaaa', arr);
 			}
 			else {
-				console.log('am i even getting here bro fuck');
 				const {auth} = getState();
 				const nodesRef = Posts.child(`${auth.id}/elements`)
 				var newNode = nodesRef.push()
@@ -284,7 +284,6 @@ export function fetchNodes(callback) {
 						videos: [],
 						},
 					group: "nodes"}]
-					console.log('awerjao;iwejrioajwerjaiwejr;aiwe', arr)
 			}
       callback(arr)
     });

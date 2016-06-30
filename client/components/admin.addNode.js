@@ -32,7 +32,7 @@ const newStyles = {
     top: 0,
     bottom: 0,
     right: 0,
-    left:0, 
+    left:0,
     backgroundSize: 'cover',
     zIndex: 100000,
     pointerEvents: 'auto',
@@ -112,7 +112,7 @@ const style = {
     top: 0,
     bottom: 0,
     right: 0,
-    left:0, 
+    left:0,
     backgroundSize: 'cover',
     zIndex: 100000,
     pointerEvents: 'auto'
@@ -134,7 +134,7 @@ const style = {
     right: 0,
     overflow: "scroll"
   },
-  
+
   buttonFonts: {
 
     fontFamily: "Chalks",
@@ -169,12 +169,12 @@ class AddNode extends Component {
       starWidth : (style.imageContent.width = 100 + value*500),
       starHeight: (style.imageContent.height = 100 + value*500)
     })
-    
+
     style.imageContent.width = 100 + value*500
     style.imageContent.height = 100 + value*500
     style.imageContent.left = 500 - (value*500)/2
     style.imageContent.top = 160 - (value*500)/2
-    
+
   }
 
   // Sets the star type/width/height for the new node
@@ -222,15 +222,15 @@ class AddNode extends Component {
 
   onConfirm = (e, value) => {
 
-    this.props.createNode({cy: this.props.cy, 
-                           currentNode: this.props.currentNode, 
+    this.props.createNode({cy: this.props.cy,
+                           currentNode: this.props.currentNode,
                            id: this.state.newNodeName,
                            description: this.state.markdownDescription,
                            width: this.state.starWidth,
                            height: this.state.starHeight,
                            connections: this.props.selectedEdges,
                            type: this.state.starType
-                         })
+                         }, this.props.userID)
 
       /**
 
@@ -251,7 +251,7 @@ class AddNode extends Component {
 			})
 
       this.handleRequestClosePrompt()
-    
+
   }
 
 	render(){
@@ -326,7 +326,7 @@ class AddNode extends Component {
           open={this.state.error}
           message={"Node name was blank or invalid. Please enter a new node name"}
           autoHideDuration={4000} />
-          <div style={style.backButton} >      
+          <div style={style.backButton} >
               <FlatButton style={style.buttonFonts} onTouchTap={this.handleRequestClosePrompt} label="Exit without saving"/>
               <FlatButton style={style.buttonFonts} onTouchTap={this.onConfirm} label="Save and exit"/>
           </div>
@@ -337,7 +337,7 @@ class AddNode extends Component {
 
 function mapStateToProps(state){
   console.debug("MAPPING STATE TO PROPS IN ADDNODE")
-  return { selectedEdges: state.adminAdd.selectedEdges, create: state.adminAdd.create, currentNode : state.selectNode.currentNode, cy: state.selectNode.cy }
+  return { userID: state.auth.id, selectedEdges: state.adminAdd.selectedEdges, create: state.adminAdd.create, currentNode : state.selectNode.currentNode, cy: state.selectNode.cy }
 }
 
 export default connect(mapStateToProps, actions)(AddNode)
