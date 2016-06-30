@@ -38,7 +38,7 @@ const newStyles = {
       right: 0,
       left:0, 
       backgroundSize: 'cover',
-      zIndex: 100000,
+      zIndex: 100,
       pointerEvents: 'auto',
     }
   }
@@ -54,7 +54,7 @@ const styles = {
     right: 0,
     left:0, 
     backgroundSize: 'cover',
-    zIndex: 100000,
+    zIndex: 100,
     pointerEvents: 'auto'
 
   },
@@ -63,46 +63,10 @@ const styles = {
     display: 'block ',
     position: 'absolute',
     background: 'url(./assets/imgs/metalBackground.jpg)',
-    zIndex: 100001,
+    zIndex: 100,
     transitionDuration: '.75s',
     backgroundSize: 'cover',
 
-  },
-   launchContainerStylePanel2 : {
-    maxWidth: '50%',
-    display: 'block ',
-    position: 'absolute',
-    background: 'url(http://wallpaper.zone/img/210731.jpg)',
-    backgroundSize: 'cover',
-    transitionDuration: '1.5s'
-  },
-  launchContainerStylePanel3 : {
-    maxWidth: '100%',
-    display: 'block ',
-    position: 'absolute',
-    background: 'url(http://wallpaper.zone/img/210731.jpg)',
-    backgroundSize: 'cover',
-    transitionDelay: '.75s',
-    transitionDuration: '.25s'
-  },
-  launchContainerStylePanel4 : {
-    maxWidth: '100%',
-    display: 'block ',
-    position: 'absolute',
-    background: 'url(http://wallpaper.zone/img/210731.jpg)',
-    backgroundSize: 'cover',
-    transitionDelay: '1s',
-    transitionDuration: '.25s'
-  },
-  launchContainerStylePanel5 : {
-    maxWidth: '50%',
-    display: 'block ',
-    position: 'absolute',
-    background: 'url(http://wallpaper.zone/img/210731.jpg)',
-    backgroundSize: 'cover',
-    transitionDuration: '1.5s',
-    transitionDelay: '1.5s',
-    zIndex: 10001
   },
   backButton: {
     position: 'fixed',
@@ -113,7 +77,6 @@ const styles = {
     color: 'white'
   },
   buttonFonts: {
-
     fontFamily: "Chalks",
     color: 'white'
   },
@@ -172,7 +135,7 @@ const styles = {
 		maxWidth: 'none'
 	},
   dialogHugePlayer: {
-    minHeight: 580
+    minHeight: 660
   },
 	rocketImg: {
 		opacity: .2,
@@ -283,7 +246,7 @@ const styles = {
     marginRight: 30
   },
   zIndex: {
-    zIndex: 1000501
+    zIndex: 100000
   }
 }
 
@@ -323,11 +286,17 @@ class User extends Component {
     
   };
 
+  handleRequestClose = () => {
+    this.setState({
+      open: false,
+    });
+  };
+
   handleToggleNext = (event) => {
     console.log(event.currentTarget)
     this.setState({
       anchorEl : event.currentTarget,
-      lol: true
+      open: true
     })
   }
 
@@ -354,7 +323,15 @@ class User extends Component {
     }
   }
 
+  handleMenuSelect = (event, menuItem) => {
+    var bind = this
+    var ele = this.props.cy.filter('node[id = "' + menuItem.key + '"]')
+    console.log(ele[0]._private.data.id, "lol")
+    this.props.selectNode({ currentQuestions: ele[0]._private.data.questions, moduleDescription: ele[0]._private.data.description, currentArticles: ele[0]._private.data.articles, currentVideos: ele[0]._private.data.videos, currentNode: ele[0], previousNode: bind.props.currentNode})
+    this.handleRequestClose()
+  }
 
+  
 
   render(){
 
@@ -370,9 +347,25 @@ class User extends Component {
       alignItems: 'center',
       justifyContent: 'center'
     }
+    const checkInit = () => {
+      const bind = this
+      if(this.props.currentNode._private){
+        return this.props.currentNode._private.edges.map(function(value){
+          if(value._private.data.source === bind.props.currentNode._private.data.id){
+            return <MenuItem key={value._private.data.target} primaryText={value._private.data.target} />
+          }
+          if(value._private.data.target === bind.props.currentNode._private.data.id){
+            return <MenuItem key={value._private.data.source} primaryText={value._private.data.source} />
+          }
+        })
+      }
+    }
 
     console.log("RENDERING USERVIEW")
     return(
+
+      
+
   		<div>
 
         <Drawer
@@ -439,24 +432,20 @@ class User extends Component {
           </Tabs>
           <Popover
                 style={styles.zIndex}
-                open={this.state.lol}
+                open={this.state.open}
                 anchorEl={this.state.anchorEl}
                 anchorOrigin={{"horizontal":"left", "vertical":"top"}}
                 targetOrigin={{"horizontal":"middle","vertical":"bottom"}}
                 onRequestClose={this.handleRequestClose}
               >
-                <Menu>
-                  <MenuItem primaryText="Refresh" />
-                  <MenuItem primaryText="Help &amp; feedback" />
-                  <MenuItem primaryText="Settings" />
-                  <MenuItem primaryText="Sign out" />
+                <Menu onItemTouchTap = {this.handleMenuSelect} >
+                  {checkInit()}
                 </Menu>
               </Popover>
           <div style={styles.backButton} >
-
-              <FlatButton style={styles.buttonFonts} onTouchTap={this.handleCloseModule} label="Back to Galactic View"/>
-              <FlatButton style={styles.buttonFonts} onTouchTap={this.handleOpenQuestion} label="Ask A Question"/>
-              <FlatButton style={styles.buttonFonts} onTouchTap = {this.handleToggleNext} label="Next Nodes"/>
+            <FlatButton style={styles.buttonFonts} onTouchTap={this.handleCloseModule} label="Back to graph view"/>
+            <FlatButton style={styles.buttonFonts} onTouchTap={this.handleOpenQuestion} label="Ask A Question"/>
+            <FlatButton style={styles.buttonFonts} onTouchTap = {this.handleToggleNext} label="Next Modules"/>
           </div>
 
           </div>

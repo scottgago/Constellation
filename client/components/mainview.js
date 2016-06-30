@@ -128,7 +128,6 @@ class MainView extends Component {
       fillColor: 'rgba(200, 200, 200, 1)', // optional: custom background color for item
       content: 'Edit Node', // html/text content to be displayed in the menu
       select: function(ele){ 
-        console.log("fuck you")
 
         // a function to execute when the command is selected
         var holder = bind.props.currentNode
@@ -152,7 +151,7 @@ class MainView extends Component {
       fillColor: 'rgba(54,54,54, 1)', // optional: custom background color for item
       content: 'Objectives', // html/text content to be displayed in the menu
       select: function(ele){ 
-
+        console.log("objectives")
         var holder = bind.props.currentNode
        
 
@@ -216,10 +215,10 @@ class MainView extends Component {
   activePadding: 29, // additional size in pixels for the active command
   indicatorSize: 17, // the size in pixels of the pointer to the active command
   separatorWidth: 7, // the empty spacing in pixels between successive commands
-  spotlightPadding: 2, // extra spacing in pixels between the element and the spotlight
+  spotlightPadding: 17, // extra spacing in pixels between the element and the spotlight
   minSpotlightRadius: 44, // the minimum radius in pixels of the spotlight
   maxSpotlightRadius: 16, // the maximum radius in pixels of the spotlight
-  openMenuEvents: 'cxttapstart taphold', // cytoscape events that will open the menu (space separated)
+  openMenuEvents: 'cxttapend taphold', // cytoscape events that will open the menu (space separated)
   itemColor: 'white', // the colour of text in the command's content
   itemTextShadowColor: 'black', // the text shadow colour of the command's content
   zIndex: 19999 // the z-index of the ui div

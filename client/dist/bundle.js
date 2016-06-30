@@ -36897,21 +36897,7 @@
 	      return _react2.default.createElement(
 	        'div',
 	        null,
-	        _react2.default.createElement(_AppBar2.default, {
-	          title: 'Constellations',
-	          style: style.menubar,
-	          iconStyleRight: style.rightIcon,
-	          iconElementLeft: _react2.default.createElement(
-	            _IconButton2.default,
-	            { onTouchTap: this.handleToggle },
-	            _react2.default.createElement(_moreVert2.default, null)
-	          ),
-	          iconElementRight: _react2.default.createElement(_Toggle2.default, {
-	            label: 'Admin',
-	            onToggle: this.handleAdminToggle,
-	            labelStyle: style.toggleStyle
-	          })
-	        }),
+	        '/>',
 	        _react2.default.createElement(
 	          _Drawer2.default,
 	          {
@@ -47959,7 +47945,6 @@
 	          fillColor: 'rgba(200, 200, 200, 1)', // optional: custom background color for item
 	          content: 'Edit Node', // html/text content to be displayed in the menu
 	          select: function select(ele) {
-	            console.log("fuck you");
 
 	            // a function to execute when the command is selected
 	            var holder = bind.props.currentNode;
@@ -47982,7 +47967,7 @@
 	          fillColor: 'rgba(54,54,54, 1)', // optional: custom background color for item
 	          content: 'Objectives', // html/text content to be displayed in the menu
 	          select: function select(ele) {
-
+	            console.log("objectives");
 	            var holder = bind.props.currentNode;
 
 	            bind.props.selectNode({
@@ -48040,10 +48025,10 @@
 	        activePadding: 29, // additional size in pixels for the active command
 	        indicatorSize: 17, // the size in pixels of the pointer to the active command
 	        separatorWidth: 7, // the empty spacing in pixels between successive commands
-	        spotlightPadding: 2, // extra spacing in pixels between the element and the spotlight
+	        spotlightPadding: 17, // extra spacing in pixels between the element and the spotlight
 	        minSpotlightRadius: 44, // the minimum radius in pixels of the spotlight
 	        maxSpotlightRadius: 16, // the maximum radius in pixels of the spotlight
-	        openMenuEvents: 'cxttapstart taphold', // cytoscape events that will open the menu (space separated)
+	        openMenuEvents: 'cxttapend taphold', // cytoscape events that will open the menu (space separated)
 	        itemColor: 'white', // the colour of text in the command's content
 	        itemTextShadowColor: 'black', // the text shadow colour of the command's content
 	        zIndex: 19999 // the z-index of the ui div
@@ -76643,7 +76628,7 @@
 	    right: 0,
 	    left: 0,
 	    backgroundSize: 'cover',
-	    zIndex: 100000,
+	    zIndex: 100,
 	    pointerEvents: 'auto'
 	  }
 	};
@@ -76659,7 +76644,7 @@
 	    right: 0,
 	    left: 0,
 	    backgroundSize: 'cover',
-	    zIndex: 100000,
+	    zIndex: 100,
 	    pointerEvents: 'auto'
 
 	  },
@@ -76668,46 +76653,10 @@
 	    display: 'block ',
 	    position: 'absolute',
 	    background: 'url(./assets/imgs/metalBackground.jpg)',
-	    zIndex: 100001,
+	    zIndex: 100,
 	    transitionDuration: '.75s',
 	    backgroundSize: 'cover'
 
-	  },
-	  launchContainerStylePanel2: {
-	    maxWidth: '50%',
-	    display: 'block ',
-	    position: 'absolute',
-	    background: 'url(http://wallpaper.zone/img/210731.jpg)',
-	    backgroundSize: 'cover',
-	    transitionDuration: '1.5s'
-	  },
-	  launchContainerStylePanel3: {
-	    maxWidth: '100%',
-	    display: 'block ',
-	    position: 'absolute',
-	    background: 'url(http://wallpaper.zone/img/210731.jpg)',
-	    backgroundSize: 'cover',
-	    transitionDelay: '.75s',
-	    transitionDuration: '.25s'
-	  },
-	  launchContainerStylePanel4: {
-	    maxWidth: '100%',
-	    display: 'block ',
-	    position: 'absolute',
-	    background: 'url(http://wallpaper.zone/img/210731.jpg)',
-	    backgroundSize: 'cover',
-	    transitionDelay: '1s',
-	    transitionDuration: '.25s'
-	  },
-	  launchContainerStylePanel5: {
-	    maxWidth: '50%',
-	    display: 'block ',
-	    position: 'absolute',
-	    background: 'url(http://wallpaper.zone/img/210731.jpg)',
-	    backgroundSize: 'cover',
-	    transitionDuration: '1.5s',
-	    transitionDelay: '1.5s',
-	    zIndex: 10001
 	  },
 	  backButton: {
 	    position: 'fixed',
@@ -76718,7 +76667,6 @@
 	    color: 'white'
 	  },
 	  buttonFonts: {
-
 	    fontFamily: "Chalks",
 	    color: 'white'
 	  },
@@ -76777,7 +76725,7 @@
 	    maxWidth: 'none'
 	  },
 	  dialogHugePlayer: {
-	    minHeight: 580
+	    minHeight: 660
 	  },
 	  rocketImg: {
 	    opacity: .2,
@@ -76888,7 +76836,7 @@
 	    marginRight: 30
 	  },
 	  zIndex: {
-	    zIndex: 1000501
+	    zIndex: 100000
 	  }
 	};
 
@@ -76920,11 +76868,17 @@
 	      _this.props.openBlastDoor();
 	    };
 
+	    _this.handleRequestClose = function () {
+	      _this.setState({
+	        open: false
+	      });
+	    };
+
 	    _this.handleToggleNext = function (event) {
 	      console.log(event.currentTarget);
 	      _this.setState({
 	        anchorEl: event.currentTarget,
-	        lol: true
+	        open: true
 	      });
 	    };
 
@@ -76950,6 +76904,14 @@
 	      }
 	    };
 
+	    _this.handleMenuSelect = function (event, menuItem) {
+	      var bind = _this;
+	      var ele = _this.props.cy.filter('node[id = "' + menuItem.key + '"]');
+	      console.log(ele[0]._private.data.id, "lol");
+	      _this.props.selectNode({ currentQuestions: ele[0]._private.data.questions, moduleDescription: ele[0]._private.data.description, currentArticles: ele[0]._private.data.articles, currentVideos: ele[0]._private.data.videos, currentNode: ele[0], previousNode: bind.props.currentNode });
+	      _this.handleRequestClose();
+	    };
+
 	    _this.state = {
 	      open: false,
 	      navigateNext: false,
@@ -76961,6 +76923,7 @@
 	  _createClass(User, [{
 	    key: 'render',
 	    value: function render() {
+	      var _this2 = this;
 
 	      var opts = {
 	        height: 390,
@@ -76973,6 +76936,19 @@
 	        minHeight: 480,
 	        alignItems: 'center',
 	        justifyContent: 'center'
+	      };
+	      var checkInit = function checkInit() {
+	        var bind = _this2;
+	        if (_this2.props.currentNode._private) {
+	          return _this2.props.currentNode._private.edges.map(function (value) {
+	            if (value._private.data.source === bind.props.currentNode._private.data.id) {
+	              return _react2.default.createElement(_MenuItem2.default, { key: value._private.data.target, primaryText: value._private.data.target });
+	            }
+	            if (value._private.data.target === bind.props.currentNode._private.data.id) {
+	              return _react2.default.createElement(_MenuItem2.default, { key: value._private.data.source, primaryText: value._private.data.source });
+	            }
+	          });
+	        }
 	      };
 
 	      console.log("RENDERING USERVIEW");
@@ -77076,7 +77052,7 @@
 	            _Popover2.default,
 	            {
 	              style: styles.zIndex,
-	              open: this.state.lol,
+	              open: this.state.open,
 	              anchorEl: this.state.anchorEl,
 	              anchorOrigin: { "horizontal": "left", "vertical": "top" },
 	              targetOrigin: { "horizontal": "middle", "vertical": "bottom" },
@@ -77084,19 +77060,16 @@
 	            },
 	            _react2.default.createElement(
 	              _Menu2.default,
-	              null,
-	              _react2.default.createElement(_MenuItem2.default, { primaryText: 'Refresh' }),
-	              _react2.default.createElement(_MenuItem2.default, { primaryText: 'Help & feedback' }),
-	              _react2.default.createElement(_MenuItem2.default, { primaryText: 'Settings' }),
-	              _react2.default.createElement(_MenuItem2.default, { primaryText: 'Sign out' })
+	              { onItemTouchTap: this.handleMenuSelect },
+	              checkInit()
 	            )
 	          ),
 	          _react2.default.createElement(
 	            'div',
 	            { style: styles.backButton },
-	            _react2.default.createElement(_FlatButton2.default, { style: styles.buttonFonts, onTouchTap: this.handleCloseModule, label: 'Back to Galactic View' }),
+	            _react2.default.createElement(_FlatButton2.default, { style: styles.buttonFonts, onTouchTap: this.handleCloseModule, label: 'Back to graph view' }),
 	            _react2.default.createElement(_FlatButton2.default, { style: styles.buttonFonts, onTouchTap: this.handleOpenQuestion, label: 'Ask A Question' }),
-	            _react2.default.createElement(_FlatButton2.default, { style: styles.buttonFonts, onTouchTap: this.handleToggleNext, label: 'Next Nodes' })
+	            _react2.default.createElement(_FlatButton2.default, { style: styles.buttonFonts, onTouchTap: this.handleToggleNext, label: 'Next Modules' })
 	          )
 	        )
 	      );

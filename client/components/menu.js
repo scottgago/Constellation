@@ -107,16 +107,19 @@ class Menu extends Component {
     console.log("RENDERING MENU")
 		return (
       <div>
-  			<AppBar
-          title="Constellations"
-          style = {style.menubar}
-          iconStyleRight ={ style.rightIcon}
-          iconElementLeft={<IconButton onTouchTap={this.handleToggle}><MoreVertIcon /></IconButton>}
-          iconElementRight={<Toggle
-            label="Admin"
-            onToggle={this.handleAdminToggle}
-            labelStyle ={style.toggleStyle}
-          />}
+      {
+  			// <AppBar
+      
+     //      title="Constellations"
+     //      style = {style.menubar}
+     //      iconStyleRight ={ style.rightIcon}
+     //      iconElementLeft={<IconButton onTouchTap={this.handleToggle}><MoreVertIcon /></IconButton>}
+     //      iconElementRight={<Toggle
+     //        label="Admin"
+     //        onToggle={this.handleAdminToggle}
+     //        labelStyle ={style.toggleStyle}
+     //      />
+   }
         />
         <Drawer
           docked={false}
