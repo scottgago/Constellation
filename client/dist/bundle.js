@@ -36603,7 +36603,7 @@
 	'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
-	  value: true
+		value: true
 	});
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -36664,94 +36664,94 @@
 	// }
 
 	var App = function (_Component) {
-	  _inherits(App, _Component);
+		_inherits(App, _Component);
 
-	  function App(props, context) {
-	    _classCallCheck(this, App);
+		function App(props, context) {
+			_classCallCheck(this, App);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(App).call(this, props, context));
+			var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(App).call(this, props, context));
 
-	    _this.signOut = _this.signOut.bind(_this);
-	    return _this;
-	  }
+			_this.signOut = _this.signOut.bind(_this);
+			return _this;
+		}
 
-	  _createClass(App, [{
-	    key: 'componentWillReceiveProps',
-	    value: function componentWillReceiveProps(nextProps) {
-	      var router = this.context.router;
-	      var auth = this.props.auth;
+		_createClass(App, [{
+			key: 'componentWillReceiveProps',
+			value: function componentWillReceiveProps(nextProps) {
+				var router = this.context.router;
+				var auth = this.props.auth;
 
 
-	      if (auth.authenticated && !nextProps.auth.authenticated) {
-	        router.replace(_config.POST_SIGN_OUT_PATH);
-	      } else if (!auth.authenticated && nextProps.auth.authenticated) {
-	        router.replace(_config.POST_SIGN_IN_PATH);
-	      }
-	    }
-	  }, {
-	    key: 'signOut',
-	    value: function signOut() {
-	      this.props.signOut();
-	      window.location.replace('/');
-	    }
-	  }, {
-	    key: 'render',
-	    value: function render() {
-	      var _props = this.props;
-	      var auth = _props.auth;
-	      var children = _props.children;
+				if (auth.authenticated && !nextProps.auth.authenticated) {
+					router.replace(_config.POST_SIGN_OUT_PATH);
+				} else if (!auth.authenticated && nextProps.auth.authenticated) {
+					router.replace(_config.POST_SIGN_IN_PATH);
+				}
+			}
+		}, {
+			key: 'signOut',
+			value: function signOut() {
+				this.props.signOut();
+				window.location.replace('/');
+			}
+		}, {
+			key: 'render',
+			value: function render() {
+				var _props = this.props;
+				var auth = _props.auth;
+				var children = _props.children;
 
-	      return _react2.default.createElement(
-	        'div',
-	        null,
-	        _react2.default.createElement(
-	          'ul',
-	          { className: 'header__links' },
-	          auth.authenticated ? _react2.default.createElement(
-	            'li',
-	            null,
-	            _react2.default.createElement(
-	              'a',
-	              { className: 'header__link', onClick: this.signOut, href: '#' },
-	              'Sign out'
-	            )
-	          ) : null
-	        ),
-	        _react2.default.createElement(
-	          'div',
-	          null,
-	          children
-	        )
-	      );
-	    }
-	  }]);
+				return _react2.default.createElement(
+					'div',
+					{ className: 'initialBackground' },
+					_react2.default.createElement(
+						'ul',
+						{ className: 'header__links' },
+						auth.authenticated ? _react2.default.createElement(
+							'li',
+							null,
+							_react2.default.createElement(
+								'a',
+								{ className: 'header__link', onClick: this.signOut, href: '#' },
+								'Sign out'
+							)
+						) : null
+					),
+					_react2.default.createElement(
+						'div',
+						null,
+						children
+					)
+				);
+			}
+		}]);
 
-	  return App;
+		return App;
 	}(_react.Component);
 
 	App.contextTypes = {
-	  router: _react2.default.PropTypes.object.isRequired
+		router: _react2.default.PropTypes.object.isRequired
 	};
 	exports.default = (0, _reactRedux.connect)(function (state) {
-	  return {
-	    auth: state.auth
-	  };
+		return {
+			auth: state.auth
+		};
 	}, function (dispatch) {
-	  return {
-	    signOut: function (_signOut) {
-	      function signOut() {
-	        return _signOut.apply(this, arguments);
-	      }
+		return {
+			signOut: function (_signOut) {
+				function signOut() {
+					return _signOut.apply(this, arguments);
+				}
 
-	      signOut.toString = function () {
-	        return _signOut.toString();
-	      };
+				signOut.toString = function () {
+					return _signOut.toString();
+				};
 
-	      return signOut;
-	    }(function () {
-	      return dispatch(signOut());
-	    })
-	  };
+				return signOut;
+			}(function () {
+				return dispatch(signOut());
+			})
+		};
 	})(App);
 
 /***/ },
@@ -46507,9 +46507,10 @@
 		var height = { height: height }.height;
 		var width = { width: width }.width;
 		var starType = { type: type }.type;
-
+		console.log('a;jwerajwei;rjawe;rjaew;r');
 		var nodesRef = Posts.child(userID + '/elements');
 		var newNode = nodesRef.push();
+		console.log('l;aje;rjaoiw;ejr;iaowjer;iaewjira');
 
 		newNode.setWithPriority({
 			group: 'nodes',
@@ -92213,6 +92214,7 @@
 	    _react2.default.createElement(
 	      'div',
 	      { className: 'g-col' },
+	      _react2.default.createElement('img', { className: 'hat', src: './assets/imgs/astronaut.jpg' }),
 	      _react2.default.createElement(
 	        'h1',
 	        { className: 'sign-in__heading' },
