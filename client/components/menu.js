@@ -16,6 +16,7 @@ import Toggle from 'material-ui/Toggle';
 const style = {
 	menubar : {
 		'backgroundColor': '#05090c',
+    zIndex : 20
 	},
   containerStyle : {
     maxWidth: '100%'
@@ -107,19 +108,16 @@ class Menu extends Component {
     console.log("RENDERING MENU")
 		return (
       <div>
-      {
-  			// <AppBar
-      
-     //      title="Constellations"
-     //      style = {style.menubar}
-     //      iconStyleRight ={ style.rightIcon}
-     //      iconElementLeft={<IconButton onTouchTap={this.handleToggle}><MoreVertIcon /></IconButton>}
-     //      iconElementRight={<Toggle
-     //        label="Admin"
-     //        onToggle={this.handleAdminToggle}
-     //        labelStyle ={style.toggleStyle}
-     //      />
-   }
+  			<AppBar
+          title="Constellations"
+          style = {style.menubar}
+          iconStyleRight ={ style.rightIcon}
+          iconElementLeft={<IconButton onTouchTap={this.handleToggle}><MoreVertIcon /></IconButton>}
+          iconElementRight={<Toggle
+            label="Admin"
+            onToggle={this.handleAdminToggle}
+            labelStyle ={style.toggleStyle}
+          />}
         />
         <Drawer
           docked={false}

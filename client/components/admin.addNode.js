@@ -205,7 +205,7 @@ class AddNode extends Component {
   contentChange = (e,value) => {
     this.state.markdownDescription = e
   }
-  
+
   checkStyle = () =>{
     if(!this.props.create){
       return style.containerStyle
@@ -216,6 +216,18 @@ class AddNode extends Component {
 
   onConfirm = (e, value) => {
     console.log(this.props.selectedEdges)
+
+    if(value === ""){
+      this.setState({
+        error: true
+      },
+      setTimeout(()=>{
+        this.setState({
+          error: false
+        })
+      }, 1000)
+      )
+    }
 
     this.props.createNode({cy: this.props.cy, 
                            currentNode: this.props.currentNode, 
