@@ -80,7 +80,7 @@ class AddConnections extends Component {
 			if(this.props.create){
 				var allNodes = []
 				var newnodes = this.props.cy.nodes()
-	      
+
 	      for(var i = 0; i < newnodes.length; i++){
 	      	if(newnodes[i]._private.data.id !== this.props.currentNode._private.data.id){
 	        	allNodes.push(newnodes[i]._private.data.id)
@@ -104,7 +104,7 @@ class AddConnections extends Component {
 
 		const checkEdit_root = () => {
 			if(this.props.edit){
-				
+
 				var currentEdges = []
 				this.state.availableConnections = []
 				this.state.edit_currentEdges = []
@@ -117,7 +117,7 @@ class AddConnections extends Component {
 						currentEdges.push(this.props.currentNode._private.edges[i]._private.data.source)
 						this.state.availableConnections.push(this.props.currentNode._private.edges[i]._private.data.source)
 					}
-				
+
 
 				this.state.edit_currentEdges = currentEdges
 
@@ -136,7 +136,7 @@ class AddConnections extends Component {
 	// Maps out the current node connections in the edit version of this module
 
 		const checkEdit_all = () => {
-			
+
 			if(this.props.edit){
 
 			var allNodes = []
@@ -170,7 +170,7 @@ class AddConnections extends Component {
   // Maps out all the remaining connections available
 
 		return (
-			
+
 			<div style={style.nodeList}>
 				<span>Node Connections</span>
 				<Table style={style.buttonFonts} multiSelectable={true} onRowSelection={this.selectorFunction}>
@@ -181,7 +181,7 @@ class AddConnections extends Component {
 							<TableHeaderColumn>Connection Status</TableHeaderColumn>
 						</TableRow>
 					</TableHeader>
-						
+
 					<TableBody deselectOnClickaway={false}>
 					{checkAdd_root()}
 					{checkAdd_all()}
@@ -196,7 +196,7 @@ class AddConnections extends Component {
 
 function mapStateToProps(state){
   console.debug("MAPPING PROPS TO STATE IN ADDCONNECTIONS")
-  return { create: state.adminAdd.create, edit: state.adminEdit.edit, cy: state.selectNode.cy, currentNode : state.selectNode.currentNode }
+  return {  create: state.adminAdd.create, edit: state.adminEdit.edit, cy: state.selectNode.cy, currentNode : state.selectNode.currentNode }
 }
 
 export default connect(mapStateToProps,actions)(AddConnections)

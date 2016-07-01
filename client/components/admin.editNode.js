@@ -26,7 +26,7 @@ const newStyles = {
     top: 0,
     bottom: 0,
     right: 0,
-    left:0, 
+    left:0,
     backgroundSize: 'cover',
     zIndex: 100000,
     pointerEvents: 'auto',
@@ -122,7 +122,7 @@ const style = {
     top: 0,
     bottom: 0,
     right: 0,
-    left:0, 
+    left:0,
     backgroundSize: 'cover',
     zIndex: 100000,
     pointerEvents: 'auto'
@@ -253,7 +253,7 @@ class EditNode extends Component {
 
     for(var i = 0; i < this.props.selectedEdges.length; i++){
       var flag = true
-      
+
       for(var j = 0; j < this.props.currentNode._private.edges.length; j++){
         if(this.props.currentNode._private.edges[j]._private.data.source === this.props.selectedEdges[i] ||
            this.props.currentNode._private.edges[j]._private.data.target === this.props.selectedEdges[i]){
@@ -279,7 +279,7 @@ class EditNode extends Component {
       }
       if(!flag){
         cleanUp.push(this.props.currentNode._private.edges[i])
-      } 
+      }
     }
 
     for(var i = 0; i < cleanUp.length; i++){
@@ -289,11 +289,11 @@ class EditNode extends Component {
     // Clean up the nodes that are being removed
 
 
-    
+
     for(var i = 0; i < addNodes.length; i++){
 
       var newEdge = {
-        
+
         group: 'edges',
         data: {
           id : this.props.currentNode._private.data.id + addNodes[i],
@@ -303,7 +303,7 @@ class EditNode extends Component {
         }
 
       this.props.cy.add(newEdge)
-      this.props.editEdges({selectedEdge: newEdge})
+      this.props.editEdges({selectedEdge: newEdge}, this.props.userID)
       document.getElementById("cy").style.display = 'block'
       this.props.cy.zoomingEnabled(true)
       this.props.cy.panningEnabled(true)
@@ -348,7 +348,7 @@ class EditNode extends Component {
       <div style={this.checkStyle()}>
           <AdminAddVideo />
           <AdminAddArticle />
-        
+
           <div style = {style.dialogBody}>
             <Tabs inkBarStyle={style.inkBarStyle} style={style.contentDiv} tabItemContainerStyle={style.tabsColor}>
               <Tab label="Style">
@@ -362,7 +362,12 @@ class EditNode extends Component {
               </Tab>
               <Tab label="Content" >
                 <div>
+<<<<<<< HEAD
                   <p style={style.pTextStyles} >Videos</p>
+=======
+                  <p>Videos</p>
+                  <Paper zDepth={5}>
+>>>>>>> 76f9e92283aac8ba92863d53da70b6c69214844e
                     <RaisedButton onTouchTap = {this.handleAddVideo} style={style.contentDiv}>Add a video</RaisedButton>
                     <Table>
                       <TableHeader>
@@ -414,6 +419,7 @@ class EditNode extends Component {
               </Tab>
               <Tab label="Connections/Admins">
                 <div>
+<<<<<<< HEAD
                     <div style={style.textboxMargins} >
                       <TextField disabled ={true}
                                  value = {this.checkInit()} 
@@ -421,11 +427,21 @@ class EditNode extends Component {
                                  inputStyle = {style.textStyles} 
                                  onChange = {this.handleChangeText} underlineShow={false} />
                     </div>
+=======
+                  <p>Node name</p>
+                  <Paper zDepth={2}>
+                    <TextField disabled ={true}
+                               hintText="Nodename"
+                               style={style.textStyle}
+                               onChange = {this.handleChangeText} underlineShow={false} />
+                    <Divider />
+                  </Paper>
+>>>>>>> 76f9e92283aac8ba92863d53da70b6c69214844e
                     <AddAdmin />
                     <AddConnections />
-                  
-                  
-                
+
+
+
                 </div>
               </Tab>
               <Tab label="Markdown">
@@ -436,11 +452,11 @@ class EditNode extends Component {
               </Tab>
             </Tabs>
           </div>
-          <div style={style.backButton} > 
-                     
+          <div style={style.backButton} >
+
               <FlatButton style={style.buttonFonts} onTouchTap={this.handleCancel} label="Exit without saving"/>
               <FlatButton style={style.buttonFonts} onTouchTap={this.onSubmit} label="Save and exit"/>
-            
+
           </div>
       </div>
     )
@@ -449,7 +465,7 @@ class EditNode extends Component {
 
 function mapStateToProps(state){
   console.debug("MAPPING STATE TO PROPS IN EDITNODE")
-  return { markdownDescription: state.adminEdit.markdownDescription, selectedEdges: state.adminAdd.selectedEdges, edit: state.adminEdit.edit, currentVideos: state.selectNode.currentVideos, currentArticles: state.selectNode.currentArticles, currentNode : state.selectNode.currentNode, cy: state.selectNode.cy }
+  return { userID: state.auth.id, markdownDescription: state.adminEdit.markdownDescription, selectedEdges: state.adminAdd.selectedEdges, edit: state.adminEdit.edit, currentVideos: state.selectNode.currentVideos, currentArticles: state.selectNode.currentArticles, currentNode : state.selectNode.currentNode, cy: state.selectNode.cy }
 }
 
 export default connect(mapStateToProps, actions)(EditNode)
