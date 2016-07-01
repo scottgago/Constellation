@@ -362,12 +362,8 @@ class EditNode extends Component {
               </Tab>
               <Tab label="Content" >
                 <div>
-<<<<<<< HEAD
                   <p style={style.pTextStyles} >Videos</p>
-=======
-                  <p>Videos</p>
-                  <Paper zDepth={5}>
->>>>>>> 76f9e92283aac8ba92863d53da70b6c69214844e
+
                     <RaisedButton onTouchTap = {this.handleAddVideo} style={style.contentDiv}>Add a video</RaisedButton>
                     <Table>
                       <TableHeader>
@@ -419,7 +415,6 @@ class EditNode extends Component {
               </Tab>
               <Tab label="Connections/Admins">
                 <div>
-<<<<<<< HEAD
                     <div style={style.textboxMargins} >
                       <TextField disabled ={true}
                                  value = {this.checkInit()} 
@@ -427,16 +422,7 @@ class EditNode extends Component {
                                  inputStyle = {style.textStyles} 
                                  onChange = {this.handleChangeText} underlineShow={false} />
                     </div>
-=======
-                  <p>Node name</p>
-                  <Paper zDepth={2}>
-                    <TextField disabled ={true}
-                               hintText="Nodename"
-                               style={style.textStyle}
-                               onChange = {this.handleChangeText} underlineShow={false} />
-                    <Divider />
-                  </Paper>
->>>>>>> 76f9e92283aac8ba92863d53da70b6c69214844e
+
                     <AddAdmin />
                     <AddConnections />
 
