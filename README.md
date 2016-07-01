@@ -1,7 +1,7 @@
 # Constellation
 Graph based learning tool.
 
-![Screenshot](http://i.imgur.com/gjoPq6D.gifv)
+![Screenshot](http://i.imgur.com/gjoPq6D.gif)
 
 ## Installation
 To install: 
