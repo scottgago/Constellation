@@ -8,18 +8,25 @@ import * as actions from '../actions/reducerActions';
 import { connect } from 'react-redux';
 import { POST_SIGN_IN_PATH, POST_SIGN_OUT_PATH } from '../auth/config';
 
-// const styles = {
-// 	launchContainerStylePanel2 : {
-// 	    maxWidth: '100%',
-// 	    display: 'block ',
-// 	    position: 'absolute',
-// 	    background: 'url(./assets/imgs/metalBackground.jpg)',
-// 	    backgroundSize: 'cover',
-// 	    transitionDuration: '.5s',
-// 	    transitionDelay: '.4s',
-// 	    zIndex: 1000000
-//   },
-// }
+const styles = {
+	launchContainerStylePanel2 : {
+	    maxWidth: '100%',
+	    display: 'block ',
+	    position: 'absolute',
+	    background: 'url(./assets/imgs/metalBackground.jpg)',
+	    backgroundSize: 'cover',
+	    transitionDuration: '.5s',
+	    transitionDelay: '.4s',
+	    zIndex: 1000000
+  },
+   centerDiv: {
+    margin: 0,
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)'
+  },
+}
 
 
 class App extends Component {

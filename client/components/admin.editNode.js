@@ -39,6 +39,27 @@ const style = {
     width: '100%',
     height: '100%'
   },
+  imageContent : {
+    display: 'block',
+    margin: 'auto',
+    width: '40%',
+    height: "40%" 
+  },
+  centerDiv: {
+    margin: 0,
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)'
+  },
+  blackBox:{
+    maxWidth: '85%',
+    width: '75%',
+    height: '100%',
+    height: 700,
+    overflow: 'none',
+    margin: "0 auto",
+  },
   tabsColor: {
     backgroundColor: "#25383C"
   },
@@ -68,12 +89,10 @@ const style = {
     backgroundColor: "#d297d8"
   },
   editBackground: {
-
     background: 'url(./assets/imgs/lol.jpg)',
     backgroundSize: 'cover'
   },
   editBackgroundBody: {
-
     background: 'url(./assets/imgs/editbackground.png)',
     backgroundSize: 'cover'
   },
@@ -82,11 +101,11 @@ const style = {
     height: 40
   },
   sliderStyle:{
-    maxWidth: '90%',
-    margin: "0 auto"
-  },
-  textStyle: {
-    marginLeft: 20
+    maxWidth: '75%',
+    width: '90%',
+    bottom: 0,
+    position: 'absolute'
+
   },
   alignCenter : {
     alignItems: 'center',
@@ -109,6 +128,20 @@ const style = {
     pointerEvents: 'auto'
 
   },
+  textboxMargins : {
+    margin: "auto 4"
+  },
+  textStyles : {
+    fontFamily: "Chalks",
+    color: 'white',
+    marginLeft: 20
+  },
+  pTextStyles : {
+    fontFamily: "Chalks",
+    color: 'white',
+    marginLeft: 20,
+    marginTop: 10
+  },
   inkBarStyle: {
     backgroundColor: "#F88017"
   },
@@ -121,13 +154,36 @@ const style = {
     color: 'white'
   },
   buttonFonts: {
-
     fontFamily: "Chalks",
     color: 'white'
+  },
+  markDownDiv:{
+    marginTop: 30,
+    marginLeft: 20,
+    marginRight: 20
   }
+
 }
 
 class EditNode extends Component {
+
+  constructor(props){
+    super(props)
+
+    this.state = {
+      edit: false,
+      cy: null,
+      markdownDescription: "",
+      currentVideos: [],
+      starWidth: 100,
+      starHeight: 100,
+      currentArticles: [],
+      currentNode: null,
+      addVideo: false,
+      addArticle: false,
+      starType: "./assets/imgs/chalk.png"
+    }
+  }
 
   onChangeSlider = (e, value) => {
     this.props.currentNode.style({
@@ -158,12 +214,37 @@ class EditNode extends Component {
       cy: null,
       markdownDescription: "",
       currentVideos: [],
+      starWidth: 100,
+      starHeight: 100,
       currentArticles: [],
       currentNode: null,
       addVideo: false,
       addArticle: false,
+      starType: "./assets/imgs/chalk.png"
     });
   };
+
+  onChangeSlider = (e, value) => {
+
+    this.setState({
+      starWidth : (style.imageContent.width = 100 + value*500),
+      starHeight: (style.imageContent.height = 100 + value*500)
+    })
+    
+    style.imageContent.width = 100 + value*500
+    style.imageContent.height = 100 + value*500
+    style.imageContent.left = 500 - (value*500)/2
+    style.imageContent.top = 160 - (value*500)/2
+    
+  }
+
+  checkInit = () => {
+    console.log(this.props.currentNode, "sup?")
+    if(this.props.currentNode._private){
+      return this.props.currentNode._private.data.id
+    }
+    return ""
+  }
 
   onSubmit = () =>{
 
@@ -271,18 +352,18 @@ class EditNode extends Component {
           <div style = {style.dialogBody}>
             <Tabs inkBarStyle={style.inkBarStyle} style={style.contentDiv} tabItemContainerStyle={style.tabsColor}>
               <Tab label="Style">
-              <Paper zDepth={2}>
-                <div style = {style.alignCenter}>
-                  <h2 style={style.headline}>Styling</h2>
-                  <p>Node size</p>
+                <div style={style.blackBox}> 
+                  <div style={style.centerDiv}>
+
+                    <img style={style.imageContent} src={this.state.starType}/>
+                  </div>
                   <Slider name="slider0" defaultValue={0} style={style.sliderStyle} onChange={this.onChangeSlider} />
                 </div>
-              </Paper>
               </Tab>
               <Tab label="Content" >
                 <div>
-                  <p>Videos</p>
-                  <Paper zDepth={5}>
+                  <p style={style.pTextStyles} >Videos</p>
+
                     <RaisedButton onTouchTap = {this.handleAddVideo} style={style.contentDiv}>Add a video</RaisedButton>
                     <Table>
                       <TableHeader>
@@ -306,9 +387,7 @@ class EditNode extends Component {
                         })}
                       </TableBody>
                     </Table>
-                  </Paper>
-                  <Paper zDepth={2}>
-                  <p>Documentation</p>
+                  <p style={style.pTextStyles} >Documentation</p>
                     <RaisedButton onTouchTap = {this.handleAddArticle} style={style.contentDiv} >Add an article</RaisedButton>
                     <Table>
                       <TableHeader>
@@ -332,19 +411,18 @@ class EditNode extends Component {
                         })}
                       </TableBody>
                     </Table>
-                  </Paper>
                 </div>
               </Tab>
               <Tab label="Connections/Admins">
                 <div>
-                  <p>Node name</p>
-                  <Paper zDepth={2}>
-                    <TextField disabled ={true}
-                               hintText="Nodename"
-                               style={style.textStyle}
-                               onChange = {this.handleChangeText} underlineShow={false} />
-                    <Divider />
-                  </Paper>
+                    <div style={style.textboxMargins} >
+                      <TextField disabled ={true}
+                                 value = {this.checkInit()} 
+                                 hintText = "Nodename" 
+                                 inputStyle = {style.textStyles} 
+                                 onChange = {this.handleChangeText} underlineShow={false} />
+                    </div>
+
                     <AddAdmin />
                     <AddConnections />
 
@@ -353,7 +431,7 @@ class EditNode extends Component {
                 </div>
               </Tab>
               <Tab label="Markdown">
-                <div>
+                <div style = {style.markDownDiv} >
                   <MarkdownEditor initialContent={this.props.markdownDescription} onContentChange ={this.contentChange} iconsSet="materialize-ui"/>
                   <RaisedButton style = {style.submitButton} > Submit markdown changes </RaisedButton>
                 </div>

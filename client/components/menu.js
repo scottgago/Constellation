@@ -17,6 +17,7 @@ import Toggle from 'material-ui/Toggle';
 const style = {
 	menubar : {
 		'backgroundColor': '#05090c',
+    zIndex : 20
 	},
   containerStyle : {
     maxWidth: '100%'

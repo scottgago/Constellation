@@ -2,8 +2,8 @@ import { CLOSE_BLASTDOORS, USER_SUBMITANSWER, OPEN_BLASTDOORS, USER_SUBMITQUESTI
 		 ADMIN_ADDVIDEO, ADMIN_OPEN_EDIT, ADMIN_CLOSE_EDIT, ADMIN_ADDARTICLE, ADMIN_ADDDESCRIPTION, SELECT_NODE, REGISTER_CY, CLOSE_USER_VIEW } from './actionList'
 import Firebase from 'firebase';
 
-const Posts = new Firebase('https://rong-b0e6a.firebaseio.com');
-// const nodesRef = Posts.child('elements')
+const Posts = new Firebase('https://constellations-3ccaa.firebaseio.com');
+const nodesRef = Posts.child('elements')
 // nodesRef.orderByValue().once("value", function(value){
 // 	console.log(value.val(), "hey")
 // })
@@ -139,16 +139,18 @@ export function createNode({cy, currentNode, id, description, styles, admins, wi
         	}
       	}, nodeName)
 
-      	// if(!{connections}.connections.length){
-      	// 	nodesRef.push({
-      	// 		group: 'edges',
-      	// 		data: {
-      	// 			id: nodeName + {currentNode}.currentNode._private.data.id,
-      	// 			source: nodeName,
-      	// 			target: {currentNode}.currentNode._private.data.id
-      	// 		}
-      	// 	})
-      	// }
+      	console.log({connections}.connections)
+
+      	if(!{connections}.connections.length){
+      		nodesRef.push({
+      			group: 'edges',
+      			data: {
+      				id: nodeName + {currentNode}.currentNode._private.data.id,
+      				source: nodeName,
+      				target: {currentNode}.currentNode._private.data.id
+      			}
+      		})
+      	}
 
 
       	for(var i = 0; i < {connections}.connections.length; i++){

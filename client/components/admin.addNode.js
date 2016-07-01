@@ -48,47 +48,52 @@ const style = {
 
   sliderStyle:{
     maxWidth: '75%',
-    position: 'absolute',
     width: '90%',
-    top: 400
+    bottom: 0,
+    position: 'absolute'
+
   },
-	imageContent : {
-		height: 100,
-    width: 100,
-    left: 500,
-    margin: "auto",
-		position: 'absolute',
-    top: 160
-	},
-	dialogBody: {
-  	minWidth: 1000,
-  	maxWidth: 'none',
-  	minHeight: 600
-	},
-	headline: {
+  dialogBody: {
+    minWidth: 1000,
+    maxWidth: 'none',
+    minHeight: 600
+  },
+  headline: {
     fontSize: 24,
     paddingTop: 16,
     marginBottom: 12,
     fontWeight: 400,
     opacity: 1,
-	},
-	textStyle: {
-  	marginLeft: 20
-	},
-	floatLeft:{
-		float: 'left',
-		maxWidth: '15%',
-		width: '15%',
-		height: 400
-	},
+  },
+  textStyle: {
+    marginLeft: 20
+  },
+  floatLeft:{
+    float: 'left',
+    maxWidth: '15%',
+    width: '15%',
+    height: 400
+  },
+	imageContent : {
+		display: 'block',
+    margin: 'auto',
+    width: '40%',
+    height: "40%"	
+  },
+  centerDiv: {
+    margin: 0,
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)'
+  },
 	blackBox:{
 		maxWidth: '85%',
 		width: '75%',
 		height: '100%',
-		height: 400,
-		float: 'left',
-		backgroundImage: 'url(./assets/imgs/pEeUsp1.jpg)',
-    overflow: 'none'
+		height: 700,
+    overflow: 'none',
+    margin: "0 auto"
 	},
 	marginTop :{
   	marginTop: 25,
@@ -146,6 +151,13 @@ class AddNode extends Component {
 	constructor(props){
 		super(props)
 
+    var bind = this
+    var selectedEdges = []
+
+    if(this.props.currentNode.data){
+      selectedEdges = [this.props.currentNode.data.id]
+    }
+
 		this.state = {
 			create: false,
 			cy: null,
@@ -156,10 +168,10 @@ class AddNode extends Component {
       error: false,
 			passToEditNode: null,
       selectedConnections: [],
-      selectedEdges: this.selectedEdges,
+      selectedEdges: selectedEdges,
 			newNodeName : "",
 			markdownDescription: "",
-			starType: "./assets/imgs/star (1).png"
+			starType: "./assets/imgs/chalk.png"
 		}
 	}
 
@@ -180,8 +192,8 @@ class AddNode extends Component {
   // Sets the star type/width/height for the new node
 
 	handleRequestClosePrompt = () => {
-    this.props.closeCreate()
     document.getElementById("cy").style.display = 'block'
+    this.props.closeCreate()
     this.props.cy.zoomingEnabled(true)
     this.props.cy.panningEnabled(true)
   };
@@ -194,24 +206,6 @@ class AddNode extends Component {
     this.state.markdownDescription = e
   }
 
-  starChange = (e,value) => {
-  	if(value === "star1"){
-  		this.setState({
-  			starType: './assets/imgs/star (1).png'
-  		})
-  	}
-  	if(value === "star2"){
-  		this.setState({
-  			starType: './assets/imgs/star.png'
-  		})
-  	}
-  	if(value === "star3"){
-  		this.setState({
-  			starType: './assets/imgs/8902697.png'
-  		})
-  	}
-  }
-
   checkStyle = () =>{
     if(!this.props.create){
       return style.containerStyle
@@ -221,6 +215,19 @@ class AddNode extends Component {
   }
 
   onConfirm = (e, value) => {
+    console.log(this.props.selectedEdges)
+
+    if(value === ""){
+      this.setState({
+        error: true
+      },
+      setTimeout(()=>{
+        this.setState({
+          error: false
+        })
+      }, 1000)
+      )
+    }
 
     this.props.createNode({cy: this.props.cy,
                            currentNode: this.props.currentNode,
@@ -289,34 +296,11 @@ class AddNode extends Component {
 		            </div>
 		          </Tab>
 		          <Tab label="Styling">
-		            <div style={style.marginTop}>
+                <div style={style.blackBox}> 
+                  <div style={style.centerDiv}>
 
-                  <RadioButtonGroup onChange={this.starChange} style = {style.floatLeft} name="shipSpeed" defaultSelected="star1">
-
-                    <RadioButton
-                      value="star1"
-                      label="star1"
-                      style={style.radioButtonTop}
-                    />
-
-                    <RadioButton
-                      value="star2"
-                      label="star2"
-                      style={style.radioButton}
-                    />
-                    <RadioButton
-                      value="star3"
-                      label="star3"
-                      style={style.radioButton}
-                    />
-                    <RadioButton
-                      value="star4"
-                      label="star4"
-                      style={style.radioButton}
-                    />
-                  </RadioButtonGroup>
-                </div>
-                <div style={style.blackBox}> <img style={style.imageContent} src={this.state.starType}/>
+                    <img style={style.imageContent} src={this.state.starType}/>
+                  </div>
                   <Slider name="slider0" defaultValue={0} style={style.sliderStyle} onChange={this.onChangeSlider} />
                 </div>
 		          </Tab>

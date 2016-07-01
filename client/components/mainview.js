@@ -4,11 +4,43 @@ import User from './user.view'
 import Loading from './loading'
 import { connect } from 'react-redux';
 import * as actions from '../actions/reducerActions';
+import {
+  Step,
+  Stepper,
+  StepLabel,
+} from 'material-ui/Stepper';
+import RaisedButton from 'material-ui/RaisedButton';
+import FlatButton from 'material-ui/FlatButton';
+
+import Drawer from 'material-ui/Drawer';
 
 var jquery = require('jquery');
 var cxtmenu = require('cytoscape-cxtmenu');
 var panzoom = require('cytoscape-panzoom');
 var edgehandles = require('cytoscape-edgehandles');
+
+const styles  = {
+  tutorial : {
+    backgroundColor: "rgba(0, 0, 0, 0.6)",
+    maxWidth : '100%'
+  },
+  centerDiv: {
+    margin: 0,
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)'
+  },
+  textStyles : {
+    fontFamily: "Chalks",
+    color: 'white'
+  },
+  pTextStyles : {
+    fontFamily: "Chalks",
+    color: 'white',
+    topMargin: 9
+  }
+}
 
 
 class MainView extends Component {
@@ -19,7 +51,9 @@ class MainView extends Component {
 			cy : null,
 			view : false,
 			currentNode: null,
-      previousNode: null
+      previousNode: {},
+      stepIndex: 0,
+      finished: false
 		}
   }
 
@@ -128,7 +162,6 @@ class MainView extends Component {
       fillColor: 'rgba(200, 200, 200, 1)', // optional: custom background color for item
       content: 'Edit Node', // html/text content to be displayed in the menu
       select: function(ele){ 
-        console.log("fuck you")
 
         // a function to execute when the command is selected
         var holder = bind.props.currentNode
@@ -152,7 +185,7 @@ class MainView extends Component {
       fillColor: 'rgba(54,54,54, 1)', // optional: custom background color for item
       content: 'Objectives', // html/text content to be displayed in the menu
       select: function(ele){ 
-
+        console.log("objectives")
         var holder = bind.props.currentNode
        
 
@@ -216,10 +249,10 @@ class MainView extends Component {
   activePadding: 29, // additional size in pixels for the active command
   indicatorSize: 17, // the size in pixels of the pointer to the active command
   separatorWidth: 7, // the empty spacing in pixels between successive commands
-  spotlightPadding: 2, // extra spacing in pixels between the element and the spotlight
+  spotlightPadding: 17, // extra spacing in pixels between the element and the spotlight
   minSpotlightRadius: 44, // the minimum radius in pixels of the spotlight
   maxSpotlightRadius: 16, // the maximum radius in pixels of the spotlight
-  openMenuEvents: 'cxttapstart taphold', // cytoscape events that will open the menu (space separated)
+  openMenuEvents: 'cxttapend taphold', // cytoscape events that will open the menu (space separated)
   itemColor: 'white', // the colour of text in the command's content
   itemTextShadowColor: 'black', // the text shadow colour of the command's content
   zIndex: 19999 // the z-index of the ui div
@@ -341,68 +374,54 @@ class MainView extends Component {
 
       //   // Builds the onTap event. When the node is clicked, apply styling changes to the node edges
       //   // and the node itself. Then, change state so that the current node is the clicked node.
+          var evtTarget = event.cyTarget;
+          var holder = bind.props.currentNode
+          bind.props.selectNode({ currentQuestions: evtTarget._private.data.questions, moduleDescription: evtTarget._private.data.description, currentArticles: evtTarget._private.data.articles, currentVideos: evtTarget._private.data.videos, currentNode: evtTarget, previousNode: holder})
 
-      //     var evtTarget = event.cyTarget;
-      //     var holder = bind.props.currentNode
+
+          if(bind.props.previousNode._private){
+            bind.props.previousNode._private.edges.forEach((value)=>{
+              value.style({
+              'line-color' : '#ccc',
+              'overlay-color' : '#ccc',
+              'overlay-opacity' : 0,
+              'width' : 1,
+              'overlay-padding': 1
+              })
+            })
+          }
+
+          evtTarget._private.edges.forEach((value)=>{
+            value.style({
+              'line-color' : [102,255,0],
+              'overlay-color' : [102,255,0],
+              'overlay-opacity' : .5,
+              'width' : 4,
+              'overlay-padding': 2
+            })
+          })
+
     
-      //     
-
-      //     evtTarget.style({
-      //       'font-size': 80
-      //     })
-
-      //     if(bind.props.previousNode._private){
-      //       bind.props.previousNode._private.edges.forEach((value)=>{
-      //         value.style({
-      //         'line-color' : '#ccc',
-      //         'overlay-color' : '#ccc',
-      //         'overlay-opacity' : 0,
-      //         'width' : 1,
-      //         'overlay-padding': 1
-      //         })
-      //       })
-      //     }
-
-      //     evtTarget._private.edges.forEach((value)=>{
-      //       value.style({
-      //         'line-color' : [102,255,0],
-      //         'overlay-color' : [102,255,0],
-      //         'overlay-opacity' : .5,
-      //         'width' : 4,
-      //         'overlay-padding': 2
-      //       })
-      //     })
-
-      //     bind.props.selectNode({ currentQuestions: evtTarget._private.data.questions, moduleDescription: evtTarget._private.data.description, currentArticles: evtTarget._private.data.articles, currentVideos: evtTarget._private.data.videos, currentNode: evtTarget, previousNode: holder, openUserView: true })
-    
-      //     if(bind.props.adminMode){
-      //       bind.props.openAdmin()
-      //     }
+       
      
-      //     bind.setState({
-      //       currentNode  : evtTarget,
-      //       previousNode : holder,
-      //       view         : true,
-      //       cy           : cy
-      //     },
-      //     ()=>{
-      //       if(bind.props.previousNode._private){
-      //         bind.props.previousNode._private.edges.forEach((value)=>{
-      //           bind.props.previousNode.style({
-      //             'font-size' : 30,
-      //             'color': "#66ff00"
-      //           })
-      //           if((value._private.data.source !== bind.props.currentNode._private.data.id) && (value._private.data.target !== bind.props.currentNode._private.data.id ))
-      //           value.style({
-      //             'line-color' : '#ccc',
-      //             'overlay-color' : '#ccc',
-      //             'overlay-opacity' : 0,
-      //             'width' : 1
-      //           })
-      //         })
-      //       }
-      //     }
-      //   )
+          bind.setState({
+            currentNode  : evtTarget,
+            previousNode : holder
+          },
+          ()=>{
+            if(bind.props.previousNode._private){
+              bind.props.previousNode._private.edges.forEach((value)=>{
+                if((value._private.data.source !== bind.props.currentNode._private.data.id) && (value._private.data.target !== bind.props.currentNode._private.data.id ))
+                value.style({
+                  'line-color' : '#ccc',
+                  'overlay-color' : '#ccc',
+                  'overlay-opacity' : 0,
+                  'width' : 1
+                })
+              })
+            }
+          }
+        )
       });
       var nodes = cy.nodes()
       var cxtmenuApi = cy.cxtmenu( defaults )
@@ -426,10 +445,154 @@ class MainView extends Component {
   	this.props.fetchNodes(initCy)
   }
 
+  getStepContent(stepIndex) {
+    switch (stepIndex) {
+      case 0:
+        return (<div style={styles.centerDiv}>
+                  <p style={styles.pTextStyles}> Welcome to Constellations! <br/>
+                    This tutorial will help you get started learning JavaScript as quickly as possibe. <br/>
+                    We've set up our graph-based layout to help you navigate through resource nodes as quickly as possible <br/>
+                    and foster dynamic learning! <br/>
+                    Click next to learn about selecting nodes!
+                  </p>
+                  <div style = {{ right: 0, bottom: 0, topMargin: 5  }}>
+                    <RaisedButton
+                      label={this.state.stepIndex === 2 ? 'Finish' : 'Next'}
+                      primary={true}
+                      onTouchTap={this.handleNext}
+                      style={{float: 'right'}}
+                      labelStyle={styles.textStyles}
+                    />
+                    <FlatButton
+                      label="Back"
+                      disabled={this.state.stepIndex === 0}
+                      onTouchTap={this.handlePrev}
+                      style={{marginRight: 12, float: 'right'}}
+                      labelStyle={styles.textStyles}
+                    />
+                  </div>
+                </div>);
+      case 1:
+        return (<div style={styles.centerDiv}>
+                  <img src="./assets/imgs/gifstep5.gif"/>
+                <div>
+                <p style={styles.pTextStyles}> Click on the node to zoom in and activate the node's connections </p>
+                    <div style = {{ right: 0, bottom: 0, topMargin: 5  }}>
+                    <RaisedButton
+                      label={this.state.stepIndex === 2 ? 'Finish' : 'Next'}
+                      primary={true}
+                      onTouchTap={this.handleNext}
+                      style={{float: 'right'}}
+                      labelStyle={styles.textStyles}
+                    />
+                    <FlatButton
+                      label="Back"
+                      disabled={this.state.stepIndex === 0}
+                      onTouchTap={this.handlePrev}
+                      style={{marginRight: 12, float: 'right'}}
+                      labelStyle={styles.textStyles}
+                    />
+                  </div>
+                  </div>
+                </div>)
+      case 2:
+        return (<div style={styles.centerDiv}>
+                  <img src="./assets/imgs/gifstep6.gif"/>
+                  <p style={styles.pTextStyles}> Once the node is activated, click and hold the node to bring up the node's actions. If you want to read the node's learning objectives, click on the syllabus action. If you want to dive right in, go ahead and select the Launch Node action</p>
+                <div style = {{ right: 0, bottom: 0, topMargin: 5  }}>
+                    <RaisedButton
+                      label={this.state.stepIndex === 2 ? 'Finish' : 'Next'}
+                      primary={true}
+                      onTouchTap={this.handleNext}
+                      style={{float: 'right'}}
+                      labelStyle={styles.textStyles}
+                    />
+                    <FlatButton
+                      label="Back"
+                      disabled={this.state.stepIndex === 0}
+                      onTouchTap={this.handlePrev}
+                      style={{marginRight: 12, float: 'right'}}
+                      labelStyle={styles.textStyles}
+                    />
+                  </div>
+                </div>)
+      default:
+        return 'You\'re a long way from home sonny jim!';
+    }
+  }
+
+  handleNext = () => {
+    const {stepIndex} = this.state;
+    this.setState({
+      stepIndex: stepIndex + 1,
+      finished: stepIndex >= 2,
+    });
+  };
+
+  handlePrev = () => {
+    const {stepIndex} = this.state;
+    if (stepIndex > 0) {
+      this.setState({stepIndex: stepIndex - 1});
+    }
+  };
+
   render () {
     console.log("RENDERING MAINVIEW")
-    return <div id="cy">
-    </div>
+    const contentStyle = {margin: '0 16px'};
+
+    return (
+      <div>
+        <Drawer
+          docked={false}
+          zDepth={5}
+          containerStyle={styles.tutorial}
+          openSecondary={true}
+          width={1800}
+          open={!this.state.finished}>
+          {
+          // <div style={styles.centerDiv}>
+          // <img width="100%" align ="middle" src="./assets/imgs/gifstep1.gif"/>
+          // </div>
+          }
+          <div style={{width: '100%', maxWidth: 700, width: 700, margin: 'auto'}}>
+        <Stepper activeStep={this.state.stepIndex}>
+          <Step>
+            <StepLabel style={styles.textStyles}>Welcome!</StepLabel>
+          </Step>
+          <Step>
+            <StepLabel style={styles.textStyles}>How to select a node</StepLabel>
+
+          </Step>
+          <Step>
+            <StepLabel style={styles.textStyles}>How to launch a node</StepLabel>
+          </Step>
+        </Stepper>
+        <div style={contentStyle}>
+          {this.state.finished ? (
+            <p>
+              <a
+                href="#"
+                onClick={(event) => {
+                  event.preventDefault();
+                  this.setState({stepIndex: 0, finished: true});
+                }}
+              >
+                Click here
+              </a> to reset the example.
+            </p>
+          ) : (
+            <div>
+              {this.getStepContent(this.state.stepIndex)}
+              
+            </div>
+          )}
+        </div>
+      </div>
+
+        </Drawer>
+      <div id="cy" />
+      </div>
+      )
   }
 }
 

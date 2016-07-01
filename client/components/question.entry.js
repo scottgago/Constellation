@@ -8,7 +8,12 @@ import FlatButton from 'material-ui/FlatButton'
 
 const styles = {
 	avatar: {
-    marginRight: 30
+    marginRight: 25
+  },
+  containerStyle : {
+  	background: "none",
+  	fontFamily: "Chalks",
+  	color: 'white'
   }
 }
 
@@ -24,6 +29,7 @@ class QuestionEntry extends Component {
 	}
 
 	handleTextChange = (e,value) =>{
+		console.log(value)
 		this.state.submitAnswer = value
 	}
 
@@ -37,14 +43,18 @@ class QuestionEntry extends Component {
 
 	render () {
 		return (
-		<Card>
+		<Card style = {styles.containerStyle} >
       <CardHeader
         title={this.state.question.subject}
         subtitle= {this.state.question.question}
         actAsExpander={true}
         showExpandableButton={true}
+        titleColor = "white"
+        subtitleColor = "white"
       />
-      <CardText  expandable={true}>
+      <CardText  
+      	expandable={true}
+      	color = "white">
       	{this.state.question.answers.map((value, index)=>{
       		return (
       			<div key={index}>
@@ -59,9 +69,13 @@ class QuestionEntry extends Component {
       		)
       	})}
       <TextField 
+      	style = {styles.containerStyle}
+      	textareaStyle = {styles.containerStyle}
       	hintText="Submit an answer"
       	onChange = {this.handleTextChange}
 				disabled = {this.state.lock}
+				fullWidth = {true}
+				multiLine = {true}
       />
       </CardText>
       <CardActions expandable={true}>
