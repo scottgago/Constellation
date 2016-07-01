@@ -9,6 +9,7 @@ function SignIn({signInWithGoogle}) {
   return (
     <div className="g-row sign-in">
       <div className="g-col">
+        <img className='hat' src = {'./assets/imgs/astronaut.jpg'}/>
         <h1 className="sign-in__heading">Sign in</h1>
         <button className="sign-in__button" onClick={signInWithGoogle} type="button">Google</button>
         {/*<Link to='/realapp'> go to ReaApp </Link>*/}
