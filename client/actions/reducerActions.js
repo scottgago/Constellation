@@ -2,11 +2,8 @@ import { CLOSE_BLASTDOORS, USER_SUBMITANSWER, OPEN_BLASTDOORS, USER_SUBMITQUESTI
 		 ADMIN_ADDVIDEO, ADMIN_OPEN_EDIT, ADMIN_CLOSE_EDIT, ADMIN_ADDARTICLE, ADMIN_ADDDESCRIPTION, SELECT_NODE, REGISTER_CY, CLOSE_USER_VIEW } from './actionList'
 import Firebase from 'firebase';
 
-const Posts = new Firebase('https://constellations-3ccaa.firebaseio.com');
-const nodesRef = Posts.child('elements')
-// nodesRef.orderByValue().once("value", function(value){
-// 	console.log(value.val(), "hey")
-// })
+const Posts = new Firebase('https://rong-b0e6a.firebaseio.com');
+const nodesRef = Posts.child('elements');
 
 export function openQuestion(){
 	return {type: USER_OPEN_SUBMITQUESTION, payload: {questionPrompt: true}}
@@ -71,55 +68,36 @@ export function submitEdit(currentNode){
 }
 
 export function editEdges({selectedEdge}, userID){
-	const nodesRef = Posts.child(`${userID}/elements`);
 	var newEdge = nodesRef.push()
-
 	var newEdgeObj = {selectedEdge}
-
 	newEdgeObj.selectedEdge.data.firebaseID = newEdge.toString(),
-
-	console.log(newEdgeObj.selectedEdge)
-
 	newEdge.setWithPriority(newEdgeObj.selectedEdge, newEdgeObj.selectedEdge.data.id)
 	return { type: ADMIN_EDIT_EDGES, payload: { edgesChanges: false} }
 }
 
 export function addVideo(currentNode){
-
-
 	var nodeRef = new Firebase(currentNode._private.data.firebaseID + "/data")
-
 	nodeRef.update({
 		videos: currentNode._private.data.videos
 	})
-
-
 	return { type: ADMIN_ADDVIDEO, payload: {}}
 }
 
 export function addArticle(currentNode){
-
 	var nodeRef = new Firebase(currentNode._private.data.firebaseID + "/data")
-
 	nodeRef.update({
 		articles: currentNode._private.data.articles
 	})
-
-
 	return { type: ADMIN_ADDARTICLE, payload: {}}
 }
 
 export function createNode({cy, currentNode, id, description, styles, admins, width, height, type, connections}, userID) {
-
-
 		var nodeName = {id: id}.id
 		var height = {height: height}.height
 		var width = {width: width}.width
 		var starType = {type: type}.type
-		console.log('a;jwerajwei;rjawe;rjaew;r');
-		const nodesRef = Posts.child(`${userID}/elements`);
+
 		var newNode = nodesRef.push()
-		console.log('l;aje;rjaoiw;ejr;iaowjer;iaewjira');
 
 		newNode.setWithPriority({
 			group: 'nodes',
@@ -138,9 +116,6 @@ export function createNode({cy, currentNode, id, description, styles, admins, wi
 	          	}
         	}
       	}, nodeName)
-
-      	console.log({connections}.connections)
-
       	if(!{connections}.connections.length){
       		nodesRef.push({
       			group: 'edges',
@@ -151,8 +126,6 @@ export function createNode({cy, currentNode, id, description, styles, admins, wi
       			}
       		})
       	}
-
-
       	for(var i = 0; i < {connections}.connections.length; i++){
       		nodesRef.push({
       			group: 'edges',
@@ -163,9 +136,7 @@ export function createNode({cy, currentNode, id, description, styles, admins, wi
       			}
       		})
       	}
-
-
-	return { type: ADMIN_CREATENODE, payload: {
+				return { type: ADMIN_CREATENODE, payload: {
 				cy: cy,
 				currentNode : currentNode,
 				id : id,
@@ -185,19 +156,15 @@ export function toggleAdmin({adminMode}) {
 	return { type: TOGGLE_ADMIN, payload: {adminMode: adminMode}}
 }
 
-
 export function fetchNodes(callback) {
   return (dispatch, getState) => {
-		const {auth} = getState();
-		const nodesRef = Posts.child(`${auth.id}`);
-    nodesRef.once('value', snapshot => {
-			var arr = [];
-			console.log('thisisbullshit', snapshot);
-			if(snapshot.exists()) {
+    Posts.once('value', snapshot => {
+
 				dispatch({
 					type: FETCH_NODES,
 					payload: {nodes: snapshot.val()}
 				});
+				var arr = [];
 				for(var key in snapshot.val().elements){
 					if(snapshot.val().elements[key].group === "nodes"){
 						var newObj = {
@@ -243,51 +210,7 @@ export function fetchNodes(callback) {
 					}
 					arr.push(newObj)
 				}
-				console.log('oooooogggaaaaaaaa', arr);
-			}
-			else {
-				const {auth} = getState();
-				const nodesRef = Posts.child(`${auth.id}/elements`)
-				var newNode = nodesRef.push()
-				const initObj = {
-					group: 'nodes',
-					data: {
-						firebaseID: newNode.toString(),
-						id: "JavaScript",
-						videos: '[]',
-						articles: '[]',
-						description: "",
-						questions: '[]',
-						quizzes: '[]',
-						style: {
-							width: 100,
-							height: 100,
-							starType: "./assets/imgs/star (1).png"
-						}
-					}
-				}
-				newNode.setWithPriority(initObj, "JavaScript")
-				var obj = {};
-				obj[auth.id] = initObj;
-
-				dispatch({
-	        type: FETCH_NODES,
-	        payload: {nodes: {elements: obj  } }
-	      });
-				arr = [{
-					data:{
-						articles:[],
-						description: "",
-						firebaseID: `https://constellation-f9f08.firebaseio.com/${auth.id}/elements`,
-						id: "Javascript",
-						questions: [],
-						quizzes: [],
-						style: [],
-						videos: [],
-						},
-					group: "nodes"}]
-			}
-      callback(arr)
+				callback(arr)
     });
   };
 }
@@ -297,7 +220,6 @@ export function openEdit(){
 }
 
 export function addConnection(connection, userID){
-	const nodesRef = Posts.child(`${userID}/elements`);
 	nodesRef.push(connection)
 }
 

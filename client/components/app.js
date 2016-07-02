@@ -8,6 +8,8 @@ import * as actions from '../actions/reducerActions';
 import { connect } from 'react-redux';
 import { POST_SIGN_IN_PATH, POST_SIGN_OUT_PATH } from '../auth/config';
 
+import {setupUser} from '../auth/actions';
+
 const styles = {
 	launchContainerStylePanel2 : {
 	    maxWidth: '100%',
@@ -47,6 +49,7 @@ class App extends Component {
     		router.replace(POST_SIGN_OUT_PATH);
   	}
   	else if (!auth.authenticated && nextProps.auth.authenticated) {
+				setupUser(nextProps.auth.id);
     		router.replace(POST_SIGN_IN_PATH);
   	}
   }
@@ -58,9 +61,6 @@ class App extends Component {
 		const {auth, children} = this.props;
 		return (
 			<div className = 'initialBackground'>
-				<ul className="header__links">
-					{auth.authenticated ? <li><a className="header__link" onClick={this.signOut} href="#">Sign out</a></li> : null}
-				</ul>
 				<div>{children}</div>
 			</div>
 	);
