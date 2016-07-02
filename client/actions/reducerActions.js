@@ -2,11 +2,8 @@ import { CLOSE_BLASTDOORS, USER_SUBMITANSWER, OPEN_BLASTDOORS, USER_SUBMITQUESTI
 		 ADMIN_ADDVIDEO, ADMIN_OPEN_EDIT, ADMIN_CLOSE_EDIT, ADMIN_ADDARTICLE, ADMIN_ADDDESCRIPTION, SELECT_NODE, REGISTER_CY, CLOSE_USER_VIEW } from './actionList'
 import Firebase from 'firebase';
 
-const Posts = new Firebase('https://constellations-3ccaa.firebaseio.com');
-const nodesRef = Posts.child('elements')
-// nodesRef.orderByValue().once("value", function(value){
-// 	console.log(value.val(), "hey")
-// })
+const Posts = new Firebase('https://rong-b0e6a.firebaseio.com');
+const nodesRef = Posts.child('elements');
 
 export function openQuestion(){
 	return {type: USER_OPEN_SUBMITQUESTION, payload: {questionPrompt: true}}
@@ -78,45 +75,29 @@ export function submitEdit(currentNode){
 
 export function editEdges({selectedEdge}, userID){
 	var newEdge = nodesRef.push()
-
 	var newEdgeObj = {selectedEdge}
-
 	newEdgeObj.selectedEdge.data.firebaseID = newEdge.toString(),
-
-	console.log(newEdgeObj.selectedEdge)
-
 	newEdge.setWithPriority(newEdgeObj.selectedEdge, newEdgeObj.selectedEdge.data.id)
 	return { type: ADMIN_EDIT_EDGES, payload: { edgesChanges: false} }
 }
 
 export function addVideo(currentNode){
-
-
 	var nodeRef = new Firebase(currentNode._private.data.firebaseID + "/data")
-
 	nodeRef.update({
 		videos: currentNode._private.data.videos
 	})
-
-
 	return { type: ADMIN_ADDVIDEO, payload: {}}
 }
 
 export function addArticle(currentNode){
-
 	var nodeRef = new Firebase(currentNode._private.data.firebaseID + "/data")
-
 	nodeRef.update({
 		articles: currentNode._private.data.articles
 	})
-
-
 	return { type: ADMIN_ADDARTICLE, payload: {}}
 }
 
 export function createNode({cy, currentNode, id, description, styles, admins, width, height, type, connections}, userID) {
-
-
 		var nodeName = {id: id}.id
 		var height = {height: height}.height
 		var width = {width: width}.width
@@ -141,7 +122,6 @@ export function createNode({cy, currentNode, id, description, styles, admins, wi
         	}
       	}, nodeName)
 
-
       	if(!{connections}.connections.length){
       		nodesRef.push({
       			group: 'edges',
@@ -152,8 +132,6 @@ export function createNode({cy, currentNode, id, description, styles, admins, wi
       			}
       		})
       	}
-
-
       	for(var i = 0; i < {connections}.connections.length; i++){
       		nodesRef.push({
       			group: 'edges',
@@ -164,9 +142,7 @@ export function createNode({cy, currentNode, id, description, styles, admins, wi
       			}
       		})
       	}
-
-
-	return { type: ADMIN_CREATENODE, payload: {
+				return { type: ADMIN_CREATENODE, payload: {
 				cy: cy,
 				currentNode : currentNode,
 				id : id,
@@ -186,16 +162,17 @@ export function toggleAdmin({adminMode}) {
 	return { type: TOGGLE_ADMIN, payload: {adminMode: adminMode}}
 }
 
-
 export function fetchNodes(callback) {
   return (dispatch, getState) => {
     	Posts.once('value', snapshot => {
     		console.log(snapshot.val(), "elements")
 			var arr = [];
+
 				dispatch({
 					type: FETCH_NODES,
 					payload: {nodes: snapshot.val()}
 				});
+				var arr = [];
 				for(var key in snapshot.val().elements){
 					if(snapshot.val().elements[key].group === "nodes"){
 						var newObj = {
@@ -243,6 +220,7 @@ export function fetchNodes(callback) {
 				}
 
 			callback(arr)
+
     });
   };
 }
@@ -252,7 +230,6 @@ export function openEdit(){
 }
 
 export function addConnection(connection, userID){
-	const nodesRef = Posts.child(`${userID}/elements`);
 	nodesRef.push(connection)
 }
 

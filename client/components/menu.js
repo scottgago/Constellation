@@ -127,8 +127,8 @@ class Menu extends Component {
           width= {500}
           onRequestChange={(open) => this.setState({open})}>
           <div onClick = { this.props.signOut } style={style.menuItem}>Sign Out</div>
-  
-     
+
+
         </Drawer>
       </div>
 			)

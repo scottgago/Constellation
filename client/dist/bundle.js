@@ -36640,6 +36640,8 @@
 
 	var _config = __webpack_require__(429);
 
+	var _actions = __webpack_require__(425);
+
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -36692,6 +36694,7 @@
 				if (auth.authenticated && !nextProps.auth.authenticated) {
 					router.replace(_config.POST_SIGN_OUT_PATH);
 				} else if (!auth.authenticated && nextProps.auth.authenticated) {
+					(0, _actions.setupUser)(nextProps.auth.id);
 					router.replace(_config.POST_SIGN_IN_PATH);
 				}
 			}
@@ -46383,11 +46386,8 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	var Posts = new _firebase2.default('https://constellations-3ccaa.firebaseio.com');
+	var Posts = new _firebase2.default('https://rong-b0e6a.firebaseio.com');
 	var nodesRef = Posts.child('elements');
-	// nodesRef.orderByValue().once("value", function(value){
-	// 	console.log(value.val(), "hey")
-	// })
 
 	function openQuestion() {
 		return { type: _actionList.USER_OPEN_SUBMITQUESTION, payload: { questionPrompt: true } };
@@ -46460,34 +46460,24 @@
 		var selectedEdge = _ref.selectedEdge;
 
 		var newEdge = nodesRef.push();
-
 		var newEdgeObj = { selectedEdge: selectedEdge };
-
-		newEdgeObj.selectedEdge.data.firebaseID = newEdge.toString(), console.log(newEdgeObj.selectedEdge);
-
-		newEdge.setWithPriority(newEdgeObj.selectedEdge, newEdgeObj.selectedEdge.data.id);
+		newEdgeObj.selectedEdge.data.firebaseID = newEdge.toString(), newEdge.setWithPriority(newEdgeObj.selectedEdge, newEdgeObj.selectedEdge.data.id);
 		return { type: _actionList.ADMIN_EDIT_EDGES, payload: { edgesChanges: false } };
 	}
 
 	function addVideo(currentNode) {
-
 		var nodeRef = new _firebase2.default(currentNode._private.data.firebaseID + "/data");
-
 		nodeRef.update({
 			videos: currentNode._private.data.videos
 		});
-
 		return { type: _actionList.ADMIN_ADDVIDEO, payload: {} };
 	}
 
 	function addArticle(currentNode) {
-
 		var nodeRef = new _firebase2.default(currentNode._private.data.firebaseID + "/data");
-
 		nodeRef.update({
 			articles: currentNode._private.data.articles
 		});
-
 		return { type: _actionList.ADMIN_ADDARTICLE, payload: {} };
 	}
 
@@ -46502,7 +46492,6 @@
 		var height = _ref2.height;
 		var type = _ref2.type;
 		var connections = _ref2.connections;
-
 
 		var nodeName = { id: id }.id;
 		var height = { height: height }.height;
@@ -46538,7 +46527,6 @@
 				}
 			});
 		}
-
 		for (var i = 0; i < { connections: connections }.connections.length; i++) {
 			nodesRef.push({
 				group: 'edges',
@@ -46549,7 +46537,6 @@
 				}
 			});
 		}
-
 		return { type: _actionList.ADMIN_CREATENODE, payload: {
 				cy: cy,
 				currentNode: currentNode,
@@ -46577,10 +46564,12 @@
 			Posts.once('value', function (snapshot) {
 				console.log(snapshot.val(), "elements");
 				var arr = [];
+
 				dispatch({
 					type: _actionList.FETCH_NODES,
 					payload: { nodes: snapshot.val() }
 				});
+				var arr = [];
 				for (var key in snapshot.val().elements) {
 					if (snapshot.val().elements[key].group === "nodes") {
 						var newObj = {
@@ -46637,7 +46626,6 @@
 	}
 
 	function addConnection(connection, userID) {
-		var nodesRef = Posts.child(userID + '/elements');
 		nodesRef.push(connection);
 	}
 
@@ -46722,12 +46710,11 @@
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
+	exports.setupUser = setupUser;
 	exports.initAuth = initAuth;
 	exports.signInError = signInError;
 	exports.signInSuccess = signInSuccess;
-	exports.signInWithGithub = signInWithGithub;
 	exports.signInWithGoogle = signInWithGoogle;
-	exports.signInWithTwitter = signInWithTwitter;
 	exports.signOut = signOut;
 	exports.signOutSuccess = signOutSuccess;
 
@@ -46735,10 +46722,26 @@
 
 	var _actionTypes = __webpack_require__(430);
 
+	//firebaseDB = firebase.database()
+
+	function setupUser(userID) {
+	  _index.firebaseDb.ref('users/' + userID).once('value').then(function (snapshot) {
+	    if (snapshot.val()) {
+	      console.log('dooooooowewewewewewewewewe', snapshot.val());
+	    } else {
+	      console.log('uuuuuuuuuussssssseeeeerrrr', userID);
+	      _index.firebaseDb.ref('users/' + userID).set({
+	        admin: true,
+	        visited: false
+	      });
+	    }
+	  });
+	}
+
 	function authenticate(provider) {
 	  return function (dispatch) {
 	    _index.firebaseAuth.signInWithPopup(provider).then(function (result) {
-	      return dispatch(signInSuccess(result));
+	      dispatch(signInSuccess(result));
 	    }).catch(function (error) {
 	      return dispatch(signInError(error));
 	    });
@@ -46766,17 +46769,15 @@
 	  };
 	}
 
-	function signInWithGithub() {
-	  return authenticate(new firebase.auth.GithubAuthProvider());
-	}
+	// export function signInWithGithub() {
+	//   return authenticate(new firebase.auth.GithubAuthProvider());
+	// }
+	// export function signInWithTwitter() {
+	//   return authenticate(new firebase.auth.TwitterAuthProvider());
+	// }
 
 	function signInWithGoogle() {
-	  console.log('wtfbro');
 	  return authenticate(new firebase.auth.GoogleAuthProvider());
-	}
-
-	function signInWithTwitter() {
-	  return authenticate(new firebase.auth.TwitterAuthProvider());
 	}
 
 	function signOut() {
@@ -46802,7 +46803,7 @@
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.firebaseAuth = exports.firebaseApp = undefined;
+	exports.firebaseDb = exports.firebaseAuth = exports.firebaseApp = undefined;
 
 	__webpack_require__(427);
 
@@ -46810,7 +46811,7 @@
 
 	var firebaseApp = exports.firebaseApp = firebase.initializeApp(_config.FIREBASE_CONFIG);
 	var firebaseAuth = exports.firebaseAuth = firebaseApp.auth();
-	//export const firebaseDb = firebaseApp.database();
+	var firebaseDb = exports.firebaseDb = firebaseApp.database();
 
 /***/ },
 /* 427 */
