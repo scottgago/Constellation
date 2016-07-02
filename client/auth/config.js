@@ -1,8 +1,8 @@
 export const FIREBASE_CONFIG = {
-  apiKey: "AIzaSyCeg_8JUbBuhWKgq6DWPVmG8KZyh2z_Y9E",
-  authDomain: "rong-b0e6a.firebaseapp.com",
-  databaseURL: "https://rong-b0e6a.firebaseio.com",
-  storageBucket: ""
+    apiKey: "AIzaSyB4XSatW82fjyjX3F3eC5E9EichkoBfdUk",
+    authDomain: "constellations-3ccaa.firebaseapp.com",
+    databaseURL: "https://constellations-3ccaa.firebaseio.com",
+    storageBucket: "constellations-3ccaa.appspot.com",
 };
 
 

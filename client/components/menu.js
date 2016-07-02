@@ -136,13 +136,14 @@ class Menu extends Component {
 }
 
 function mapStateToProps(state){
+  console.log(state, "state")
   console.debug("MAPPING STATE TO PROPS IN MENU")
-  return { }
+  return {}
 }
 function mapDispatchToProps(dispatch) {
   return {
     signOut: ()=>dispatch(signOut()),
-    toggleAdmin: ()=>dispatch(toggleAdmin())
+    toggleAdmin: (x)=>dispatch(toggleAdmin(x))
   }
 }
 

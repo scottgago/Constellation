@@ -8,36 +8,47 @@ import TextField from 'material-ui/TextField';
 
 const styles = {
 	question: {
-    marginTop: 25,
-    width: '100%',
-    height: 300, 
-    overflow: 'scroll'
-  },
-
+    	width: '100%',
+    	height: 300, 
+    	overflow: 'scroll',
+		background: "none",
+  		fontFamily: "Chalks",
+  		color: 'white'
+  	},
+  	textStyle : {
+		fontFamily: "Chalks",
+  		color: 'white'
+  	},
 	dialogBody: {
 		minHeight: 600,
 		overflow: 'scroll',
-    background: 'url(./assets/imgs/metalBackground.jpg)',
-    backgroundSize: 'cover',
-    borderRadius: 3,
-    zIndex: 100002
-	},
-	zIndex:{
+		background: 'url(./assets/imgs/metalBackground.jpg)',
+		backgroundSize: 'cover',
+		borderRadius: 3,
 		zIndex: 100002
 	},
-
+	zIndex: {
+		zIndex: 100002
+	},
+	backButton: {
+    	position: 'fixed',
+    	bottom: 0,
+    	right: 0,
+    	margin: 5
+  	},
 	subject: {
-    width: '100%',
-    height: '100%'
-  },
-
-  dialog: {
-  	alignItems: 'center',
-  	justifyContent: 'center',
-  	overflow: 'scroll', 
-    width: '80%',
-    maxWidth: 'none',
-  },
+    	width: '100%',
+		background: "none",
+  		fontFamily: "Chalks",
+  		color: 'white'
+  	},
+	dialog: {
+  		alignItems: 'center',
+  		justifyContent: 'center',
+  		overflow: 'scroll', 
+    	width: '40%',
+    	maxWidth: 'none',
+  	}
 }
 
 class AskQuestion extends Component {
@@ -68,6 +79,9 @@ class AskQuestion extends Component {
 		this.props.submitQuestion(this.props.currentNode)
 		this.props.closeQuestion()
 	}
+	handleClose = () => {
+		this.props.closeQuestion()
+	}
 
 
 
@@ -96,31 +110,40 @@ class AskQuestion extends Component {
 				bodyStyle= {styles.dialogBody}
 				contentStyle= {styles.dialog}
 				open={this.props.questionPrompt}
-				width={800}
-				actions={actions}
+				actionsContainerStyle = {{background: 'none'}}
+				width={400}
 				onRequestClose={this.handleClose}> 
-					<Paper 
-				    zDepth={4} 
-				    style={styles.subject}>
 				    <TextField 
 				      hintText="Subject"
+				      hintStyle= {styles.textStyle}
 				      onChange = {this.handleTextChangeSubject}
-				      style = {styles.textStyle}
+				      style = {styles.subject}
+					  inputStyle = {styles.textStyle}
 
-				      />
-				  </Paper>
-				  <Paper zDepth={2} />
-				  <Paper
-				    zDepth={2}
-				    style={styles.question}>
+				    />
+
 				  	<TextField 
 				      hintText="Question"
+				      hintStyle= {styles.textStyle}
 				      multiLine={true}
 				      onChange = {this.handleTextChangeQuestion}
-				      style = {styles.textStyle}
-
-				      />
-				  </Paper>
+				      style = {styles.question}
+					  textareaStyle = {styles.textStyle}
+					/>
+					<div style={styles.backButton}>
+					  	<FlatButton
+        					label="Cancel"
+        					primary={true}
+        					onTouchTap={this.handleClose}
+        					labelStyle={styles.textStyle}
+      					/>
+      					<FlatButton
+        					label="Submit"
+        					primary={true}
+        					onTouchTap={this.handleSubmit}
+        					labelStyle={{ color: '#89e894', fontFamily: "Chalks"}}
+      					/>
+      				</div>
 			</Dialog>
 		)
 	}

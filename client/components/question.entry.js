@@ -49,7 +49,7 @@ class QuestionEntry extends Component {
         subtitle= {this.state.question.question}
         actAsExpander={true}
         showExpandableButton={true}
-        titleColor = "white"
+        titleColor = "#779ecb"
         subtitleColor = "white"
       />
       <CardText  
@@ -72,6 +72,7 @@ class QuestionEntry extends Component {
       	style = {styles.containerStyle}
       	textareaStyle = {styles.containerStyle}
       	hintText="Submit an answer"
+        hintStyle = {{ color: 'white', fontFamily: "Chalks"}}
       	onChange = {this.handleTextChange}
 				disabled = {this.state.lock}
 				fullWidth = {true}
@@ -79,10 +80,14 @@ class QuestionEntry extends Component {
       />
       </CardText>
       <CardActions expandable={true}>
-        <FlatButton label="Cancel" />
+        <FlatButton label="Cancel" 
+          style={{ color: 'white', fontFamily: "Chalks"}}
+        />
         <FlatButton label="Submit" 
         	disabled = {this.state.lock}
         	onTouchTap={this.handleAnswerSubmit}
+          style={{ color: '#89e894', fontFamily: "Chalks"}}
+
         />
       </CardActions>
     </Card>

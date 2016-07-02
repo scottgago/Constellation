@@ -58,9 +58,6 @@ class App extends Component {
 		const {auth, children} = this.props;
 		return (
 			<div className = 'initialBackground'>
-				<ul className="header__links">
-					{auth.authenticated ? <li><a className="header__link" onClick={this.signOut} href="#">Sign out</a></li> : null}
-				</ul>
 				<div>{children}</div>
 			</div>
 	);

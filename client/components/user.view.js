@@ -54,7 +54,7 @@ const styles = {
     right: 0,
     left:0, 
     backgroundSize: 'cover',
-    zIndex: 100,
+    zIndex: 105,
     pointerEvents: 'auto'
 
   },
@@ -186,8 +186,13 @@ const styles = {
     height: '100%'
   },
 	description: {
-    padding: 10,
-    marginTop: 10,
+    maxWidth: 400,
+    width: 400,
+    maxHeight: 400,
+    height: 400,
+    margin : "0 auto",
+    topMargin: 90,
+    overflow: "scroll"
 	},
   headline: {
     fontSize: 24,
@@ -362,34 +367,25 @@ class User extends Component {
     }
 
     console.log("RENDERING USERVIEW")
+    console.log("this.props.moduleDescrit" , this.props.moduleDescription)
     return(
-
-      
-
-  		<div>
-
-        <Drawer
-          docked={false}
-          width={1600}
-          containerStyle={styles.launchContainerStyle}
-          open={this.props.openUserView}
-        >
-        
+      <div>
         <div style={this.checkStyleLaunch()}>
-          <RaisedButton onClick = {this.handleClosePrompt} backgroundColor ='#ff0000' style={styles.buttonDecline}>ABORT</RaisedButton>
-          <MarkdownParser style={styles.description} markdown={this.props.moduleDescription}/>
-          <RaisedButton onClick = {this.handleOpenModule} backgroundColor ='#3ed715' style={styles.buttonAccept}>LAUNCH</RaisedButton>
+          <div style={styles.description}>
+          <MarkdownParser markdown={this.props.moduleDescription}/>
+          </div>
+          <div style={styles.backButton} >
+            <FlatButton style={{ color: '#779ecb', fontFamily: "Chalks"}} onTouchTap={this.handleClosePrompt} label="Back to graph view"/>
+            <FlatButton style={{ color: '#89e894', fontFamily: "Chalks"}} onTouchTap = {this.handleOpenModule} label="Launch Module"/>
+          </div>
         </div>
-      
-        </Drawer>
-
 
         <div style={this.checkStyle()}>
           <Tabs style = {styles.buttonFonts} tabItemContainerStyle={styles.tabsColor} inkBarStyle={styles.inkBarStyle}>
             <Tab style = {styles.buttonFonts} label="Content" >
               <Tabs tabItemContainerStyle={styles.tabsColor2} inkBarStyle={styles.inkBarStyle}>
                 {this.props.currentVideos.map(function(value){
-                  return (<Tab key={value.name} label={value.name}>
+                  return (<Tab key={value.name} label={value.name} style = {styles.buttonFonts} >
                     <div style={styles.contentDiv}>
                       <div style={styles.floatLeft}>
                       
@@ -397,6 +393,7 @@ class User extends Component {
                        videoId={value.video}
                        opts={opts} />
                       
+                      <img src="http://www.4iqsolutions.com/wp-content/uploads/2015/01/Chalk-Drawing-Questionmark-Bubbles.png" />
                       </div>
                     <div style={styles.floatRight}>
                         <MarkdownParser className = "markdownParser"  markdown={value.markdown}/>
@@ -409,7 +406,7 @@ class User extends Component {
             <Tab label="Documentation" style = {styles.buttonFonts} >
               <Tabs tabItemContainerStyle={styles.tabsColor2} inkBarStyle={styles.inkBarStyle}>
               {this.props.currentArticles.map((value)=>{
-                return ( <Tab key= {value.name} label = {value.name}>
+                return ( <Tab key= {value.name} label = {value.name} style = {styles.buttonFonts}>
                   <div style={styles.topIframeMargin}>
                     <iframe style={styles.dialogHugePlayer} src={value.article} height={'50%'} width={'100%'}/>
                     
@@ -442,10 +439,11 @@ class User extends Component {
                   {checkInit()}
                 </Menu>
               </Popover>
+
           <div style={styles.backButton} >
-            <FlatButton style={styles.buttonFonts} onTouchTap={this.handleCloseModule} label="Back to graph view"/>
+            <FlatButton style={{ color: '#779ecb', fontFamily: "Chalks"}} onTouchTap={this.handleCloseModule} label="Back to graph view"/>
             <FlatButton style={styles.buttonFonts} onTouchTap={this.handleOpenQuestion} label="Ask A Question"/>
-            <FlatButton style={styles.buttonFonts} onTouchTap = {this.handleToggleNext} label="Next Modules"/>
+            <FlatButton style={{ color: '#89e894', fontFamily: "Chalks"}} onTouchTap = {this.handleToggleNext} label="Next Modules"/>
           </div>
 
           </div>

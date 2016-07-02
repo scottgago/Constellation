@@ -58,8 +58,14 @@ export function closeQuestion(){
 
 export function submitEdit(currentNode){
 
-	var nodeRef = new Firebase(currentNode._private.data.firebaseID + "/data/style")
+	console.log('submitEdit', console.log(currentNode._private.data.description))
 
+	var nodeRef = new Firebase(currentNode._private.data.firebaseID + "/data/style")
+	var nodeRefDesc = new Firebase(currentNode._private.data.firebaseID + "/data/")
+	
+	nodeRefDesc.update({
+		description : currentNode._private.data.description
+	})
 	nodeRef.set({
 		height: currentNode._private.style.height.value,
 		width: currentNode._private.style.width.value,
@@ -71,7 +77,6 @@ export function submitEdit(currentNode){
 }
 
 export function editEdges({selectedEdge}, userID){
-	const nodesRef = Posts.child(`${userID}/elements`);
 	var newEdge = nodesRef.push()
 
 	var newEdgeObj = {selectedEdge}
@@ -116,10 +121,7 @@ export function createNode({cy, currentNode, id, description, styles, admins, wi
 		var height = {height: height}.height
 		var width = {width: width}.width
 		var starType = {type: type}.type
-		console.log('a;jwerajwei;rjawe;rjaew;r');
-		const nodesRef = Posts.child(`${userID}/elements`);
 		var newNode = nodesRef.push()
-		console.log('l;aje;rjaoiw;ejr;iaowjer;iaewjira');
 
 		newNode.setWithPriority({
 			group: 'nodes',
@@ -139,7 +141,6 @@ export function createNode({cy, currentNode, id, description, styles, admins, wi
         	}
       	}, nodeName)
 
-      	console.log({connections}.connections)
 
       	if(!{connections}.connections.length){
       		nodesRef.push({
@@ -188,12 +189,9 @@ export function toggleAdmin({adminMode}) {
 
 export function fetchNodes(callback) {
   return (dispatch, getState) => {
-		const {auth} = getState();
-		const nodesRef = Posts.child(`${auth.id}`);
-    nodesRef.once('value', snapshot => {
+    	Posts.once('value', snapshot => {
+    		console.log(snapshot.val(), "elements")
 			var arr = [];
-			console.log('thisisbullshit', snapshot);
-			if(snapshot.exists()) {
 				dispatch({
 					type: FETCH_NODES,
 					payload: {nodes: snapshot.val()}
@@ -243,51 +241,8 @@ export function fetchNodes(callback) {
 					}
 					arr.push(newObj)
 				}
-				console.log('oooooogggaaaaaaaa', arr);
-			}
-			else {
-				const {auth} = getState();
-				const nodesRef = Posts.child(`${auth.id}/elements`)
-				var newNode = nodesRef.push()
-				const initObj = {
-					group: 'nodes',
-					data: {
-						firebaseID: newNode.toString(),
-						id: "JavaScript",
-						videos: '[]',
-						articles: '[]',
-						description: "",
-						questions: '[]',
-						quizzes: '[]',
-						style: {
-							width: 100,
-							height: 100,
-							starType: "./assets/imgs/star (1).png"
-						}
-					}
-				}
-				newNode.setWithPriority(initObj, "JavaScript")
-				var obj = {};
-				obj[auth.id] = initObj;
 
-				dispatch({
-	        type: FETCH_NODES,
-	        payload: {nodes: {elements: obj  } }
-	      });
-				arr = [{
-					data:{
-						articles:[],
-						description: "",
-						firebaseID: `https://constellation-f9f08.firebaseio.com/${auth.id}/elements`,
-						id: "Javascript",
-						questions: [],
-						quizzes: [],
-						style: [],
-						videos: [],
-						},
-					group: "nodes"}]
-			}
-      callback(arr)
+			callback(arr)
     });
   };
 }

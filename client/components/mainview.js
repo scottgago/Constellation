@@ -39,7 +39,16 @@ const styles  = {
     fontFamily: "Chalks",
     color: 'white',
     topMargin: 9
-  }
+  },
+  launchContainerStyle : {
+    maxWidth: '100%',
+    display: 'block ',
+    position: 'absolute',
+    background: 'url(./assets/imgs/metalBackground.jpg)',
+    zIndex: 100,
+    transitionDuration: '.75s',
+    backgroundSize: 'cover',
+  },
 }
 
 
@@ -57,21 +66,21 @@ class MainView extends Component {
 		}
   }
 
-  // findPath = () => {
-  //   var aStar = this.state.cy.elements().aStar({ root: "#JavaScript2", goal: "#JavaScript10" });
-  //   var map = aStar.path.select()
-  //   for (var i = 0; i < map.length; i++){
-  //     if(map[i]._private.group === 'edges'){
-  //       map[i].style({
-  //         'line-color' : '#0289d5',
-  //         'overlay-color' : '#0289d5',
-  //         'overlay-opacity' : .9,
-  //         'width' : 10,
-  //         'overlay-padding': 3
-  //       })
-  //     }
-  //   }
-  // }
+  findPath = () => {
+    var aStar = this.props.cy.elements().aStar({ root: "#JavaScript2", goal: "#JavaScript10" });
+    var map = aStar.path.select()
+    for (var i = 0; i < map.length; i++){
+      if(map[i]._private.group === 'edges'){
+        map[i].style({
+          'line-color' : '#0289d5',
+          'overlay-color' : '#0289d5',
+          'overlay-opacity' : .9,
+          'width' : 10,
+          'overlay-padding': 3
+        })
+      }
+    }
+  }
 
   //TODO: Implement this later
 
@@ -154,9 +163,9 @@ class MainView extends Component {
     var bind = this
     
     var defaults = {
-  menuRadius: 100, // the radius of the circular menu in pixels
-  selector: 'node', // elements matching this Cytoscape.js selector will trigger cxtmenus
-  commands: [ // an array of commands to list in the menu or a function that returns the array
+      menuRadius: 100, // the radius of the circular menu in pixels
+      selector: 'node', // elements matching this Cytoscape.js selector will trigger cxtmenus
+      commands: [ // an array of commands to list in the menu or a function that returns the array
     
     { // example command
       fillColor: 'rgba(200, 200, 200, 1)', // optional: custom background color for item
@@ -183,12 +192,9 @@ class MainView extends Component {
     },
      { // example command
       fillColor: 'rgba(54,54,54, 1)', // optional: custom background color for item
-      content: 'Objectives', // html/text content to be displayed in the menu
+      content: 'Syllabus', // html/text content to be displayed in the menu
       select: function(ele){ 
-        console.log("objectives")
         var holder = bind.props.currentNode
-       
-
           bind.props.selectNode({ 
             currentQuestions: ele._private.data.questions, 
             moduleDescription: ele._private.data.description, 
@@ -265,6 +271,7 @@ class MainView extends Component {
       name : "cose-bilkent",
       ready: function () {
         bind.props.openBlastDoor()
+        bind.findPath()
       },
       // Called on `layoutstop`
       stop: function () {
@@ -424,9 +431,22 @@ class MainView extends Component {
         )
       });
       var nodes = cy.nodes()
+      // var aStar = cy.elements().aStar({ root: "#JQuery", goal: "#Arrays" });
+      // var map = aStar.path.select()
+      //   for (var i = 0; i < map.length; i++){
+      //     if(map[i]._private.group === 'edges'){
+      //       map[i].style({
+      //         'line-color' : '#0289d5',
+      //         'overlay-color' : '#0289d5',
+      //         'overlay-opacity' : .9,
+      //         'width' : 10,
+      //         'overlay-padding': 3
+      //       })
+      //     }
+      //   }
       var cxtmenuApi = cy.cxtmenu( defaults )
       // cy.edgehandles( edgesDefaults )
-      // cy.panzoom(panZoomDefaults)
+      // var panZoom = cy.panzoom(panZoomDefaults)
 
       for(var i = 0; i < nodes.length; i++){
         nodes[i].style({

@@ -208,6 +208,16 @@ class EditNode extends Component {
     }
   }
 
+  contentChange = (e) => {
+    this.state.markdownDescription = e
+    console.log(this.state.markdownDescription)
+  }
+
+  submitChanges = () => {
+    console.log("changes", this.props.currentNode.data.description)
+    this.props.currentNode._private.data.description = this.state.markdownDescription
+  }
+
   handleRequestClosePrompt = () => {
     this.setState({
       edit: false,
@@ -247,6 +257,11 @@ class EditNode extends Component {
   }
 
   onSubmit = () =>{
+
+    this.props.submitEdit(this.props.currentNode)
+  
+
+
 
 
     var addNodes = []
@@ -433,7 +448,7 @@ class EditNode extends Component {
               <Tab label="Markdown">
                 <div style = {style.markDownDiv} >
                   <MarkdownEditor initialContent={this.props.markdownDescription} onContentChange ={this.contentChange} iconsSet="materialize-ui"/>
-                  <RaisedButton style = {style.submitButton} > Submit markdown changes </RaisedButton>
+                  <RaisedButton style = {style.submitButton} onTouchTap={this.submitChanges} > Submit markdown changes </RaisedButton>
                 </div>
               </Tab>
             </Tabs>

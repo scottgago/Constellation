@@ -36712,19 +36712,6 @@
 					'div',
 					{ className: 'initialBackground' },
 					_react2.default.createElement(
-						'ul',
-						{ className: 'header__links' },
-						auth.authenticated ? _react2.default.createElement(
-							'li',
-							null,
-							_react2.default.createElement(
-								'a',
-								{ className: 'header__link', onClick: this.signOut, href: '#' },
-								'Sign out'
-							)
-						) : null
-					),
-					_react2.default.createElement(
 						'div',
 						null,
 						children
@@ -36973,6 +36960,7 @@
 	}(_react.Component);
 
 	function mapStateToProps(state) {
+	  console.log(state, "state");
 	  console.debug("MAPPING STATE TO PROPS IN MENU");
 	  return {};
 	}
@@ -36981,8 +36969,8 @@
 	    signOut: function signOut() {
 	      return dispatch((0, _actions.signOut)());
 	    },
-	    toggleAdmin: function toggleAdmin() {
-	      return dispatch((0, _reducerActions.toggleAdmin)());
+	    toggleAdmin: function toggleAdmin(x) {
+	      return dispatch((0, _reducerActions.toggleAdmin)(x));
 	    }
 	  };
 	}
@@ -46451,8 +46439,14 @@
 
 	function submitEdit(currentNode) {
 
-		var nodeRef = new _firebase2.default(currentNode._private.data.firebaseID + "/data/style");
+		console.log('submitEdit', console.log(currentNode._private.data.description));
 
+		var nodeRef = new _firebase2.default(currentNode._private.data.firebaseID + "/data/style");
+		var nodeRefDesc = new _firebase2.default(currentNode._private.data.firebaseID + "/data/");
+
+		nodeRefDesc.update({
+			description: currentNode._private.data.description
+		});
 		nodeRef.set({
 			height: currentNode._private.style.height.value,
 			width: currentNode._private.style.width.value,
@@ -46465,7 +46459,6 @@
 	function editEdges(_ref, userID) {
 		var selectedEdge = _ref.selectedEdge;
 
-		var nodesRef = Posts.child(userID + '/elements');
 		var newEdge = nodesRef.push();
 
 		var newEdgeObj = { selectedEdge: selectedEdge };
@@ -46515,10 +46508,7 @@
 		var height = { height: height }.height;
 		var width = { width: width }.width;
 		var starType = { type: type }.type;
-		console.log('a;jwerajwei;rjawe;rjaew;r');
-		var nodesRef = Posts.child(userID + '/elements');
 		var newNode = nodesRef.push();
-		console.log('l;aje;rjaoiw;ejr;iaowjer;iaewjira');
 
 		newNode.setWithPriority({
 			group: 'nodes',
@@ -46537,8 +46527,6 @@
 				}
 			}
 		}, nodeName);
-
-		console.log({ connections: connections }.connections);
 
 		if (!{ connections: connections }.connections.length) {
 			nodesRef.push({
@@ -46586,110 +46574,59 @@
 
 	function fetchNodes(callback) {
 		return function (dispatch, getState) {
-			var _getState = getState();
-
-			var auth = _getState.auth;
-
-			var nodesRef = Posts.child('' + auth.id);
-			nodesRef.once('value', function (snapshot) {
+			Posts.once('value', function (snapshot) {
+				console.log(snapshot.val(), "elements");
 				var arr = [];
-				console.log('thisisbullshit', snapshot);
-				if (snapshot.exists()) {
-					dispatch({
-						type: _actionList.FETCH_NODES,
-						payload: { nodes: snapshot.val() }
-					});
-					for (var key in snapshot.val().elements) {
-						if (snapshot.val().elements[key].group === "nodes") {
-							var newObj = {
-								group: snapshot.val().elements[key].group,
-								data: {
-									id: snapshot.val().elements[key].data.id,
-									firebaseID: snapshot.val().elements[key].data.firebaseID,
-									description: snapshot.val().elements[key].data.description,
-									style: snapshot.val().elements[key].data.style
-								}
-							};
-						} else {
-							arr.push(snapshot.val().elements[key]);
-							continue;
-						}
-
-						newObj.data.description = snapshot.val().elements[key].data.description;
-						if (snapshot.val().elements[key].data.articles === "[]" || snapshot.val().elements[key].data.articles === undefined) {
-							newObj.data.articles = [];
-						} else {
-							newObj.data.articles = snapshot.val().elements[key].data.articles;
-						}
-						if (snapshot.val().elements[key].data.videos === '[]' || snapshot.val().elements[key].data.videos === undefined) {
-							newObj.data.videos = [];
-						} else {
-							newObj.data.videos = snapshot.val().elements[key].data.videos;
-						}
-						if (snapshot.val().elements[key].data.questions === '[]' || snapshot.val().elements[key].data.questions === undefined) {
-							newObj.data.questions = [];
-						} else {
-							newObj.data.questions = snapshot.val().elements[key].data.questions;
-							for (var i = 0; i < newObj.data.questions.length; i++) {
-								console.log(newObj.data.questions[i]);
-								if (newObj.data.questions[i].answers === '[]' || newObj.data.questions[i].answers === undefined) {
-									newObj.data.questions[i].answers = [];
-								}
+				dispatch({
+					type: _actionList.FETCH_NODES,
+					payload: { nodes: snapshot.val() }
+				});
+				for (var key in snapshot.val().elements) {
+					if (snapshot.val().elements[key].group === "nodes") {
+						var newObj = {
+							group: snapshot.val().elements[key].group,
+							data: {
+								id: snapshot.val().elements[key].data.id,
+								firebaseID: snapshot.val().elements[key].data.firebaseID,
+								description: snapshot.val().elements[key].data.description,
+								style: snapshot.val().elements[key].data.style
 							}
-						}
-						if (snapshot.val().elements[key].data.quizzes === '[]' || snapshot.val().elements[key].data.quizzes === undefined) {
-							newObj.data.quizzes = [];
-						} else {
-							newObj.data.quizzes = snapshot.val().elements[key].data.quizzes;
-						}
-						arr.push(newObj);
+						};
+					} else {
+						arr.push(snapshot.val().elements[key]);
+						continue;
 					}
-					console.log('oooooogggaaaaaaaa', arr);
-				} else {
-					var _getState2 = getState();
 
-					var _auth = _getState2.auth;
-
-					var _nodesRef = Posts.child(_auth.id + '/elements');
-					var newNode = _nodesRef.push();
-					var initObj = {
-						group: 'nodes',
-						data: {
-							firebaseID: newNode.toString(),
-							id: "JavaScript",
-							videos: '[]',
-							articles: '[]',
-							description: "",
-							questions: '[]',
-							quizzes: '[]',
-							style: {
-								width: 100,
-								height: 100,
-								starType: "./assets/imgs/star (1).png"
+					newObj.data.description = snapshot.val().elements[key].data.description;
+					if (snapshot.val().elements[key].data.articles === "[]" || snapshot.val().elements[key].data.articles === undefined) {
+						newObj.data.articles = [];
+					} else {
+						newObj.data.articles = snapshot.val().elements[key].data.articles;
+					}
+					if (snapshot.val().elements[key].data.videos === '[]' || snapshot.val().elements[key].data.videos === undefined) {
+						newObj.data.videos = [];
+					} else {
+						newObj.data.videos = snapshot.val().elements[key].data.videos;
+					}
+					if (snapshot.val().elements[key].data.questions === '[]' || snapshot.val().elements[key].data.questions === undefined) {
+						newObj.data.questions = [];
+					} else {
+						newObj.data.questions = snapshot.val().elements[key].data.questions;
+						for (var i = 0; i < newObj.data.questions.length; i++) {
+							console.log(newObj.data.questions[i]);
+							if (newObj.data.questions[i].answers === '[]' || newObj.data.questions[i].answers === undefined) {
+								newObj.data.questions[i].answers = [];
 							}
 						}
-					};
-					newNode.setWithPriority(initObj, "JavaScript");
-					var obj = {};
-					obj[_auth.id] = initObj;
-
-					dispatch({
-						type: _actionList.FETCH_NODES,
-						payload: { nodes: { elements: obj } }
-					});
-					arr = [{
-						data: {
-							articles: [],
-							description: "",
-							firebaseID: 'https://constellation-f9f08.firebaseio.com/' + _auth.id + '/elements',
-							id: "Javascript",
-							questions: [],
-							quizzes: [],
-							style: [],
-							videos: []
-						},
-						group: "nodes" }];
+					}
+					if (snapshot.val().elements[key].data.quizzes === '[]' || snapshot.val().elements[key].data.quizzes === undefined) {
+						newObj.data.quizzes = [];
+					} else {
+						newObj.data.quizzes = snapshot.val().elements[key].data.quizzes;
+					}
+					arr.push(newObj);
 				}
+
 				callback(arr);
 			});
 		};
@@ -47469,13 +47406,13 @@
 	"use strict";
 
 	Object.defineProperty(exports, "__esModule", {
-	  value: true
+	    value: true
 	});
 	var FIREBASE_CONFIG = exports.FIREBASE_CONFIG = {
-	  apiKey: "AIzaSyCeg_8JUbBuhWKgq6DWPVmG8KZyh2z_Y9E",
-	  authDomain: "rong-b0e6a.firebaseapp.com",
-	  databaseURL: "https://rong-b0e6a.firebaseio.com",
-	  storageBucket: ""
+	    apiKey: "AIzaSyB4XSatW82fjyjX3F3eC5E9EichkoBfdUk",
+	    authDomain: "constellations-3ccaa.firebaseapp.com",
+	    databaseURL: "https://constellations-3ccaa.firebaseio.com",
+	    storageBucket: "constellations-3ccaa.appspot.com"
 	};
 
 	// Route paths
@@ -48346,6 +48283,15 @@
 	    fontFamily: "Chalks",
 	    color: 'white',
 	    topMargin: 9
+	  },
+	  launchContainerStyle: {
+	    maxWidth: '100%',
+	    display: 'block ',
+	    position: 'absolute',
+	    background: 'url(./assets/imgs/metalBackground.jpg)',
+	    zIndex: 100,
+	    transitionDuration: '.75s',
+	    backgroundSize: 'cover'
 	  }
 	};
 
@@ -48356,6 +48302,22 @@
 	    _classCallCheck(this, MainView);
 
 	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(MainView).call(this, props));
+
+	    _this.findPath = function () {
+	      var aStar = _this.props.cy.elements().aStar({ root: "#JavaScript2", goal: "#JavaScript10" });
+	      var map = aStar.path.select();
+	      for (var i = 0; i < map.length; i++) {
+	        if (map[i]._private.group === 'edges') {
+	          map[i].style({
+	            'line-color': '#0289d5',
+	            'overlay-color': '#0289d5',
+	            'overlay-opacity': .9,
+	            'width': 10,
+	            'overlay-padding': 3
+	          });
+	        }
+	      }
+	    };
 
 	    _this.handleNext = function () {
 	      var stepIndex = _this.state.stepIndex;
@@ -48385,26 +48347,12 @@
 	    return _this;
 	  }
 
-	  // findPath = () => {
-	  //   var aStar = this.state.cy.elements().aStar({ root: "#JavaScript2", goal: "#JavaScript10" });
-	  //   var map = aStar.path.select()
-	  //   for (var i = 0; i < map.length; i++){
-	  //     if(map[i]._private.group === 'edges'){
-	  //       map[i].style({
-	  //         'line-color' : '#0289d5',
-	  //         'overlay-color' : '#0289d5',
-	  //         'overlay-opacity' : .9,
-	  //         'width' : 10,
-	  //         'overlay-padding': 3
-	  //       })
-	  //     }
-	  //   }
-	  // }
-
-	  //TODO: Implement this later
-
 	  _createClass(MainView, [{
 	    key: 'componentDidMount',
+
+
+	    //TODO: Implement this later
+
 	    value: function componentDidMount() {
 	      var _this2 = this;
 
@@ -48514,11 +48462,9 @@
 	          }
 	        }, { // example command
 	          fillColor: 'rgba(54,54,54, 1)', // optional: custom background color for item
-	          content: 'Objectives', // html/text content to be displayed in the menu
+	          content: 'Syllabus', // html/text content to be displayed in the menu
 	          select: function select(ele) {
-	            console.log("objectives");
 	            var holder = bind.props.currentNode;
-
 	            bind.props.selectNode({
 	              currentQuestions: ele._private.data.questions,
 	              moduleDescription: ele._private.data.description,
@@ -48588,6 +48534,7 @@
 	        name: "cose-bilkent",
 	        ready: function ready() {
 	          bind.props.openBlastDoor();
+	          bind.findPath();
 	        },
 	        // Called on `layoutstop`
 	        stop: function stop() {},
@@ -48733,9 +48680,22 @@
 	          });
 	        });
 	        var nodes = cy.nodes();
+	        // var aStar = cy.elements().aStar({ root: "#JQuery", goal: "#Arrays" });
+	        // var map = aStar.path.select()
+	        //   for (var i = 0; i < map.length; i++){
+	        //     if(map[i]._private.group === 'edges'){
+	        //       map[i].style({
+	        //         'line-color' : '#0289d5',
+	        //         'overlay-color' : '#0289d5',
+	        //         'overlay-opacity' : .9,
+	        //         'width' : 10,
+	        //         'overlay-padding': 3
+	        //       })
+	        //     }
+	        //   }
 	        var cxtmenuApi = cy.cxtmenu(defaults);
 	        // cy.edgehandles( edgesDefaults )
-	        // cy.panzoom(panZoomDefaults)
+	        // var panZoom = cy.panzoom(panZoomDefaults)
 
 	        for (var i = 0; i < nodes.length; i++) {
 	          nodes[i].style({
@@ -55185,15 +55145,6 @@
 	    key: 'render',
 	    value: function render() {
 	      console.log("RENDERING ADDNODE");
-	      var cancel = [_react2.default.createElement(_FlatButton2.default, {
-	        label: 'Cancel',
-	        primary: true,
-	        onTouchTap: this.handleRequestClosePrompt
-	      }), _react2.default.createElement(_FlatButton2.default, {
-	        label: 'Create Node',
-	        primary: true,
-	        onTouchTap: this.onConfirm
-	      })];
 	      return _react2.default.createElement(
 	        'div',
 	        { style: this.checkStyle() },
@@ -55257,7 +55208,7 @@
 	          'div',
 	          { style: style.backButton },
 	          _react2.default.createElement(_FlatButton2.default, { style: style.buttonFonts, onTouchTap: this.handleRequestClosePrompt, label: 'Exit without saving' }),
-	          _react2.default.createElement(_FlatButton2.default, { style: style.buttonFonts, onTouchTap: this.onConfirm, label: 'Save and exit' })
+	          _react2.default.createElement(_FlatButton2.default, { style: { color: '#89e894', fontFamily: "Chalks" }, onTouchTap: this.onConfirm, label: 'Save and exit' })
 	        )
 	      );
 	    }
@@ -56177,6 +56128,16 @@
 	      }
 	    };
 
+	    _this.contentChange = function (e) {
+	      _this.state.markdownDescription = e;
+	      console.log(_this.state.markdownDescription);
+	    };
+
+	    _this.submitChanges = function () {
+	      console.log("changes", _this.props.currentNode.data.description);
+	      _this.props.currentNode._private.data.description = _this.state.markdownDescription;
+	    };
+
 	    _this.handleRequestClosePrompt = function () {
 	      _this.setState({
 	        edit: false,
@@ -56215,6 +56176,8 @@
 	    };
 
 	    _this.onSubmit = function () {
+
+	      _this.props.submitEdit(_this.props.currentNode);
 
 	      var addNodes = [];
 
@@ -56548,7 +56511,7 @@
 	                _react2.default.createElement(MarkdownEditor, { initialContent: this.props.markdownDescription, onContentChange: this.contentChange, iconsSet: 'materialize-ui' }),
 	                _react2.default.createElement(
 	                  _RaisedButton2.default,
-	                  { style: style.submitButton },
+	                  { style: style.submitButton, onTouchTap: this.submitChanges },
 	                  ' Submit markdown changes '
 	                )
 	              )
@@ -59050,7 +59013,8 @@
 		},
 		buttonFonts: {
 			fontFamily: "Chalks",
-			color: 'white'
+			color: '#89e894',
+			background: "none"
 		}
 	};
 
@@ -59100,7 +59064,7 @@
 
 						return _react2.default.createElement(
 							_Table.TableRow,
-							{ selected: true, selectable: false },
+							{ style: style.buttonFonts, selected: true, selectable: false },
 							_react2.default.createElement(
 								_Table.TableRowColumn,
 								null,
@@ -59139,7 +59103,7 @@
 						return allNodes.map(function (value) {
 							return _react2.default.createElement(
 								_Table.TableRow,
-								{ key: value },
+								{ style: style.buttonFonts, key: value },
 								_react2.default.createElement(
 									_Table.TableRowColumn,
 									null,
@@ -64156,7 +64120,7 @@
 	    right: 0,
 	    left: 0,
 	    backgroundSize: 'cover',
-	    zIndex: 100,
+	    zIndex: 105,
 	    pointerEvents: 'auto'
 
 	  },
@@ -64288,8 +64252,13 @@
 	    height: '100%'
 	  },
 	  description: {
-	    padding: 10,
-	    marginTop: 10
+	    maxWidth: 400,
+	    width: 400,
+	    maxHeight: 400,
+	    height: 400,
+	    margin: "0 auto",
+	    topMargin: 90,
+	    overflow: "scroll"
 	  },
 	  headline: {
 	    fontSize: 24,
@@ -64464,31 +64433,23 @@
 	      };
 
 	      console.log("RENDERING USERVIEW");
+	      console.log("this.props.moduleDescrit", this.props.moduleDescription);
 	      return _react2.default.createElement(
 	        'div',
 	        null,
 	        _react2.default.createElement(
-	          _Drawer2.default,
-	          {
-	            docked: false,
-	            width: 1600,
-	            containerStyle: styles.launchContainerStyle,
-	            open: this.props.openUserView
-	          },
+	          'div',
+	          { style: this.checkStyleLaunch() },
 	          _react2.default.createElement(
 	            'div',
-	            { style: this.checkStyleLaunch() },
-	            _react2.default.createElement(
-	              _RaisedButton2.default,
-	              { onClick: this.handleClosePrompt, backgroundColor: '#ff0000', style: styles.buttonDecline },
-	              'ABORT'
-	            ),
-	            _react2.default.createElement(_markdown2.default, { style: styles.description, markdown: this.props.moduleDescription }),
-	            _react2.default.createElement(
-	              _RaisedButton2.default,
-	              { onClick: this.handleOpenModule, backgroundColor: '#3ed715', style: styles.buttonAccept },
-	              'LAUNCH'
-	            )
+	            { style: styles.description },
+	            _react2.default.createElement(_markdown2.default, { markdown: this.props.moduleDescription })
+	          ),
+	          _react2.default.createElement(
+	            'div',
+	            { style: styles.backButton },
+	            _react2.default.createElement(_FlatButton2.default, { style: { color: '#779ecb', fontFamily: "Chalks" }, onTouchTap: this.handleClosePrompt, label: 'Back to graph view' }),
+	            _react2.default.createElement(_FlatButton2.default, { style: { color: '#89e894', fontFamily: "Chalks" }, onTouchTap: this.handleOpenModule, label: 'Launch Module' })
 	          )
 	        ),
 	        _react2.default.createElement(
@@ -64506,7 +64467,7 @@
 	                this.props.currentVideos.map(function (value) {
 	                  return _react2.default.createElement(
 	                    _Tabs.Tab,
-	                    { key: value.name, label: value.name },
+	                    { key: value.name, label: value.name, style: styles.buttonFonts },
 	                    _react2.default.createElement(
 	                      'div',
 	                      { style: styles.contentDiv },
@@ -64515,7 +64476,8 @@
 	                        { style: styles.floatLeft },
 	                        _react2.default.createElement(_reactYoutube2.default, {
 	                          videoId: value.video,
-	                          opts: opts })
+	                          opts: opts }),
+	                        _react2.default.createElement('img', { src: 'http://www.4iqsolutions.com/wp-content/uploads/2015/01/Chalk-Drawing-Questionmark-Bubbles.png' })
 	                      ),
 	                      _react2.default.createElement(
 	                        'div',
@@ -64536,7 +64498,7 @@
 	                this.props.currentArticles.map(function (value) {
 	                  return _react2.default.createElement(
 	                    _Tabs.Tab,
-	                    { key: value.name, label: value.name },
+	                    { key: value.name, label: value.name, style: styles.buttonFonts },
 	                    _react2.default.createElement(
 	                      'div',
 	                      { style: styles.topIframeMargin },
@@ -64579,9 +64541,9 @@
 	          _react2.default.createElement(
 	            'div',
 	            { style: styles.backButton },
-	            _react2.default.createElement(_FlatButton2.default, { style: styles.buttonFonts, onTouchTap: this.handleCloseModule, label: 'Back to graph view' }),
+	            _react2.default.createElement(_FlatButton2.default, { style: { color: '#779ecb', fontFamily: "Chalks" }, onTouchTap: this.handleCloseModule, label: 'Back to graph view' }),
 	            _react2.default.createElement(_FlatButton2.default, { style: styles.buttonFonts, onTouchTap: this.handleOpenQuestion, label: 'Ask A Question' }),
-	            _react2.default.createElement(_FlatButton2.default, { style: styles.buttonFonts, onTouchTap: this.handleToggleNext, label: 'Next Modules' })
+	            _react2.default.createElement(_FlatButton2.default, { style: { color: '#89e894', fontFamily: "Chalks" }, onTouchTap: this.handleToggleNext, label: 'Next Modules' })
 	          )
 	        )
 	      );
@@ -76169,7 +76131,7 @@
 	          subtitle: this.state.question.question,
 	          actAsExpander: true,
 	          showExpandableButton: true,
-	          titleColor: 'white',
+	          titleColor: '#779ecb',
 	          subtitleColor: 'white'
 	        }),
 	        _react2.default.createElement(
@@ -76198,6 +76160,7 @@
 	            style: styles.containerStyle,
 	            textareaStyle: styles.containerStyle,
 	            hintText: 'Submit an answer',
+	            hintStyle: { color: 'white', fontFamily: "Chalks" },
 	            onChange: this.handleTextChange,
 	            disabled: this.state.lock,
 	            fullWidth: true,
@@ -76207,10 +76170,14 @@
 	        _react2.default.createElement(
 	          _Card.CardActions,
 	          { expandable: true },
-	          _react2.default.createElement(_FlatButton2.default, { label: 'Cancel' }),
+	          _react2.default.createElement(_FlatButton2.default, { label: 'Cancel',
+	            style: { color: 'white', fontFamily: "Chalks" }
+	          }),
 	          _react2.default.createElement(_FlatButton2.default, { label: 'Submit',
 	            disabled: this.state.lock,
-	            onTouchTap: this.handleAnswerSubmit
+	            onTouchTap: this.handleAnswerSubmit,
+	            style: { color: '#89e894', fontFamily: "Chalks" }
+
 	          })
 	        )
 	      );
@@ -77604,12 +77571,17 @@
 
 	var styles = {
 		question: {
-			marginTop: 25,
 			width: '100%',
 			height: 300,
-			overflow: 'scroll'
+			overflow: 'scroll',
+			background: "none",
+			fontFamily: "Chalks",
+			color: 'white'
 		},
-
+		textStyle: {
+			fontFamily: "Chalks",
+			color: 'white'
+		},
 		dialogBody: {
 			minHeight: 600,
 			overflow: 'scroll',
@@ -77621,17 +77593,23 @@
 		zIndex: {
 			zIndex: 100002
 		},
-
+		backButton: {
+			position: 'fixed',
+			bottom: 0,
+			right: 0,
+			margin: 5
+		},
 		subject: {
 			width: '100%',
-			height: '100%'
+			background: "none",
+			fontFamily: "Chalks",
+			color: 'white'
 		},
-
 		dialog: {
 			alignItems: 'center',
 			justifyContent: 'center',
 			overflow: 'scroll',
-			width: '80%',
+			width: '40%',
 			maxWidth: 'none'
 		}
 	};
@@ -77660,6 +77638,10 @@
 					answers: []
 				});
 				_this.props.submitQuestion(_this.props.currentNode);
+				_this.props.closeQuestion();
+			};
+
+			_this.handleClose = function () {
 				_this.props.closeQuestion();
 			};
 
@@ -77694,33 +77676,39 @@
 						bodyStyle: styles.dialogBody,
 						contentStyle: styles.dialog,
 						open: this.props.questionPrompt,
-						width: 800,
-						actions: actions,
+						actionsContainerStyle: { background: 'none' },
+						width: 400,
 						onRequestClose: this.handleClose },
-					_react2.default.createElement(
-						_Paper2.default,
-						{
-							zDepth: 4,
-							style: styles.subject },
-						_react2.default.createElement(_TextField2.default, {
-							hintText: 'Subject',
-							onChange: this.handleTextChangeSubject,
-							style: styles.textStyle
+					_react2.default.createElement(_TextField2.default, {
+						hintText: 'Subject',
+						hintStyle: styles.textStyle,
+						onChange: this.handleTextChangeSubject,
+						style: styles.subject,
+						inputStyle: styles.textStyle
 
-						})
-					),
-					_react2.default.createElement(_Paper2.default, { zDepth: 2 }),
+					}),
+					_react2.default.createElement(_TextField2.default, {
+						hintText: 'Question',
+						hintStyle: styles.textStyle,
+						multiLine: true,
+						onChange: this.handleTextChangeQuestion,
+						style: styles.question,
+						textareaStyle: styles.textStyle
+					}),
 					_react2.default.createElement(
-						_Paper2.default,
-						{
-							zDepth: 2,
-							style: styles.question },
-						_react2.default.createElement(_TextField2.default, {
-							hintText: 'Question',
-							multiLine: true,
-							onChange: this.handleTextChangeQuestion,
-							style: styles.textStyle
-
+						'div',
+						{ style: styles.backButton },
+						_react2.default.createElement(_FlatButton2.default, {
+							label: 'Cancel',
+							primary: true,
+							onTouchTap: this.handleClose,
+							labelStyle: styles.textStyle
+						}),
+						_react2.default.createElement(_FlatButton2.default, {
+							label: 'Submit',
+							primary: true,
+							onTouchTap: this.handleSubmit,
+							labelStyle: { color: '#89e894', fontFamily: "Chalks" }
 						})
 					)
 				);
@@ -96624,9 +96612,6 @@
 	    minHeight: 400,
 	    alignItems: 'center',
 	    justifyContent: 'center'
-	  },
-	  zIndex: {
-	    zIndex: 1000001
 	  }
 	};
 
@@ -96775,8 +96760,6 @@
 	            open: this.props.addArticleOpen,
 	            contentStyle: style.modalStyle,
 	            onRequestClose: this.handleClose },
-	          'style=',
-	          style.zIndex,
 	          _react2.default.createElement(
 	            _Stepper.Stepper,
 	            { activeStep: stepIndex },

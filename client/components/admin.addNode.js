@@ -263,18 +263,6 @@ class AddNode extends Component {
 
 	render(){
     console.log("RENDERING ADDNODE")
-		const cancel = [
-		  <FlatButton
-		      label="Cancel"
-		      primary={true}
-		      onTouchTap={this.handleRequestClosePrompt}
-		  />,
-      <FlatButton
-          label="Create Node"
-          primary={true}
-          onTouchTap={this.onConfirm}
-      />
-		];
 		return(
 			<div style={this.checkStyle()}>
 	        <div style = {style.dialogBody}>
@@ -312,7 +300,7 @@ class AddNode extends Component {
           autoHideDuration={4000} />
           <div style={style.backButton} >
               <FlatButton style={style.buttonFonts} onTouchTap={this.handleRequestClosePrompt} label="Exit without saving"/>
-              <FlatButton style={style.buttonFonts} onTouchTap={this.onConfirm} label="Save and exit"/>
+              <FlatButton style={{ color: '#89e894', fontFamily: "Chalks"}} onTouchTap={this.onConfirm} label="Save and exit"/>
           </div>
 	     </div>
 	    )

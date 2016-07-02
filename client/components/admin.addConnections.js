@@ -21,7 +21,8 @@ const style = {
   },
 	buttonFonts: {
     fontFamily: "Chalks",
-    color: 'white',
+    color: '#89e894',
+    background: "none"
   },
 }
 
@@ -62,7 +63,7 @@ class AddConnections extends Component {
 				//TODO: Check this
 
 				return (
-					<TableRow selected = {true} selectable={false}>
+					<TableRow style={style.buttonFonts} selected = {true} selectable={false}>
 						<TableRowColumn>{this.props.currentNode._private.data.id}</TableRowColumn>
 						<TableRowColumn>{this.props.currentNode._private.data.id}</TableRowColumn>
 						<TableRowColumn>Yes</TableRowColumn>
@@ -90,7 +91,7 @@ class AddConnections extends Component {
 
 	      return allNodes.map((value)=>{
 	      	return (
-		      	<TableRow key={value}>
+		      	<TableRow style={style.buttonFonts} key={value}>
 							<TableRowColumn>{value} </TableRowColumn>
 							<TableRowColumn>{value}</TableRowColumn>
 							<TableRowColumn>No</TableRowColumn>

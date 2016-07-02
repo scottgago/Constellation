@@ -57,9 +57,6 @@ const style = {
     minHeight: 400,
     alignItems: 'center',
     justifyContent: 'center'
-  },
-  zIndex: {
-    zIndex: 1000001
   }
 }
 
@@ -182,7 +179,6 @@ class AddArticle extends Component {
             open={this.props.addArticleOpen}
             contentStyle={style.modalStyle}
             onRequestClose={this.handleClose}>
-            style={style.zIndex}
           <Stepper activeStep={stepIndex}>
             <Step>
               <StepLabel>Select an artcle</StepLabel>
